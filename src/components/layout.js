@@ -1,5 +1,8 @@
 import * as React from 'react'
 import styled from "@emotion/styled"
+import { Global, css } from "@emotion/react"
+
+import reset from '../utils/reset'
 
 const Wrapper = styled.div`
   width: 100%;
@@ -14,6 +17,11 @@ const Wrapper = styled.div`
 const Layout = ({children}) => {
     return(
         <Wrapper>
+        <Global
+          styles={css`
+            ${reset}
+          `}
+        />
         <title>ricardo's piece of the internet</title>
         <main>{children}</main>
         </Wrapper>

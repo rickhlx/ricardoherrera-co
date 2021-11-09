@@ -11,13 +11,14 @@ const Wrapper = styled.div`
   margin: 0 auto;
   max-width: 880px;
   padding: 40px;
-  @media (max-width: 599px) {
+  @media (max-width: 768px) {
     padding: 30px;
   }
 `
 const Header = () => {
   return(
-    <header css={css(tw``)}>
+    <header css={css(tw`py-4 md:py-8 lg:py-12`)}>
+        <title>ricardo's piece of the internet</title>
         <Link to="/">ricardo's piece of the internet</Link>
     </header>
   )
@@ -32,7 +33,6 @@ const Layout = ({children}) => {
           `}
         />
         <Header/>
-        <title>ricardo's piece of the internet</title>
         <main>{children}</main>
         </Wrapper>
     )

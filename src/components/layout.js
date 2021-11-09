@@ -29,6 +29,13 @@ const Layout = ({children}) => {
       <>
         <Global
           styles={css`
+            a {
+              color: red;
+            }
+            ::selection {
+              color: white;
+              background: red;
+            }
             ${reset}
           `}
         />

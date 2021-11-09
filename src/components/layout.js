@@ -26,15 +26,17 @@ const Header = () => {
 
 const Layout = ({children}) => {
     return(
-        <Wrapper>
+      <>
         <Global
           styles={css`
             ${reset}
           `}
         />
-        <Header/>
-        <main>{children}</main>
+        <Wrapper>
+          <Header/>
+          <main>{children}</main>
         </Wrapper>
+      </>
     )
 }
 

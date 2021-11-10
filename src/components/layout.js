@@ -35,7 +35,13 @@ const Header = () => {
   return(
     <header css={css(tw`py-4 md:py-8 lg:py-12`)}>
         <title>ricardo's piece of the internet</title>
-        <Link to="/">ricardo's piece of the internet</Link>
+        <Link css={css(`
+          :hover {
+            color: red;
+          }
+        `,
+          tw`text-current`
+        )} to="/">ricardo's piece of the internet</Link>
     </header>
   )
 }

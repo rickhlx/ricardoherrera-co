@@ -1,4 +1,5 @@
 import { css } from '@emotion/react'
+import typography, { fonts } from '../utils/typography'
 
 const reset = css`
 form {
@@ -7,7 +8,7 @@ form {
 ul, ol {
   list-style-position: inside;
   margin-left: 0;
-  font-size: 18px;
+  font-size: ${typography.baseFontSize};
 }
 *,
   *:before,
@@ -16,7 +17,7 @@ ul, ol {
   }
   html,
   body {
-    font-family: sans-serif;
+    font-family: ${fonts.regular}, sans-serif;
     font-style: normal;
     padding: 0;
     margin: 0;
@@ -47,6 +48,7 @@ ul, ol {
       outline: 0;
     }
   }
+
   blockquote {
     padding-left: 1rem !important;
     margin-left: 0 !important;

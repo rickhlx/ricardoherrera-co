@@ -46,12 +46,28 @@ const Header = () => {
   )
 }
 
+const Footer = () => {
+  return(
+    <footer>
+      <div
+        css={css({
+          fontSize: '90%',
+          opacity: 0.7,
+        })}
+      >
+        Ricardo Herrera © 2021
+      </div>
+    </footer>
+  )
+}
+
 const Layout = ({children}) => {
     return(
       <>
         <GlobalStyle/>
         <Header/>
-        <main>{children}</main>
+        <>{children}</>
+        <Footer/>
       </>
     )
 }

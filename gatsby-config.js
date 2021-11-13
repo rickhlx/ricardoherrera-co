@@ -8,6 +8,7 @@ module.exports = {
     "gatsby-plugin-mdx",
     "gatsby-plugin-sharp",
     "gatsby-transformer-sharp",
+    "gatsby-plugin-react-helmet",
     "gatsby-plugin-emotion",
     {
       resolve: `gatsby-plugin-typography`,

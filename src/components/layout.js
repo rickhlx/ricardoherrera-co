@@ -1,10 +1,9 @@
 import * as React from 'react'
 import { Global, css } from "@emotion/react"
-import { Link } from "gatsby"
-import tw from 'twin.macro'
-import { Helmet } from "react-helmet"
 
 import reset from '../utils/reset'
+import SEO from './seo'
+import Header from './header'
 
 const GlobalStyle = () => {
   return(
@@ -29,29 +28,6 @@ const GlobalStyle = () => {
       ${reset}
     `}
   />
-  )
-}
-
-const SEO = () => {
-  return(
-    <Helmet
-    title="ricardo's piece of the internet"
-    titleTemplate="ricardo's piece of the internet"
-  />   
-  )
-}
-
-const Header = () => {
-  return(
-    <header css={css(tw`py-4 md:py-8 lg:py-12`)}>
-        <Link css={css(`
-          :hover {
-            color: red;
-          }
-        `,
-          tw`lg:text-xl text-current`
-        )} to="/">ricardo's piece of the internet</Link>
-    </header>
   )
 }
 

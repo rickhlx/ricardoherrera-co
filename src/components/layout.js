@@ -40,7 +40,7 @@ const Header = () => {
             color: red;
           }
         `,
-          tw`text-current`
+          tw`lg:text-lg text-current`
         )} to="/">ricardo's piece of the internet</Link>
     </header>
   )

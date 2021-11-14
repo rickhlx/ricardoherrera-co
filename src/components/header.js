@@ -16,13 +16,13 @@ const Header = () => {
     `)
 
     return(
-      <header css={css(tw`py-5 md:py-8 lg:py-10`)}>
+      <header css={css(tw`py-5 md:py-7 lg:py-9`)}>
           <Link css={css(`
             :hover {
               color: red;
             }
           `,
-            tw`text-sm md:text-base lg:text-lg text-current`
+            tw`text-sm text-transparent sm:text-base md:text-current lg:text-lg`
           )} to="/">
           <StaticImage css={css`
               border-radius: 50%;
@@ -38,8 +38,8 @@ const Header = () => {
                 height: 50px;
               } 
               @media (max-width: 768px) {
-                width: 40px;
-                height: 40px;
+                width: 50px;
+                height: 50px;
               } 
             }`
             }

@@ -9,9 +9,6 @@ const GlobalStyle = () => {
   return(
     <Global
     styles={css`
-      html {
-        background: deeppink;
-      }
       a {
         color: red;
       }
@@ -27,13 +24,6 @@ const GlobalStyle = () => {
 
 const Container = (props) => {
   return(
-    <div
-    css={css`
-      background: white;
-      min-height: 100vh;
-      min-width: 100vw;
-    `}
-    >
       <div css={css`
       width: 100%;
       max-width: 880px;
@@ -41,7 +31,6 @@ const Container = (props) => {
       margin: 0 auto; 
       `}>
       {props.children}
-      </div>
     </div>
   )
 }

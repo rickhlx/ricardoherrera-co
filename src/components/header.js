@@ -22,9 +22,9 @@ const Header = () => {
               color: red;
             }
           `,
-            tw`text-sm text-transparent sm:text-base md:text-current lg:text-lg`
+            tw`text-sm text-current lg:text-lg`
           )} to="/">
-          <StaticImage css={css`
+          <StaticImage loading="eager" css={css`
               border-radius: 50%;
               overflow: hidden;
               perspective: 0px;
@@ -45,7 +45,8 @@ const Header = () => {
             }
             src="../images/avatar.png"
           />
-            {data.site.siteMetadata.title}</Link>
+          <span css={css(tw`hidden md:inline-flex`)}>{data.site.siteMetadata.title}</span>
+            </Link>
       </header>
     )
   }

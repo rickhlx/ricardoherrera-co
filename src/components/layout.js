@@ -13,7 +13,7 @@ const GlobalStyle = () => {
       width: 100%;
       margin: 0 auto;
       max-width: 880px;
-      padding: 40px;
+      padding: 20px;
       }
       @media (max-width: 768px) {
         padding: 30px;

@@ -9,6 +9,18 @@ module.exports = {
     "gatsby-plugin-sharp",
     "gatsby-transformer-sharp",
     "gatsby-plugin-react-helmet",
+    {
+      resolve: `gatsby-plugin-manifest`,
+      options: {
+        name: `ricardo's piece of the internet`,
+        short_name: `Blog of Ricardo Herrera`,
+        start_url: `/`,
+        background_color: `#2b2e3c`,
+        theme_color: `#ff1493`,
+        display: `standalone`,
+        icon: "src/images/avatar.png",
+      },
+    },
     "gatsby-plugin-emotion",
     {
       resolve: `gatsby-plugin-typography`,

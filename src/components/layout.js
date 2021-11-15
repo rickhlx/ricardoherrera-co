@@ -9,15 +9,9 @@ const GlobalStyle = () => {
   return(
     <Global
     styles={css`
-      :root {
-      width: 100%;
-      margin: 0 auto;
-      max-width: 880px;
-      padding: 20px;
+      html {
+        background: deeppink;
       }
-      @media (max-width: 768px) {
-        padding: 30px;
-      } 
       a {
         color: red;
       }
@@ -28,6 +22,27 @@ const GlobalStyle = () => {
       ${reset}
     `}
   />
+  )
+}
+
+const Container = (props) => {
+  return(
+    <div
+    css={css`
+      background: white;
+      min-height: 100vh;
+      min-width: 100vw;
+    `}
+    >
+      <div css={css`
+      width: 100%;
+      max-width: 880px;
+      padding: 20px;
+      margin: 0 auto; 
+      `}>
+      {props.children}
+      </div>
+    </div>
   )
 }
 
@@ -51,9 +66,11 @@ const Layout = ({children}) => {
       <>
         <SEO/>
         <GlobalStyle/>
+        <Container>
         <Header/>
         <>{children}</>
         <Footer/>
+        </Container>
       </>
     )
 }

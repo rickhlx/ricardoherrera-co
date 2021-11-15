@@ -1,9 +1,11 @@
 import * as React from 'react'
 import { Global, css } from "@emotion/react"
+import tw from 'twin.macro'
 
 import reset from '../utils/reset'
 import SEO from './seo'
 import Header from './header'
+import { Instagram, Twitter, GitHub } from './social'
 
 const GlobalStyle = () => {
   return(
@@ -37,7 +39,7 @@ const Container = (props) => {
 
 const Footer = () => {
   return(
-    <footer>
+    <footer css={css(tw`flex justify-between items-center`)}>
       <div
         css={css({
           fontSize: '90%',
@@ -45,6 +47,11 @@ const Footer = () => {
         })}
       >
         Ricardo Herrera © 2021
+      </div>
+      <div css={css(tw`flex gap-0.5`)}>
+        <Twitter/>
+        <Instagram/>
+        <GitHub/>
       </div>
     </footer>
   )

@@ -1,5 +1,5 @@
-import { css } from '@emotion/react'
-import typography, { fonts } from '../utils/typography'
+import { css } from '@emotion/react';
+import typography, { fonts } from './typography';
 
 const reset = css`
 form {
@@ -171,6 +171,6 @@ ul, ol {
       border-radius: 5px;
     }
   }
-`
+`;
 
-export default reset
+export default reset;

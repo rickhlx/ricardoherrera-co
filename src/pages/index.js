@@ -1,13 +1,11 @@
-import * as React from "react"
-import Layout from '../components/layout'
-import Home from './home.mdx'
+import * as React from 'react';
+import Layout from '../components/layout';
+import Home from './home.mdx';
 
-const IndexPage = () => {
-  return (
+const IndexPage = () => (
   <Layout>
-    <Home/>
+    <Home />
   </Layout>
-  )
-}
+);
 
-export default IndexPage
+export default IndexPage;

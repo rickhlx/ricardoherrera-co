@@ -1,5 +1,5 @@
-import { css } from '@emotion/react';
-import typography, { fonts } from './typography';
+import { css } from "@emotion/react";
+import typography, { fonts } from "./typography";
 
 const reset = css`
 form {

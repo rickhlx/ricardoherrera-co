@@ -1,5 +1,5 @@
-import * as React from 'react';
-import { Link } from 'gatsby';
+import * as React from "react";
+import { Link } from "gatsby";
 
 export const Instagram = () => (
   <Link to="https://instagram.com/rickhlx">

@@ -1,11 +1,11 @@
-import * as React from 'react';
-import { Global, css } from '@emotion/react';
-import tw from 'twin.macro';
+import * as React from "react";
+import { Global, css } from "@emotion/react";
+import tw from "twin.macro";
 
-import reset from '../utils/reset';
-import SEO from './seo';
-import Header from './header';
-import { Instagram, Twitter, GitHub } from './social';
+import reset from "../utils/reset";
+import SEO from "./seo";
+import Header from "./header";
+import { Instagram, Twitter, GitHub } from "./social";
 
 const GlobalStyle = () => (
   <Global
@@ -23,12 +23,13 @@ const GlobalStyle = () => (
 );
 
 const Container = ({ children }) => (
-  <div css={css`
+  <div
+    css={css`
       width: 100%;
       max-width: 880px;
       padding: 20px;
-      margin: 0 auto; 
-      `}
+      margin: 0 auto;
+    `}
   >
     {children}
   </div>
@@ -38,7 +39,7 @@ const Footer = () => (
   <footer css={css(tw`flex justify-between items-center`)}>
     <div
       css={css({
-        fontSize: '90%',
+        fontSize: "90%",
         opacity: 0.7,
       })}
     >

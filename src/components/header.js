@@ -1,19 +1,19 @@
-import * as React from 'react';
-import { css } from '@emotion/react';
-import { Link, useStaticQuery, graphql } from 'gatsby';
-import tw from 'twin.macro';
-import { StaticImage } from 'gatsby-plugin-image';
+import * as React from "react";
+import { css } from "@emotion/react";
+import { Link, useStaticQuery, graphql } from "gatsby";
+import tw from "twin.macro";
+import { StaticImage } from "gatsby-plugin-image";
 
 const Header = () => {
   const data = useStaticQuery(graphql`
-      query {
-        site {
-          siteMetadata {
-            title
-          }
+    query {
+      site {
+        siteMetadata {
+          title
         }
       }
-    `);
+    }
+  `);
 
   return (
     <header css={css(tw`py-5 md:py-7 lg:py-9`)}>
@@ -24,7 +24,7 @@ const Header = () => {
               color: red;
             }
           `,
-          tw`text-sm text-current lg:text-lg`,
+          tw`text-sm text-current lg:text-lg`
         )}
         to="/"
       >
@@ -50,7 +50,9 @@ const Header = () => {
             }`}
           src="../images/avatar.png"
         />
-        <span css={css(tw`hidden md:inline-flex`)}>{data.site.siteMetadata.title}</span>
+        <span css={css(tw`hidden md:inline-flex`)}>
+          {data.site.siteMetadata.title}
+        </span>
       </Link>
     </header>
   );

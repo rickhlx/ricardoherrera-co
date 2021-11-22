@@ -1,59 +1,33 @@
 import * as React from "react";
 import { css } from "@emotion/react";
-import { Link, useStaticQuery, graphql } from "gatsby";
+import { Link } from "gatsby";
 import tw from "twin.macro";
-import { StaticImage } from "gatsby-plugin-image";
 
 const Header = () => {
-  const data = useStaticQuery(graphql`
-    query {
-      site {
-        siteMetadata {
-          title
-        }
-      }
-    }
-  `);
-
   return (
-    <header css={css(tw`py-5 md:py-7 lg:py-9`)}>
-      <Link
-        css={css(
-          `
-            :hover {
-              color: red;
-            }
-          `,
-          tw`text-sm text-current lg:text-lg`
-        )}
-        to="/"
-      >
-        <StaticImage
-          loading="eager"
-          css={css`
-              border-radius: 50%;
-              overflow: hidden;
-              perspective: 0px;
-              width: 60px;
-              margin-right: 0.5rem;
-              height: 60px;
-              vertical-align: middle;
-              border: 2px black solid;
-              @media (max-width: 1024px) {
-                width: 50px;
-                height: 50px;
-              } 
-              @media (max-width: 768px) {
-                width: 50px;
-                height: 50px;
-              } 
-            }`}
-          src="../images/avatar.png"
-        />
-        <span css={css(tw`hidden md:inline-flex`)}>
-          {data.site.siteMetadata.title}
-        </span>
-      </Link>
+    <header css={css(tw`max-w-screen-lg m-auto p-5 pb-10`)}>
+      <nav css={css(tw`flex justify-between`)}>
+        <div css={css(tw`h-full`)}>
+          <Link
+            css={css(
+              { fontFamily: "DM Serif Display" },
+              tw`text-4xl text-current lowercase block leading-5`
+            )}
+            to="/"
+          >
+            Ricardo
+            <br />
+            &nbsp;Herrera
+          </Link>
+        </div>
+        <div
+          css={css(`a{color: black};`, tw`flex gap-2 items-center uppercase`)}
+        >
+          {/* <Link to="/">Photo</Link>
+          <Link to="/">Blog</Link>
+          <Link to="/">About</Link> */}
+        </div>
+      </nav>
     </header>
   );
 };

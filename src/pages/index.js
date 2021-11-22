@@ -16,7 +16,7 @@ const rotate = keyframes`
 const IndexPage = () => (
   <Layout>
     <div css={css(tw`flex flex-col md:flex-row`)}>
-      <div css={css(tw`flex order-first md:order-last pt-10 m-auto md:m-0`)}>
+      <div css={css(tw`flex order-first md:order-last m-auto md:m-0`)}>
         <svg
           css={css`
             animation: ${rotate} 45s linear infinite;

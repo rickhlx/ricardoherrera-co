@@ -11,11 +11,7 @@ const GlobalStyle = () => (
   <Global
     styles={css`
       a {
-        color: red;
-      }
-      ::selection {
-        color: white;
-        background: red;
+        color: #258ebb;
       }
       ${reset}
     `}
@@ -45,7 +41,7 @@ const Footer = () => (
     >
       Ricardo Herrera © 2021
     </div>
-    <div css={css(tw`flex gap-0.5`)}>
+    <div css={css(tw`flex gap-2`)}>
       <Twitter />
       <Instagram />
       <GitHub />
@@ -57,8 +53,8 @@ const Layout = ({ children }) => (
   <>
     <SEO />
     <GlobalStyle />
+    <Header />
     <Container>
-      <Header />
       {children}
       <Footer />
     </Container>

@@ -17,7 +17,7 @@ ul, ol {
   }
   html,
   body {
-    font-family: ${fonts.regular}, sans-serif;
+    font-family: ${fonts.body}, sans-serif;
     font-style: normal;
     padding: 0;
     margin: 0;

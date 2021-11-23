@@ -1,4 +1,5 @@
 import { css, keyframes } from "@emotion/react";
+import { StaticImage } from "gatsby-plugin-image";
 import * as React from "react";
 import tw from "twin.macro";
 import Layout from "../components/layout";
@@ -15,22 +16,41 @@ const rotate = keyframes`
 
 const IndexPage = () => (
   <Layout>
-    <div css={css(tw`flex flex-col md:flex-row`)}>
-      <div css={css(tw`flex order-first md:order-last m-auto md:m-0`)}>
-        <svg
-          css={css`
-            animation: ${rotate} 45s linear infinite;
-            height: 16rem;
-          `}
-          viewBox="0 0 200 200"
-          xmlns="http://www.w3.org/2000/svg"
+    <div css={css(tw`flex flex-col md:flex-row items-center justify-between`)}>
+      <div css={css(tw`pb-6 relative md:order-last`)}>
+        <div
+          css={css(
+            tw`absolute w-full h-full top-0 flex items-center justify-center z-10`
+          )}
         >
-          <path
-            fill="#98D2EB"
-            d="M46.9,-62.4C61,-54.3,72.7,-40.9,79.8,-24.6C86.9,-8.4,89.2,10.7,82.5,25.5C75.9,40.3,60.2,50.8,44.9,58.4C29.7,66,14.8,70.8,-2.2,73.8C-19.2,76.8,-38.4,78.1,-52.2,70C-66,61.8,-74.3,44.3,-79,26.5C-83.7,8.6,-84.8,-9.7,-79.3,-25.4C-73.7,-41.1,-61.4,-54.4,-47.1,-62.4C-32.7,-70.4,-16.4,-73.2,0,-73.2C16.4,-73.2,32.8,-70.5,46.9,-62.4Z"
-            transform="translate(100 100)"
+          <StaticImage
+            css={css`
+              border-radius: 50%;
+              overflow: hidden;
+              perspective: 0px;
+              height: 12.5rem;
+              width: 12.5rem;
+            `}
+            src="../images/avatar.jpg"
           />
-        </svg>
+        </div>
+        <div css={css(tw`relative h-64`)}>
+          <svg
+            css={css`
+              animation: ${rotate} 45s linear infinite;
+              height: 17rem;
+              position: relative;
+            `}
+            viewBox="0 0 200 200"
+            xmlns="http://www.w3.org/2000/svg"
+          >
+            <path
+              fill="#98D2EB"
+              d="M42.6,-73.9C55.9,-66.1,67.9,-56.1,76.5,-43.4C85.1,-30.7,90.5,-15.4,90.8,0.2C91.1,15.7,86.5,31.5,78.3,44.9C70,58.3,58.3,69.4,44.6,77.3C31,85.2,15.5,89.8,-0.4,90.5C-16.3,91.2,-32.6,87.9,-46.4,80.2C-60.2,72.4,-71.5,60.1,-79.4,46C-87.3,31.9,-91.8,15.9,-91.6,0.1C-91.4,-15.7,-86.6,-31.5,-78.9,-45.8C-71.1,-60.2,-60.4,-73.2,-46.8,-80.8C-33.2,-88.4,-16.6,-90.6,-1,-88.9C14.7,-87.2,29.3,-81.7,42.6,-73.9Z"
+              transform="translate(100 100)"
+            />
+          </svg>
+        </div>
       </div>
       <div>
         <p

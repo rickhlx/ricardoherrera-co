@@ -17,7 +17,7 @@ module.exports = {
         start_url: "/",
         theme_color: "#fcde9c",
         display: "standalone",
-        icon: "src/images/avatar.png",
+        icon: "src/images/avatar.jpg",
       },
     },
     "gatsby-plugin-emotion",

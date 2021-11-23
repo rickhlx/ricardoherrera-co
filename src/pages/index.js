@@ -28,10 +28,14 @@ const IndexPage = () => (
               border-radius: 50%;
               overflow: hidden;
               perspective: 0px;
-              height: 12.5rem;
-              width: 12.5rem;
             `}
             src="../images/avatar.jpg"
+            placeholder="blurred"
+            width={200}
+            height={200}
+            alt="ricardo"
+            layout="constrained"
+            loading="eager"
           />
         </div>
         <div css={css(tw`relative h-64`)}>

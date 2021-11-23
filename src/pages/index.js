@@ -16,8 +16,8 @@ const rotate = keyframes`
 
 const IndexPage = () => (
   <Layout>
-    <div css={css(tw`flex flex-col md:flex-row items-center justify-between`)}>
-      <div css={css(tw`pb-6 relative md:order-last`)}>
+    <div css={css(tw`flex flex-col lg:flex-row items-center justify-between`)}>
+      <div css={css(tw`pb-6 relative lg:order-last`)}>
         <div
           css={css(
             tw`absolute w-full h-full top-0 flex items-center justify-center z-10`
@@ -55,7 +55,7 @@ const IndexPage = () => (
       <div>
         <p
           css={css(
-            tw`font-bold text-3xl w-3/4 tracking-tighter text-center md:text-left m-auto md:m-0 pb-7`
+            tw`font-bold text-3xl w-3/4 tracking-tighter text-center lg:text-left m-auto lg:m-0 pb-7`
           )}
         >
           Hello world, Ricardo here! I love automation and building things that

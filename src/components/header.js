@@ -3,6 +3,8 @@ import { css } from "@emotion/react";
 import { Link } from "gatsby";
 import tw from "twin.macro";
 
+import DarkModeToggle from "./darkmodetoggle";
+
 const Header = () => {
   return (
     <header css={css(tw`max-w-screen-lg m-auto pt-7 p-6`)}>
@@ -29,13 +31,7 @@ const Header = () => {
             RH
           </Link>
         </div>
-        <div
-          css={css(`a{color: black};`, tw`flex gap-2 items-center uppercase`)}
-        >
-          {/* <Link to="/">Photo</Link>
-          <Link to="/">Blog</Link>
-          <Link to="/">About</Link> */}
-        </div>
+        <DarkModeToggle />
       </nav>
     </header>
   );

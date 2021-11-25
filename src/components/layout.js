@@ -13,6 +13,13 @@ const GlobalStyle = () => (
       a {
         color: #258ebb;
       }
+      body.light-mode {
+        transition: background-color 0.3s ease;
+      }
+      body.dark-mode {
+        background-color: #1a202c;
+        color: #f7fafc;
+      }
       ${reset}
     `}
   />

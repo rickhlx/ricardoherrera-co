@@ -48,7 +48,7 @@ const Footer = () => (
     >
       Ricardo Herrera © 2021
     </div>
-    <div css={css(tw`flex gap-2`)}>
+    <div css={css(`a{color:currentColor}`, tw`flex gap-2`)}>
       <Twitter />
       <Instagram />
       <GitHub />

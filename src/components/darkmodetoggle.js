@@ -24,9 +24,9 @@ const DarkModeToggle = () => {
 
   return (
     <button
+      id="dark-mode-toggle"
       css={css(
         {
-          background: darkMode.value ? "#262F41" : "#EBEEF3",
           transition: "all 0.3 ease",
         },
         tw`flex border-0 rounded-full w-10 h-10 p-0 m-0 

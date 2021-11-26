@@ -18,12 +18,18 @@ const GlobalStyle = () => (
         #dark-mode-toggle {
           background-color: #ebeef3;
         }
+        #avatar-blob {
+          color: #98d2eb;
+        }
       }
       body.dark-mode {
         background-color: #1a202c;
         color: #f7fafc;
         #dark-mode-toggle {
           background-color: #262f41;
+        }
+        #avatar-blob {
+          color: #22446d;
         }
       }
       ${reset}

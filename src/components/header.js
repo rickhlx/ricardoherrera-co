@@ -9,7 +9,7 @@ const Header = () => {
   return (
     <header css={css(tw`max-w-screen-lg m-auto pt-7 p-6`)}>
       <nav css={css(tw`flex justify-between`)}>
-        <div css={css(tw`h-full`)}>
+        <div css={css(tw`h-full hover:opacity-70`)}>
           <Link
             css={css(
               { fontFamily: "DM Serif Display" },

@@ -1,7 +1,9 @@
 import * as React from "react";
 import { Global, css } from "@emotion/react";
 import tw from "twin.macro";
+import Color from "color";
 
+import { colors, themeColors } from "../utils/colors";
 import reset from "../utils/reset";
 import SEO from "./seo";
 import Header from "./header";
@@ -10,38 +12,36 @@ import { Instagram, Twitter, GitHub } from "./social";
 const GlobalStyle = () => (
   <Global
     styles={css`
-      a {
-        color: #258ebb;
+      body {
+        background-color: ${colors.white};
+        color: ${colors.black};
+        #dark-mode-toggle {
+          background-color: ${Color(colors.white).darken(0.08).hex()};
+          @media (hover: hover) {
+            &:hover {
+              color: ${colors.black};
+              background: ${themeColors.primary};
+            }
+          }
+        }
+        #avatar-blob {
+          color: ${Color(themeColors.secondary).lighten(0.75).hex()};
+        }
+        a {
+          color: ${themeColors.secondary};
+        }
       }
-      body.light-mode {
+      .light-mode {
         transition: background-color 0.3s ease;
-        #dark-mode-toggle {
-          background-color: #ebeef3;
-          @media (hover: hover) {
-            &:hover {
-              color: black;
-              background: #fcde9c;
-            }
-          }
-        }
-        #avatar-blob {
-          color: #98d2eb;
-        }
       }
-      body.dark-mode {
-        background-color: #1a202c;
-        color: #f7fafc;
+      .dark-mode {
+        background-color: ${colors.black};
+        color: ${colors.white};
         #dark-mode-toggle {
-          background-color: #262f41;
-          @media (hover: hover) {
-            &:hover {
-              color: black;
-              background: #fcde9c;
-            }
-          }
+          background-color: ${Color(colors.black).lighten(0.75).hex()};
         }
         #avatar-blob {
-          color: #22446d;
+          color: ${Color(themeColors.secondary).darken(0.55).hex()};
         }
       }
       ${reset}
@@ -73,9 +73,9 @@ const Footer = () => (
       Ricardo Herrera © 2021
     </div>
     <div css={css(tw`flex gap-2`)}>
-      <Twitter />
-      <Instagram />
-      <GitHub />
+      <Twitter hoverColor={themeColors.primary} />
+      <Instagram hoverColor={themeColors.primary} />
+      <GitHub hoverColor={themeColors.primary} />
     </div>
   </footer>
 );

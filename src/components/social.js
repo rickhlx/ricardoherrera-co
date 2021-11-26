@@ -1,9 +1,9 @@
 import * as React from "react";
 import { Link } from "gatsby";
 
-export const Instagram = () => (
+export const Instagram = ({ hoverColor }) => (
   <Link
-    css={{ color: "currentColor", ":hover": { color: "#fcde9c" } }}
+    css={{ color: "currentColor", ":hover": { color: hoverColor } }}
     to="https://instagram.com/rickhlx"
   >
     <svg
@@ -20,9 +20,9 @@ export const Instagram = () => (
   </Link>
 );
 
-export const Twitter = () => (
+export const Twitter = ({ hoverColor }) => (
   <Link
-    css={{ color: "currentColor", ":hover": { color: "#fcde9c" } }}
+    css={{ color: "currentColor", ":hover": { color: hoverColor } }}
     to="https://twitter.com/rickhlx"
   >
     <svg
@@ -39,9 +39,9 @@ export const Twitter = () => (
   </Link>
 );
 
-export const GitHub = () => (
+export const GitHub = ({ hoverColor }) => (
   <Link
-    css={{ color: "currentColor", ":hover": { color: "#fcde9c" } }}
+    css={{ color: "currentColor", ":hover": { color: hoverColor } }}
     to="https://github.com/rickhlx"
   >
     <svg

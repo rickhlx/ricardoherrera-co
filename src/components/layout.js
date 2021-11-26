@@ -15,10 +15,16 @@ const GlobalStyle = () => (
       }
       body.light-mode {
         transition: background-color 0.3s ease;
+        #dark-mode-toggle {
+          background-color: #ebeef3;
+        }
       }
       body.dark-mode {
         background-color: #1a202c;
         color: #f7fafc;
+        #dark-mode-toggle {
+          background-color: #262f41;
+        }
       }
       ${reset}
     `}

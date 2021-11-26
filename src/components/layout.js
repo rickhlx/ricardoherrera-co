@@ -17,6 +17,12 @@ const GlobalStyle = () => (
         transition: background-color 0.3s ease;
         #dark-mode-toggle {
           background-color: #ebeef3;
+          @media (hover: hover) {
+            &:hover {
+              color: black;
+              background: #fcde9c;
+            }
+          }
         }
         #avatar-blob {
           color: #98d2eb;
@@ -27,6 +33,12 @@ const GlobalStyle = () => (
         color: #f7fafc;
         #dark-mode-toggle {
           background-color: #262f41;
+          @media (hover: hover) {
+            &:hover {
+              color: black;
+              background: #fcde9c;
+            }
+          }
         }
         #avatar-blob {
           color: #22446d;
@@ -60,7 +72,7 @@ const Footer = () => (
     >
       Ricardo Herrera © 2021
     </div>
-    <div css={css(`a{color:currentColor}`, tw`flex gap-2`)}>
+    <div css={css(tw`flex gap-2`)}>
       <Twitter />
       <Instagram />
       <GitHub />

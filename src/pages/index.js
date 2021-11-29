@@ -2,7 +2,7 @@ import { css } from "@emotion/react";
 import * as React from "react";
 import tw from "twin.macro";
 import Layout from "../components/layout";
-import Bio from "./bio.mdx";
+import Bio from "../components/bio.mdx";
 import Avatar from "../components/avatar";
 
 const IndexPage = () => (

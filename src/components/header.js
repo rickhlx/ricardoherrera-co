@@ -31,7 +31,12 @@ const Header = () => {
             RH
           </Link>
         </div>
-        <DarkModeToggle />
+        <div css={css(tw`flex items-center gap-4`)}>
+          <Link css={css(tw`text-current text-xl hover:opacity-70`)} to="/blog">
+            blog
+          </Link>
+          <DarkModeToggle />
+        </div>
       </nav>
     </header>
   );

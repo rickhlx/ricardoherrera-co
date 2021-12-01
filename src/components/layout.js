@@ -80,9 +80,9 @@ const Footer = () => (
   </footer>
 );
 
-const Layout = ({ children }) => (
+const Layout = ({ title, template, description, children }) => (
   <>
-    <SEO />
+    <SEO title={title} template={template} description={description} />
     <GlobalStyle />
     <Header />
     <Container>

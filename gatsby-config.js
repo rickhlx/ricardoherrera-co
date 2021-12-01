@@ -1,7 +1,10 @@
 module.exports = {
   siteMetadata: {
-    siteUrl: "https://www.yourdomain.tld",
+    siteUrl: "https://ricardoherrera.co",
     title: "ricardo's piece of the internet",
+    description: "The personal website of Ricardo Herrera",
+    keywords: ["blog", "portfolio", "sre", "devops", "photography", "photo"],
+    author: "Ricardo Herrera",
   },
   plugins: [
     "gatsby-plugin-image",

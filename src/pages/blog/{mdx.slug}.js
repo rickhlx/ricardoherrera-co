@@ -7,7 +7,7 @@ import Layout from "../../components/layout";
 
 const BlogPost = ({ data }) => {
   return (
-    <Layout>
+    <Layout template={false} title={data.mdx.frontmatter.title}>
       <h1 css={css(tw`text-center text-5xl py-8`)}>
         {data.mdx.frontmatter.title}
       </h1>

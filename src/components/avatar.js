@@ -26,7 +26,7 @@ const Avatar = () => {
             overflow: hidden;
             perspective: 0px;
           `}
-          src="../images/avatar.jpg"
+          src="../images/me.jpg"
           placeholder="blurred"
           width={200}
           height={200}

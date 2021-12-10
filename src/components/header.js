@@ -7,7 +7,7 @@ import DarkModeToggle from "./darkmodetoggle";
 
 const Header = () => {
   return (
-    <header css={css(tw`max-w-screen-lg m-auto pt-7 p-6`)}>
+    <header css={css(tw`max-w-screen-xl m-auto pt-7 p-6`)}>
       <nav css={css(tw`flex justify-between`)}>
         <div css={css(tw`h-full hover:opacity-70`)}>
           <Link
@@ -32,6 +32,12 @@ const Header = () => {
           </Link>
         </div>
         <div css={css(tw`flex items-center gap-4`)}>
+          <Link
+            css={css(tw`text-current text-xl hover:opacity-70`)}
+            to="/photo"
+          >
+            photo
+          </Link>
           <Link css={css(tw`text-current text-xl hover:opacity-70`)} to="/blog">
             blog
           </Link>

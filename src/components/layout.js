@@ -44,16 +44,31 @@ const GlobalStyle = () => (
           color: ${Color(themeColors.secondary).darken(0.55).hex()};
         }
       }
+      .my-masonry-grid {
+        display: -webkit-box; /* Not needed if autoprefixing */
+        display: -ms-flexbox; /* Not needed if autoprefixing */
+        display: flex;
+        margin-left: -30px; /* gutter size offset */
+        width: auto;
+      }
+      .my-masonry-grid_column {
+        padding-left: 30px; /* gutter size */
+        background-clip: padding-box;
+      }
+
+      .my-masonry-grid_column > div {
+        margin-bottom: 30px;
+      }
       ${reset}
     `}
   />
 );
 
-const Container = ({ children }) => (
+const Container = ({ children, maxWidth }) => (
   <div
     css={css`
       width: 100%;
-      max-width: 880px;
+      max-width: ${maxWidth || "880px"};
       padding: 20px;
       margin: 0 auto;
     `}
@@ -80,12 +95,12 @@ const Footer = () => (
   </footer>
 );
 
-const Layout = ({ title, template, description, children }) => (
+const Layout = ({ title, template, description, children, maxWidth }) => (
   <>
     <SEO title={title} template={template} description={description} />
     <GlobalStyle />
     <Header />
-    <Container>
+    <Container maxWidth={maxWidth}>
       {children}
       <Footer />
     </Container>

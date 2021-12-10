@@ -18,6 +18,7 @@ const IndexPage = () => (
           Hello world, Ricardo here! I love automation and building things that
           look nice.
         </p>
+        <hr css={css(tw`w-12 h-1 bg-current`)} />
         <Bio />
       </div>
     </div>

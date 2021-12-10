@@ -54,5 +54,12 @@ module.exports = {
         path: "./blog",
       },
     },
+    {
+      resolve: "gatsby-source-filesystem",
+      options: {
+        name: "photo",
+        path: "./photo",
+      },
+    },
   ],
 };

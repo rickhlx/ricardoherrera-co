@@ -1,26 +1,55 @@
 import * as React from "react";
 import { graphql } from "gatsby";
 import { GatsbyImage, getImage } from "gatsby-plugin-image";
-import Masonry from "react-masonry-css";
+import Masonry from "react-masonry-component";
+import { css } from "@emotion/react";
 import Layout from "../../components/layout";
 
-const breakpointColumnsObj = {
-  default: 4,
-  1024: 3,
-  768: 2,
-  500: 1,
+const masonryOptions = {
+  transitionDuration: 0,
+  itemSelector: ".grid-item",
+  gutter: ".gutter-sizer",
+  percentPosition: true,
 };
 
 const PhotoPage = ({ data }) => {
   return (
     <Layout title="photo" maxWidth={1280}>
       <Masonry
-        breakpointCols={breakpointColumnsObj}
-        className="my-masonry-grid"
-        columnClassName="my-masonry-grid_column"
+        css={css`
+          @media screen and (min-width: 1500px) {
+            width: 1280px;
+            margin: auto;
+          }
+        `}
+        options={masonryOptions}
       >
+        <div
+          className="gutter-sizer"
+          css={css`
+            width: 2%;
+          `}
+        />
         {data.allFile.nodes.map((node) => (
-          <GatsbyImage image={getImage(node)} />
+          <GatsbyImage
+            css={css`
+              @media screen and (min-width: 250px) {
+                width: 100%;
+              }
+              @media screen and (min-width: 768px) {
+                width: 49%;
+              }
+              @media screen and (min-width: 1024px) {
+                width: 32%;
+              }
+              @media screen and (min-width: 1280px) {
+                width: 23.5%;
+              }
+              margin-bottom: 2%;
+            `}
+            className="grid-item"
+            image={getImage(node)}
+          />
         ))}
       </Masonry>
     </Layout>

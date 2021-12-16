@@ -1,13 +1,12 @@
 import * as React from "react";
 import { Global, css } from "@emotion/react";
-import tw from "twin.macro";
 import Color from "color";
 
 import { colors, themeColors } from "../utils/colors";
 import reset from "../utils/reset";
 import SEO from "./seo";
 import Header from "./header";
-import { Instagram, Twitter, GitHub } from "./social";
+import Footer from "./footer";
 
 const GlobalStyle = () => (
   <Global
@@ -62,33 +61,13 @@ const Container = ({ children, maxWidth }) => (
   </div>
 );
 
-const Footer = () => (
-  <footer css={css(tw`flex justify-between items-center`)}>
-    <div
-      css={css({
-        fontSize: "90%",
-        opacity: 0.7,
-      })}
-    >
-      Ricardo Herrera © 2021
-    </div>
-    <div css={css(tw`flex gap-2`)}>
-      <Twitter hoverColor={themeColors.primary} />
-      <Instagram hoverColor={themeColors.primary} />
-      <GitHub hoverColor={themeColors.primary} />
-    </div>
-  </footer>
-);
-
 const Layout = ({ title, template, description, children, maxWidth }) => (
   <>
     <SEO title={title} template={template} description={description} />
     <GlobalStyle />
     <Header />
-    <Container maxWidth={maxWidth}>
-      {children}
-      <Footer />
-    </Container>
+    <Container maxWidth={maxWidth}>{children}</Container>
+    <Footer />
   </>
 );
 

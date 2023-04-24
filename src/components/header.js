@@ -3,8 +3,6 @@ import { css } from "@emotion/react";
 import { Link } from "gatsby";
 import tw from "twin.macro";
 
-import DarkModeToggle from "./darkmodetoggle";
-
 const Header = () => {
   return (
     <header css={css(tw`max-w-screen-xl m-auto pt-7 p-6`)}>

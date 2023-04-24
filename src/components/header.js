@@ -39,7 +39,6 @@ const Header = () => {
           <Link css={css(tw`text-current text-xl hover:opacity-70`)} to="/blog">
             blog
           </Link>
-          <DarkModeToggle />
         </div>
       </nav>
     </header>

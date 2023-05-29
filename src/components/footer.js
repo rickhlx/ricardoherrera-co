@@ -3,7 +3,7 @@ import { css } from "@emotion/react";
 import tw from "twin.macro";
 
 import { themeColors } from "../utils/colors";
-import { Instagram, Twitter, GitHub } from "./social";
+import { Instagram, Twitter } from "./social";
 
 const Footer = () => (
   <footer
@@ -15,12 +15,11 @@ const Footer = () => (
         opacity: 0.7,
       })}
     >
-      Ricardo Herrera © 2021
+      Ricardo Herrera © 2023
     </div>
     <div css={css(tw`flex gap-2`)}>
       <Twitter hoverColor={themeColors.primary} />
       <Instagram hoverColor={themeColors.primary} />
-      <GitHub hoverColor={themeColors.primary} />
     </div>
   </footer>
 );

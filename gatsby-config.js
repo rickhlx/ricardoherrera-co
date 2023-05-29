@@ -1,8 +1,8 @@
 module.exports = {
   siteMetadata: {
     siteUrl: "https://ricardoherrera.co",
-    title: "ricardo's piece of the internet",
-    description: "The personal website of Ricardo Herrera",
+    title: "ricardo herrera",
+    description: "The portfolio website of Ricardo Herrera",
     keywords: ["blog", "portfolio", "sre", "devops", "photography", "photo"],
     author: "Ricardo Herrera",
   },
@@ -28,8 +28,8 @@ module.exports = {
     {
       resolve: "gatsby-plugin-manifest",
       options: {
-        name: "ricardo's piece of the internet",
-        short_name: "Blog of Ricardo Herrera",
+        name: "ricardo herrera",
+        short_name: "Portfolio of Ricardo Herrera",
         start_url: "/",
         theme_color: "#fcde9c",
         display: "standalone",

@@ -82,7 +82,10 @@ const PhotoPage = ({ data }) => {
 
 export const query = graphql`
   query {
-    small: allFile(filter: { sourceInstanceName: { eq: "photo" } }) {
+    small: allFile(
+      sort: { fields: modifiedTime, order: DESC }
+      filter: { sourceInstanceName: { eq: "photo" } }
+    ) {
       nodes {
         childImageSharp {
           gatsbyImageData(

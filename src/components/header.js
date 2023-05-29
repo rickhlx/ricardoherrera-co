@@ -36,8 +36,8 @@ const Header = () => {
           >
             photo
           </Link>
-          <Link css={css(tw`text-current text-xl hover:opacity-70`)} to="/blog">
-            blog
+          <Link css={css(tw`text-current text-xl hover:opacity-70`)} to="/bio">
+            bio
           </Link>
         </div>
       </nav>

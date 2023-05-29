@@ -33,7 +33,7 @@ const lightboxOptions = {
 
 const PhotoPage = ({ data }) => {
   return (
-    <Layout title='photo' maxWidth={1280}>
+    <Layout maxWidth={1280}>
       <SimpleReactLightbox>
         <SRLWrapper options={lightboxOptions}>
           <Masonry
@@ -83,7 +83,7 @@ const PhotoPage = ({ data }) => {
 export const query = graphql`
   query {
     small: allFile(
-      sort: { fields: modifiedTime, order: DESC }
+      sort: { fields: changeTime, order: DESC }
       filter: { sourceInstanceName: { eq: "photo" } }
     ) {
       nodes {
@@ -97,7 +97,10 @@ export const query = graphql`
         }
       }
     }
-    full: allFile(filter: { sourceInstanceName: { eq: "photo" } }) {
+    full: allFile(
+      sort: { fields: changeTime, order: DESC }
+      filter: { sourceInstanceName: { eq: "photo" } }
+    ) {
       nodes {
         childImageSharp {
           gatsbyImageData(

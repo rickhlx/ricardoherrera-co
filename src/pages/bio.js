@@ -6,7 +6,7 @@ import Bio from "../components/bio.mdx";
 import Avatar from "../components/avatar";
 
 const IndexPage = () => (
-  <Layout>
+  <Layout title="bio">
     <div css={css(tw`flex flex-col lg:flex-row items-center justify-between`)}>
       <Avatar />
       <div>

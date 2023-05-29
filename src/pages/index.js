@@ -4,7 +4,7 @@ import { GatsbyImage, getImage, getSrc } from 'gatsby-plugin-image';
 import Masonry from 'react-masonry-component';
 import { css } from '@emotion/react';
 import SimpleReactLightbox, { SRLWrapper } from 'simple-react-lightbox';
-import Layout from '../../components/layout';
+import Layout from '../components/layout';
 
 const masonryOptions = {
   transitionDuration: 0,

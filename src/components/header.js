@@ -30,12 +30,6 @@ const Header = () => {
           </Link>
         </div>
         <div css={css(tw`flex items-center gap-4`)}>
-          <Link
-            css={css(tw`text-current text-xl hover:opacity-70`)}
-            to="/photo"
-          >
-            photo
-          </Link>
           <Link css={css(tw`text-current text-xl hover:opacity-70`)} to="/bio">
             bio
           </Link>

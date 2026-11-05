@@ -64,10 +64,10 @@ blender -b -P export_sharp.py     # -> out/yn1_sharp.glb (what the live page use
 ## Social card and icons
 
 ```sh
-python3 make_assets.py            # -> site/og.png, favicon.svg, favicon-32.png, apple-touch-icon.png, icon-512.png
+python3 make_assets.py            # -> site/og.png, favicon-32.png, favicon-192.png, apple-touch-icon.png, icon-512.png
 ```
 
-Needs Pillow and `rsvg-convert`. It draws from `site/iso.png` and the fonts in `fonts/` (Archivo and Martian Mono, SIL Open Font License). Re-run it after re-rendering the drawings or changing the name or role.
+Needs Pillow. The social card draws from `site/iso.png` and the fonts in `fonts/` (Archivo and Martian Mono, SIL Open Font License); re-run it after re-rendering the drawings or changing the name or role. The favicons are the yellow-wall portrait (`site/photos/portrait.jpg`, the same photo as the blog avatar): round for browser tabs, square for Apple and the 512 icon.
 
 The homepage and every writing page carry a meta description, canonical URL, Open Graph and Twitter tags, and the icon set. The tags use absolute `https://ricardoherrera.co/` URLs, so link previews only show the card once the domain points at this site.
 

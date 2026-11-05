@@ -1,10 +1,8 @@
 """Builds the social card (site/og.png) and the favicon set for the YN-1 site.
 
 Run from anywhere: python3 make_assets.py
-Needs Pillow and rsvg-convert. Fonts are in fonts/ (SIL OFL); the drawing comes from site/iso.png.
+Needs Pillow. Fonts are in fonts/ (SIL OFL); the card draws from site/iso.png, the favicons from site/photos/portrait.jpg.
 """
-import subprocess
-import tempfile
 from pathlib import Path
 from PIL import Image, ImageDraw, ImageFont
 
@@ -129,30 +127,29 @@ def og():
     im.save(OUT / "og.png", optimize=True)
 
 
-FAVICON_SVG = """<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64">
-  <rect width="64" height="64" rx="12" fill="#1b4a88"/>
-  <g fill="none" stroke="#eef4ff" stroke-width="3.2" stroke-linejoin="round" stroke-linecap="round">
-    <rect x="13" y="13" width="38" height="28" rx="3"/>
-    <path d="M24 41v5h16v-5M17 51h30"/>
-  </g>
-  <rect x="18" y="18" width="28" height="18" rx="1.5" fill="#07110c"/>
-  <path d="M22 23.5l4 3-4 3" fill="none" stroke="#8ff0b8" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/>
-  <rect x="29" y="28" width="7" height="2.4" rx="1" fill="#8ff0b8"/>
-  <circle cx="45.5" cy="38.6" r="1.7" fill="#ffab7a"/>
-</svg>
-"""
+PORTRAIT = OUT / "photos" / "portrait.jpg"  # the yellow-wall portrait, also the blog avatar
 
 
 def favicons():
-    (OUT / "favicon.svg").write_text(FAVICON_SVG)
-    for name, px in [("favicon-32.png", 32), ("apple-touch-icon.png", 180), ("icon-512.png", 512)]:
-        subprocess.run(["rsvg-convert", "-w", str(px), "-h", str(px), "-o", str(OUT / name), str(OUT / "favicon.svg")], check=True)
-    # Apple draws its own rounded corners; give it a full-bleed square.
-    sq = FAVICON_SVG.replace('rx="12" fill="#1b4a88"', 'fill="#1b4a88"')
-    with tempfile.TemporaryDirectory() as tmp:
-        apple = Path(tmp) / "apple.svg"
-        apple.write_text(sq)
-        subprocess.run(["rsvg-convert", "-w", "180", "-h", "180", "-o", str(OUT / "apple-touch-icon.png"), str(apple)], check=True)
+    """Favicons from the portrait: round for browser tabs, full-bleed squares for Apple and the 512 icon."""
+    src = Image.open(PORTRAIT).convert("RGB")
+
+    def square(px):
+        return src.resize((px, px), Image.LANCZOS)
+
+    def round_(px):
+        big = px * 4  # draw the mask large, then shrink, for a smooth edge
+        mask = Image.new("L", (big, big), 0)
+        ImageDraw.Draw(mask).ellipse((0, 0, big - 1, big - 1), fill=255)
+        im = square(px).convert("RGBA")
+        im.putalpha(mask.resize((px, px), Image.LANCZOS))
+        return im
+
+    round_(32).save(OUT / "favicon-32.png", optimize=True)
+    round_(192).save(OUT / "favicon-192.png", optimize=True)
+    square(180).save(OUT / "apple-touch-icon.png", optimize=True)  # iOS rounds the corners itself
+    square(512).save(OUT / "icon-512.png", optimize=True)
+    (OUT / "favicon.svg").unlink(missing_ok=True)
 
 
 if __name__ == "__main__":

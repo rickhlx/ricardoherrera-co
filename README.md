@@ -69,10 +69,9 @@ python3 make_assets.py            # -> site/og.png, favicon-32.png, favicon-192.
 
 Needs Pillow. The social card draws from `site/iso.png` and the fonts in `fonts/` (Archivo and Martian Mono, SIL Open Font License); re-run it after re-rendering the drawings or changing the name or role. The favicons are the yellow-wall portrait (`site/photos/portrait.jpg`, the same photo as the blog avatar): round for browser tabs, square for Apple and the 512 icon.
 
-The homepage and every writing page carry a meta description, canonical URL, Open Graph and Twitter tags, and the icon set. The homepage and the writing index share `site/og.png`. Each post gets its own share card, `/writing/<slug>/og.png`, drawn at build time from its title, summary, date, tags and revision letter (`src/lib/og-card.mjs`, satori and resvg). It uses static Archivo instances in `fonts/` (`archivo-800-112.ttf`, `archivo-600-82.ttf`, cut from the variable font), because satori can't set a variable font's axes. The tags use absolute `https://ricardoherrera.co/` URLs, so link previews only show the card once the domain points at this site.
+The homepage and every writing page carry a meta description, canonical URL, Open Graph and Twitter tags, and the icon set. The homepage and the writing index share `site/og.png`. Each post gets its own share card, `/writing/<slug>/og.png`, drawn at build time from its title, summary, date, tags and revision letter (`src/lib/og-card.mjs`, satori and resvg). It uses static Archivo instances in `fonts/` (`archivo-800-112.ttf`, `archivo-600-82.ttf`, cut from the variable font), because satori can't set a variable font's axes. The tags use absolute `https://ricardoherrera.co/` URLs, which resolve now that the domain points at this site.
 
 ## Before launch
 
 - The spot interruptions post is live but is still sample text written to show the layout. Rewrite or replace it.
 - Not yet checked on a real device: font loading, motion and the phone feel.
-- Domain cutover: `ricardoherrera.co` still serves the old Next.js site. Point it at Vercel only when Ricardo asks.

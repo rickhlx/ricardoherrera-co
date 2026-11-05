@@ -35,7 +35,7 @@ Hand markup on the sheets makes the drawings feel personal, like an engineer's w
 - **Restraint:** three to five notes per sheet. The writing section stays clean, with at most a signature or date stamp.
 - **Production:** use real scanned handwriting vectorized to SVG (not a font), so notes can draw themselves with a stroke animation. Notes that carry meaning or links stay as HTML/SVG overlays (crisp, clickable, accessible); texture-only marks can be baked into renders as decals.
 
-**Built so far — Sheet 06 (Contact):** a `.markup` group in the sheet's SVG holds a red revision cloud around the return key, a rev B triangle, and four notes: "rev B — return moved 4 mm in. kept catching the rail.", "ojo: muy justo aquí", "press return to say hello" (mailto link) and "→ sheet 04 for the writing" (flies to Writing). The title block rev is B. Lines draw in with `stroke-dashoffset` and notes fade in, staggered by a `--d` delay, when the camera arrives (the sheet gets a `drawn` class). Reduced motion shows them at once; the no-WebGL flat fallback shows them static. Text uses Caveat as a stand-in until Ricardo's scanned handwriting replaces it.
+**Dropped (November 2026):** Sheet 06 carried a `.markup` group (revision cloud around the return key, rev B triangle, four Caveat-font notes that drew themselves in on arrival) as a stand-in for scanned handwriting. Ricardo removed it rather than hand-write the notes, so no sheet has hand markup now. The small handwritten captions on the photo prints (Fig. 0 and Fig. 2-C) and the terminal sticky note stay.
 
 ## Photos
 - **Sheet 01 (Index):** the yellow-wall portrait (`site/photos/portrait.jpg`) is paper-clipped beside the name as a print, captioned *Fig. 0 · Operator*, with a handwritten redline note.
@@ -58,6 +58,5 @@ Gotchas found so far:
 ## Open items
 - Placeholder content left: the sample spot post. Everything else is real; the Archive sheet (05) holds the "things I use" list carried over from the old site's /uses page.
 - Idea not built yet: clicking keyboard keys types into the terminal.
-- Annotations: Ricardo hand-writes the Sheet 06 notes (the four notes, "B", a revision cloud, a triangle and two arrows); trace the scans to SVG and swap them in for the Caveat text. Then markup for the other sheets.
 - Not yet reviewed on a real device: font loading, motion smoothness and the phone feel.
 - Deploy: Vercel builds the site from the repo; see the README.

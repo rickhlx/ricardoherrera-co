@@ -20,6 +20,7 @@ const d = post.data;
 const toc = headings.filter((h) => h.depth === 2 && h.slug !== "footnote-label");
 const site = Astro.site ?? new URL("https://ricardoherrera.co");
 const permalink = new URL(`writing/${post.id}/`, site);
+const card = new URL("og.png", permalink); // built by src/pages/writing/[slug]/og.png.js
 const related = all.filter((p) => p !== post && p.data.tags.some((t) => d.tags.includes(t))).slice(0, 3);
 const series = d.series
   ? all
@@ -35,6 +36,7 @@ const jsonLd = {
   datePublished: d.date.toISOString(),
   dateModified: (d.updated ?? d.date).toISOString(),
   author: { "@type": "Person", name: "Ricardo Herrera", url: site.href, image: new URL("avatar.webp", site).href },
+  image: card.href,
   mainEntityOfPage: permalink.href,
   keywords: d.tags.join(", "),
 };
@@ -43,6 +45,8 @@ const jsonLd = {
   title={`${d.title} · Ricardo Herrera`}
   description={d.dek}
   canonical={permalink}
+  ogImage={card}
+  ogImageAlt={`Share card for “${d.title}”, a post by Ricardo Herrera`}
   type="article"
   noindex={d.draft}
   published={d.date}

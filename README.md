@@ -41,7 +41,7 @@ npm run preview    # serve dist/
 4. Keep `draft: true` while writing. Drafts show in `npm run dev`, and in a build only when `INCLUDE_DRAFTS=true`, with a Draft badge and `noindex`; they never go in the feed. Remove the line to publish.
 5. When you change a published post, set `updated` and add a line to `revisions`. Both show at the end of the post.
 
-Reading time, the revision letter in the index (A for the oldest post), newer/older links, related posts (shared tags), share tags, JSON-LD and the feed are generated.
+Reading time, the revision letter in the index (A for the oldest post), newer/older links, related posts (shared tags), the share card and share tags, JSON-LD and the feed are generated.
 
 ## Deploy
 
@@ -69,7 +69,7 @@ python3 make_assets.py            # -> site/og.png, favicon-32.png, favicon-192.
 
 Needs Pillow. The social card draws from `site/iso.png` and the fonts in `fonts/` (Archivo and Martian Mono, SIL Open Font License); re-run it after re-rendering the drawings or changing the name or role. The favicons are the yellow-wall portrait (`site/photos/portrait.jpg`, the same photo as the blog avatar): round for browser tabs, square for Apple and the 512 icon.
 
-The homepage and every writing page carry a meta description, canonical URL, Open Graph and Twitter tags, and the icon set. The tags use absolute `https://ricardoherrera.co/` URLs, so link previews only show the card once the domain points at this site.
+The homepage and every writing page carry a meta description, canonical URL, Open Graph and Twitter tags, and the icon set. The homepage and the writing index share `site/og.png`. Each post gets its own share card, `/writing/<slug>/og.png`, drawn at build time from its title, summary, date, tags and revision letter (`src/lib/og-card.mjs`, satori and resvg). It uses static Archivo instances in `fonts/` (`archivo-800-112.ttf`, `archivo-600-82.ttf`, cut from the variable font), because satori can't set a variable font's axes. The tags use absolute `https://ricardoherrera.co/` URLs, so link previews only show the card once the domain points at this site.
 
 ## Before launch
 

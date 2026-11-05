@@ -7,6 +7,10 @@ date: 2026-11-05
 # updated: 2026-11-06        # set when you change a published post, and add a line to revisions
 tags: [kubernetes, reliability]
 draft: true                  # drafts show in `npm run dev`, not on the live site
+# image:                     # optional cover: shown under the header and used for link previews
+#   src: ./images/<slug>.jpg # relative to this file; at least 1200×630, it's cropped to that for previews
+#   alt: What the image shows
+#   caption: Optional line under the image
 # series:
 #   name: Running on spot
 #   part: 2

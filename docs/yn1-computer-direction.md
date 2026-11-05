@@ -35,11 +35,11 @@ Hand markup on the sheets makes the drawings feel personal, like an engineer's w
 - **Restraint:** three to five notes per sheet. The writing section stays clean, with at most a signature or date stamp.
 - **Production:** use real scanned handwriting vectorized to SVG (not a font), so notes can draw themselves with a stroke animation. Notes that carry meaning or links stay as HTML/SVG overlays (crisp, clickable, accessible); texture-only marks can be baked into renders as decals.
 
-**Dropped (November 2026):** Sheet 06 carried a `.markup` group (revision cloud around the return key, rev B triangle, four Caveat-font notes that drew themselves in on arrival) as a stand-in for scanned handwriting. Ricardo removed it rather than hand-write the notes, so no sheet has hand markup now. The small handwritten captions on the photo prints (Fig. 0 and Fig. 2-C) and the terminal sticky note stay.
+**On hold (November 2026):** all stand-in handwriting is gone until Ricardo's real handwriting is scanned. Removed: Sheet 06's `.markup` group (revision cloud around the return key, rev B triangle, four Caveat-font notes that drew themselves in on arrival), the "that's me" note beside the portrait on Sheet 01, and "Paris, 2024" on the Sheet 02 print. The sticky note by the keyboard stays, since its back holds the `unlock` password, but is now set in Martian Mono. The Caveat font is no longer loaded. When handwriting comes back, follow the production notes above.
 
 ## Photos
-- **Sheet 01 (Index):** the yellow-wall portrait (`site/photos/portrait.jpg`) is paper-clipped beside the name as a print, captioned *Fig. 0 · Operator*, with a handwritten redline note.
-- **Sheet 02 (About):** the Paris overlook shot (`site/photos/paris.jpg`) is clipped above the General notes as *Fig. 2-C*, with a handwritten "Paris, 2024" on the print. Note 4 points to it.
+- **Sheet 01 (Index):** the yellow-wall portrait (`site/photos/portrait.jpg`) is paper-clipped beside the name as a print, captioned *Fig. 0 · Operator*.
+- **Sheet 02 (About):** the Paris overlook shot (`site/photos/paris.jpg`) is clipped above the General notes as *Fig. 2-C*. Note 4 points to it.
 - **Viewfinder (item 7):** a rangefinder-style eyepiece on top of the enclosure, added in three.js rather than Blender. Clicking it, the `look` terminal command, or `#viewfinder` opens a full-screen viewfinder with bright-line frame, focus patch and an orange exposure readout. **Advance** winds through the roll: Paris first, then five street photos from the old `rickhlx/personal-site` repo (`site/photos/street-1.jpg` to `street-5.jpg`, Fujifilm X100F, autumn 2024; the readout shows each frame's real exposure). The yellow portrait is not in the roll; it is on sheet 01, the blog avatar and the favicons. The viewfinder is left out of the top-bar register on purpose; visitors find it on the model or through `look`.
 - Mockup canvas: [YN-1 Photo Moments](https://claude.ai/artifact/SK7uFHMXVWnYhwG3bNDbo5).
 

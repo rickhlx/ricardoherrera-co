@@ -73,7 +73,7 @@ html .drawing { height: 420px; }
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <!-- Dank Mono for the terminal: the vendor web build (licensed, obfuscated), loaded without blocking render -->
 <link rel="stylesheet" href="fonts/dmvendor.css" media="print" onload="this.media='all'">
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@62..125,400..800&family=Martian+Mono:wdth,wght@75..100,300..500&family=Caveat:wght@500..700&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@62..125,400..800&family=Martian+Mono:wdth,wght@75..100,300..500&display=swap">
 <style>
 
 /* Layout: six A-ratio blueprint sheets hang in a dark drafting void; the camera flies a dashed route
@@ -328,7 +328,6 @@ body[data-mode="computer"] #gl.over { cursor: pointer; }
 /* ---------- photo prints clipped to the sheets ---------- */
 .ident { display: flex; align-items: flex-start; justify-content: space-between; gap: 16px; }
 .ident > div { min-width: 0; display: grid; gap: 10px; align-content: start; padding-top: 4px; }
-.handnote { font-family: "Caveat", cursive; font-weight: 500; font-size: 21px; line-height: 1; color: var(--redline); margin: 4px 0 0; transform: rotate(-2deg); transform-origin: 0 50%; }
 .print { --tilt: 3deg; margin: 12px 4px 0 0; position: relative; flex: 0 0 auto; width: 156px; transform: rotate(var(--tilt)); transform-origin: 50% 0; }
 .print .paper { position: relative; background: #f3f0e8; padding: 8px; box-shadow: 0 14px 28px rgba(0, 0, 0, 0.42), 0 2px 4px rgba(0, 0, 0, 0.3); }
 .print img { display: block; width: 100%; aspect-ratio: 140 / 184; height: auto; object-fit: cover; object-position: 52% 30%; }
@@ -339,13 +338,11 @@ body[data-mode="computer"] #gl.over { cursor: pointer; }
 .print.wide .paper { padding: 9px 9px 34px; }
 .print.wide img { aspect-ratio: 3 / 2; object-position: 50% 50%; }
 .print.wide .clip { left: auto; right: 30px; top: -32px; transform: rotate(7deg); }
-.print .paper .handnote { position: absolute; left: 14px; right: 14px; bottom: 6px; margin: 0; font-size: 20px; color: #3a3a46; transform: none; }
 .fig-row { display: flex; align-items: flex-end; gap: 14px; margin-top: 14px; }
 .fig-row .fig-no { margin: 0 0 6px; }
 @container (max-width: 899px) {
   .print { width: 116px; }
   .print.wide { width: min(262px, 64cqw); }
-  .handnote { font-size: 18px; }
 }
 /* 700-899px wide (e.g. a foldable in landscape): two columns, so the side column is narrow. Keep the name
    clear of the portrait print and the wide print clear of its caption. */
@@ -453,7 +450,6 @@ body[data-mode="computer"] #gl.over { cursor: pointer; }
           <div>
             <p class="role">Senior site reliability engineer</p>
             <h1 class="name">Ricardo Herrera</h1>
-            <p class="handnote" aria-hidden="true">↗ that's me, the one who drew this</p>
           </div>
           <figure class="print">
             <div class="paper"><img src="photos/portrait.jpg" width="640" height="640" alt="Ricardo Herrera in a denim jacket against a yellow wall"></div>
@@ -527,7 +523,7 @@ body[data-mode="computer"] #gl.over { cursor: pointer; }
       <div class="side">
         <div class="fig-row">
           <figure class="print wide">
-            <div class="paper"><img src="photos/paris.jpg" width="1080" height="720" alt="Ricardo leaning on a stone balustrade above a misty Paris skyline"><p class="handnote">Paris, 2024</p></div>
+            <div class="paper"><img src="photos/paris.jpg" width="1080" height="720" alt="Ricardo leaning on a stone balustrade above a misty Paris skyline"></div>
             <svg class="clip" viewBox="0 0 30 86" aria-hidden="true"><path d="M9 26 V11 a6 6 0 0 1 12 0 V68 a10 10 0 0 1 -20 0 V16" fill="none" stroke="rgba(0,0,0,0.35)" stroke-width="2.6" stroke-linecap="round" transform="translate(2 3)"/><path d="M9 26 V11 a6 6 0 0 1 12 0 V68 a10 10 0 0 1 -20 0 V16" fill="none" stroke="#dfe5ee" stroke-width="2.6" stroke-linecap="round"/><path d="M10 24 V12" fill="none" stroke="#fff" stroke-width="1" stroke-linecap="round" opacity="0.8"/></svg>
           </figure>
           <p class="fig-no">Fig. 2-C<br>Operator,<br>off duty</p>
@@ -1044,12 +1040,12 @@ const sticky = { t: 0, open: false, meshes: [] };
   const g = new THREE.Group();
   g.position.set(-440, 0, 290); g.rotation.y = -0.42;
   scene.add(g);
-  // canvas helper: Caveat once it has loaded, the cursive fallback until then
+  // canvas helper: Martian Mono once it has loaded, the monospace fallback until then
   const canvasTex = (w, h, paint) => {
     const c = document.createElement("canvas"); c.width = w; c.height = h;
     const tex = new THREE.CanvasTexture(c); tex.colorSpace = THREE.SRGBColorSpace; tex.anisotropy = 8;
     const draw = () => { const x = c.getContext("2d"); x.setTransform(1, 0, 0, 1, 0, 0); x.clearRect(0, 0, w, h); x.save(); paint(x); x.restore(); tex.needsUpdate = true; };
-    draw(); document.fonts?.load("600 64px Caveat").then(draw, () => {});
+    draw(); document.fonts?.load('500 40px "Martian Mono"').then(draw, () => {});
     return tex;
   };
   const shadow = new THREE.Mesh(new THREE.PlaneGeometry(S + 10, S + 10), new THREE.MeshBasicMaterial({ color: 0x000000, transparent: true, opacity: 0.35, depthWrite: false }));
@@ -1066,26 +1062,26 @@ const sticky = { t: 0, open: false, meshes: [] };
     const bg = x.createLinearGradient(0, 0, 0, 512); bg.addColorStop(0, "#e9d05a"); bg.addColorStop(0.16, "#f6e27a"); bg.addColorStop(1, "#fbe98c");
     x.fillStyle = bg; x.fillRect(0, 0, 512, 512);
     x.fillStyle = "#1f2c63"; x.strokeStyle = "#1f2c63"; x.lineWidth = 3.5; x.lineCap = "round";
-    x.font = "600 54px Caveat, cursive"; x.fillText("to do:", 40, 112);
-    x.beginPath(); x.moveTo(40, 124); x.lineTo(150, 120); x.stroke();
-    x.font = "600 66px Caveat, cursive";
+    x.font = '500 40px "Martian Mono", monospace'; x.fillText("TO DO:", 40, 108);
+    x.beginPath(); x.moveTo(40, 126); x.lineTo(196, 126); x.stroke();
+    x.font = '400 36px "Martian Mono", monospace';
     const words = todo.split(" "), lines = [];
     let line = "";
-    for (const w of words) { const t = line ? `${line} ${w}` : w; if (x.measureText(t).width > 380 && line) { lines.push(line); line = w; } else line = t; }
+    for (const w of words) { const t = line ? `${line} ${w}` : w; if (x.measureText(t).width > 360 && line) { lines.push(line); line = w; } else line = t; }
     lines.push(line);
-    x.strokeRect(44, 170, 34, 34);
-    lines.slice(0, 4).forEach((l, i) => x.fillText(l, 98, 204 + i * 72));
+    x.lineWidth = 3; x.strokeRect(44, 176, 30, 30);
+    lines.slice(0, 5).forEach((l, i) => x.fillText(l, 98, 204 + i * 56));
   });
   const front = new THREE.Mesh(geo, new THREE.MeshBasicMaterial({ map: noteTex, side: THREE.FrontSide, fog: true }));
   // the back of the note, where the code is written; seen from behind and upside down once peeled, so flip it vertically
   const codeTex = canvasTex(512, 512, (x) => {
     x.fillStyle = "#f1dc78"; x.fillRect(0, 0, 512, 512);
     x.fillStyle = "rgba(160,130,40,0.25)"; x.fillRect(0, 0, 512, 70);   // the glue strip
-    x.translate(256, 270); x.rotate(-0.05);
+    x.translate(256, 270);
     x.fillStyle = "#1f2c63"; x.strokeStyle = "#1f2c63"; x.textAlign = "center"; x.textBaseline = "middle";
-    x.font = "700 132px Caveat, cursive"; x.fillText(STICKY_CODE, 0, 0);
+    x.font = '500 92px "Martian Mono", monospace'; x.fillText(STICKY_CODE, 0, 0);
     x.lineWidth = 5; x.lineCap = "round";
-    x.beginPath(); x.moveTo(-170, 66); x.quadraticCurveTo(0, 56, 176, 62); x.moveTo(-150, 84); x.quadraticCurveTo(10, 76, 160, 82); x.stroke();
+    x.beginPath(); x.moveTo(-180, 64); x.lineTo(180, 64); x.moveTo(-180, 80); x.lineTo(180, 80); x.stroke();
   });
   codeTex.wrapT = THREE.RepeatWrapping; codeTex.repeat.y = -1; codeTex.offset.y = 1;
   const back = new THREE.Mesh(geo, new THREE.MeshBasicMaterial({ map: codeTex, side: THREE.BackSide, fog: true }));

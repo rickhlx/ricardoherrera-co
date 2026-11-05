@@ -1,5 +1,6 @@
 ---
 import { render } from "astro:content";
+import { Image, getImage } from "astro:assets";
 import Writing from "../../layouts/Writing.astro";
 import { getPosts, iso, longDate, url } from "../../lib/posts.mjs";
 
@@ -20,7 +21,16 @@ const d = post.data;
 const toc = headings.filter((h) => h.depth === 2 && h.slug !== "footnote-label");
 const site = Astro.site ?? new URL("https://ricardoherrera.co");
 const permalink = new URL(`writing/${post.id}/`, site);
-const card = new URL("og.png", permalink); // built by src/pages/writing/[slug]/og.png.js
+// Share image: the post's cover cropped to 1200×630 if it has one, otherwise the drawn card
+// from src/pages/writing/[slug]/og.png.js.
+// Images aren't upscaled, so a smaller cover is cropped to the same 1.91:1 at the largest size it allows.
+const coverWidth = d.image ? Math.min(1200, d.image.src.width, Math.floor((d.image.src.height * 1200) / 630)) : 1200;
+const coverHeight = Math.round((coverWidth * 630) / 1200);
+const cover = d.image
+  ? await getImage({ src: d.image.src, width: coverWidth, height: coverHeight, fit: "cover", format: "jpg", quality: 82 })
+  : undefined;
+const card = cover ? new URL(cover.src, site) : new URL("og.png", permalink);
+const cardAlt = d.image?.alt ?? `Share card for “${d.title}”, a post by Ricardo Herrera`;
 const related = all.filter((p) => p !== post && p.data.tags.some((t) => d.tags.includes(t))).slice(0, 3);
 const series = d.series
   ? all
@@ -46,7 +56,9 @@ const jsonLd = {
   description={d.dek}
   canonical={permalink}
   ogImage={card}
-  ogImageAlt={`Share card for “${d.title}”, a post by Ricardo Herrera`}
+  ogImageAlt={cardAlt}
+  ogImageWidth={coverWidth}
+  ogImageHeight={coverHeight}
   type="article"
   noindex={d.draft}
   published={d.date}
@@ -98,6 +110,13 @@ const jsonLd = {
               </nav>
             )}
           </header>
+
+          {d.image && (
+            <figure class="cover">
+              <Image src={d.image.src} alt={d.image.alt} widths={[704, 1056, 1408]} sizes="(min-width: 46rem) 44rem, 100vw" loading="eager" fetchpriority="high" />
+              {d.image.caption && <figcaption>{d.image.caption}</figcaption>}
+            </figure>
+          )}
 
           {toc.length >= 3 && (
             <details class="toc-mobile">

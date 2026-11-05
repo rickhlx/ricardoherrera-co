@@ -1,0 +1,10 @@
+# Blender build output (regenerate with the scripts in model/)
+model/out/
+model/drawings/
+*.blend1
+
+# make_assets.py intermediate
+apple.svg
+
+__pycache__/
+.DS_Store

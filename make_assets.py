@@ -1,0 +1,155 @@
+"""Builds the social card (og.png) and the favicon set for the YN-1 site."""
+import subprocess
+from pathlib import Path
+from PIL import Image, ImageDraw, ImageFont
+
+S = Path(__file__).parent
+F = S / "fonts"
+OUT = S / "site"
+OUT.mkdir(exist_ok=True)
+
+VOID = (6, 16, 32)
+VOID_MARK = (43, 74, 122)
+SHEET = (27, 74, 136)
+SHEET_DEEP = (22, 61, 113)
+INK = (238, 244, 255)
+INK_DIM = (184, 201, 230)
+HAIR = (238, 244, 255, 87)
+RED = (255, 171, 122)
+
+
+def archivo(size, wght, wdth):
+    f = ImageFont.truetype(str(F / "archvar.ttf"), size)
+    f.set_variation_by_axes([wght, wdth])
+    return f
+
+
+def mono(size, w=400):
+    return ImageFont.truetype(str(F / f"mono{w}.ttf"), size)
+
+
+def spaced(d, xy, text, font, fill, tracking=0.0, anchor="la"):
+    """Draw text with letter-spacing (in ems)."""
+    x, y = xy
+    em = font.size
+    if anchor.startswith("r"):
+        total = sum(d.textlength(c, font=font) + tracking * em for c in text) - tracking * em
+        x -= total
+        anchor = "l" + anchor[1]
+    for c in text:
+        d.text((x, y), c, font=font, fill=fill, anchor=anchor)
+        x += d.textlength(c, font=font) + tracking * em
+    return x
+
+
+def og():
+    W, H, SC = 1200, 630, 2           # draw at 2x, downsample for clean lines
+    w, h = W * SC, H * SC
+    im = Image.new("RGB", (w, h), VOID)
+    d = ImageDraw.Draw(im, "RGBA")
+
+    # drafting crosses in the void
+    for x in range(30 * SC, w, 60 * SC):
+        for y in range(30 * SC, h, 60 * SC):
+            s = 4 * SC
+            d.line([(x - s, y), (x + s, y)], fill=VOID_MARK + (150,), width=SC)
+            d.line([(x, y - s), (x, y + s)], fill=VOID_MARK + (150,), width=SC)
+
+    # the sheet
+    m = 34 * SC
+    sx0, sy0, sx1, sy1 = m, m, w - m, h - m
+    d.rectangle([sx0 + 10 * SC, sy0 + 16 * SC, sx1 + 10 * SC, sy1 + 16 * SC], fill=(0, 0, 0, 90))
+    d.rectangle([sx0, sy0, sx1, sy1], fill=SHEET)
+    p = 12 * SC
+    bx0, by0, bx1, by1 = sx0 + p, sy0 + p, sx1 - p, sy1 - p
+    d.rectangle([bx0 - 5 * SC, by0 - 5 * SC, bx1 + 5 * SC, by1 + 5 * SC], outline=HAIR, width=SC)
+    d.rectangle([bx0, by0, bx1, by1], outline=INK, width=int(1.5 * SC))
+
+    # zone markers along the top edge
+    zf = mono(8 * SC)
+    for i in range(8):
+        zx = bx0 + (bx1 - bx0) * (i + 0.5) / 8
+        d.text((zx, by0 - 3 * SC), str(i + 1), font=zf, fill=INK_DIM, anchor="md")
+
+    # title block
+    tb_h = 50 * SC
+    ty = by1 - tb_h
+    d.rectangle([bx0, ty, bx1, by1], fill=SHEET_DEEP)
+    d.line([(bx0, ty), (bx1, ty)], fill=INK, width=int(1.5 * SC))
+    cols = [("Project", "YN-1 workstation", 2.2), ("Title", "General arrangement", 2.2),
+            ("Drawn", "R. Herrera", 1.4), ("Site", "ricardoherrera.co", 2.2), ("Sheet", "01 / 06", 0.9)]
+    tot = sum(c[2] for c in cols)
+    x = bx0
+    small, strong = mono(8 * SC), archivo(16 * SC, 600, 82)
+    for i, (lab, val, wt) in enumerate(cols):
+        cw = (bx1 - bx0) * wt / tot
+        if i:
+            d.line([(x, ty), (x, by1)], fill=HAIR, width=SC)
+        spaced(d, (x + 10 * SC, ty + 10 * SC), lab.upper(), small, INK_DIM, 0.12)
+        spaced(d, (x + 10 * SC, ty + 22 * SC), val.upper(), strong, INK, 0.04)
+        x += cw
+
+    # drawing on the left
+    iso = Image.open(S / "assets" / "iso.png").convert("RGBA")
+    iso = iso.crop(iso.getbbox())
+    area_w, area_h = 560 * SC, (ty - by0) - 40 * SC
+    k = min(area_w / iso.width, area_h / iso.height)
+    iso = iso.resize((int(iso.width * k), int(iso.height * k)), Image.LANCZOS)
+    ix = bx0 + 40 * SC
+    iy = by0 + ((ty - by0) - iso.height) // 2
+    im.paste(iso, (ix, iy), iso)
+
+    # divider and notes on the right
+    dx = bx0 + 640 * SC
+    d.line([(dx, by0), (dx, ty)], fill=HAIR, width=SC)
+    rx = dx + 40 * SC
+    spaced(d, (rx, by0 + 92 * SC), "SENIOR SITE RELIABILITY ENGINEER", mono(11 * SC), INK_DIM, 0.1)
+    name = archivo(66 * SC, 800, 118)
+    spaced(d, (rx - 3 * SC, by0 + 118 * SC), "RICARDO", name, INK, 0.0)
+    spaced(d, (rx - 3 * SC, by0 + 178 * SC), "HERRERA", name, INK, 0.0)
+    body = mono(13 * SC)
+    lines = ["Kubernetes platforms, observability", "and the automation that keeps", "infrastructure boring."]
+    for i, ln in enumerate(lines):
+        d.text((rx, by0 + 278 * SC + i * 24 * SC), ln, font=body, fill=INK)
+
+    # redline stamp
+    stamp_f = archivo(13 * SC, 700, 90)
+    st = Image.new("RGBA", (300 * SC, 40 * SC), (0, 0, 0, 0))
+    sd = ImageDraw.Draw(st)
+    end = spaced(sd, (12 * SC, 11 * SC), "DRAWING SET · REV B", stamp_f, RED, 0.12)
+    sd.rectangle([0, 0, end + 10 * SC, 34 * SC], outline=RED, width=2 * SC)
+    st = st.crop((0, 0, int(end + 11 * SC), 35 * SC)).rotate(3, expand=True, resample=Image.BICUBIC)
+    im.paste(st, (bx0 + 26 * SC, by0 + 24 * SC), st)
+
+    im = im.resize((W, H), Image.LANCZOS)
+    im.save(OUT / "og.png", optimize=True)
+
+
+FAVICON_SVG = """<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64">
+  <rect width="64" height="64" rx="12" fill="#1b4a88"/>
+  <g fill="none" stroke="#eef4ff" stroke-width="3.2" stroke-linejoin="round" stroke-linecap="round">
+    <rect x="13" y="13" width="38" height="28" rx="3"/>
+    <path d="M24 41v5h16v-5M17 51h30"/>
+  </g>
+  <rect x="18" y="18" width="28" height="18" rx="1.5" fill="#07110c"/>
+  <path d="M22 23.5l4 3-4 3" fill="none" stroke="#8ff0b8" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/>
+  <rect x="29" y="28" width="7" height="2.4" rx="1" fill="#8ff0b8"/>
+  <circle cx="45.5" cy="38.6" r="1.7" fill="#ffab7a"/>
+</svg>
+"""
+
+
+def favicons():
+    (OUT / "favicon.svg").write_text(FAVICON_SVG)
+    for name, px in [("favicon-32.png", 32), ("apple-touch-icon.png", 180), ("icon-512.png", 512)]:
+        subprocess.run(["rsvg-convert", "-w", str(px), "-h", str(px), "-o", str(OUT / name), str(OUT / "favicon.svg")], check=True)
+    # Apple draws its own rounded corners; give it a full-bleed square.
+    sq = FAVICON_SVG.replace('rx="12" fill="#1b4a88"', 'fill="#1b4a88"')
+    (S / "apple.svg").write_text(sq)
+    subprocess.run(["rsvg-convert", "-w", "180", "-h", "180", "-o", str(OUT / "apple-touch-icon.png"), str(S / "apple.svg")], check=True)
+
+
+if __name__ == "__main__":
+    og()
+    favicons()
+    print("ok")

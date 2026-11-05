@@ -1,0 +1,729 @@
+<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style></head><body>
+<title>Ricardo Herrera · Writing</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@62..125,400..800&family=Literata:ital,opsz,wght@0,7..72,400..700;1,7..72,400..700&family=Martian+Mono:wdth,wght@75..100,300..500&display=swap">
+<style>
+/* Layout: a quiet reading column (~70ch) with a sticky contents rail on wide screens.
+   Same family as the YN-1 drawing set (Prussian blue, Archivo, Martian Mono, revision letters),
+   but on paper instead of the void: the drawings are for exploring, this part is for reading. */
+:root {
+  --paper: #f6f8fb;
+  --surface: #ffffff;
+  --ink: #141c27;
+  --muted: #566273;
+  --rule: #d9e0ea;
+  --accent: #1d4f91;
+  --accent-soft: #e7eefa;
+  --code-bg: #eef2f8;
+  --redline: #b8430f;
+  --syn-key: #1d4f91;
+  --syn-str: #2b6a4b;
+  --syn-com: #737f91;
+  --syn-num: #9a4a12;
+  --syn-attr: #6b3fa0;
+  --font-read: "Literata", Georgia, "Times New Roman", serif;
+  --font-display: "Archivo", "Arial Narrow", Arial, sans-serif;
+  --font-mono: "Martian Mono", ui-monospace, Menlo, Consolas, monospace;
+  --step: 1;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --paper: #0c1421; --surface: #111b2b; --ink: #e2e8f1; --muted: #97a3b6; --rule: #243249;
+    --accent: #8fb8f2; --accent-soft: #16253c; --code-bg: #0f1928; --redline: #ff9d6b;
+    --syn-key: #8fb8f2; --syn-str: #9fd3b0; --syn-com: #6f7d93; --syn-num: #f0b27a; --syn-attr: #c9a8f0;
+    color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --paper: #0c1421; --surface: #111b2b; --ink: #e2e8f1; --muted: #97a3b6; --rule: #243249;
+  --accent: #8fb8f2; --accent-soft: #16253c; --code-bg: #0f1928; --redline: #ff9d6b;
+  --syn-key: #8fb8f2; --syn-str: #9fd3b0; --syn-com: #6f7d93; --syn-num: #f0b27a; --syn-attr: #c9a8f0;
+  color-scheme: dark;
+}
+
+* { box-sizing: border-box; }
+body {
+  background: var(--paper); color: var(--ink);
+  font-family: var(--font-read); font-size: 16px; line-height: 1.6;
+  -webkit-text-size-adjust: 100%; text-rendering: optimizeLegibility;
+}
+body::before { content: ""; position: fixed; inset: 0 0 auto; height: env(safe-area-inset-top, 0px); z-index: 10; background: var(--paper); }
+a { color: var(--accent); text-underline-offset: 0.18em; text-decoration-thickness: 1px; }
+a:hover { text-decoration-thickness: 2px; }
+:focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; border-radius: 2px; }
+button { font: inherit; color: inherit; }
+.mono { font-family: var(--font-mono); font-variation-settings: "wdth" 85; }
+.sr-only { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+@media (prefers-reduced-motion: no-preference) { html { scroll-behavior: smooth; } }
+
+.gutter {
+  padding-left: max(16px, env(safe-area-inset-left, 0px));
+  padding-right: max(16px, env(safe-area-inset-right, 0px));
+}
+.wrap { max-width: 1180px; margin: 0 auto; }
+
+/* ---------- site header ---------- */
+.site {
+  position: sticky; top: env(safe-area-inset-top, 0px); z-index: 9;
+  background: var(--paper); border-bottom: 1px solid var(--rule);
+}
+.site .wrap { display: flex; align-items: center; justify-content: space-between; gap: 16px; min-height: 56px; }
+.brand { display: flex; align-items: baseline; gap: 12px; text-decoration: none; color: var(--ink); min-width: 0; }
+.brand strong { font-family: var(--font-display); font-variation-settings: "wdth" 110; font-weight: 750; text-transform: uppercase; letter-spacing: 0.02em; font-size: 15px; white-space: nowrap; }
+.brand span { font-family: var(--font-mono); font-variation-settings: "wdth" 85; font-size: 10.5px; letter-spacing: 0.08em; text-transform: uppercase; color: var(--muted); white-space: nowrap; }
+.site nav { display: flex; gap: 4px 18px; flex-wrap: wrap; justify-content: flex-end; }
+.site nav a { font-family: var(--font-mono); font-variation-settings: "wdth" 85; font-size: 11px; letter-spacing: 0.06em; text-transform: uppercase; color: var(--muted); text-decoration: none; padding-block: 8px; }
+.site nav a:hover, .site nav a[aria-current="page"] { color: var(--ink); }
+.progress { position: absolute; left: 0; bottom: -1px; height: 2px; width: 100%; background: var(--accent); transform-origin: 0 50%; transform: scaleX(0); }
+@media (max-width: 560px) { .brand span { display: none; } .site nav { gap: 4px 14px; } }
+
+/* ---------- index ---------- */
+.index { max-width: 52rem; margin: 0 auto; padding-block: 56px 72px; display: grid; gap: 40px; }
+.eyebrow { font-family: var(--font-mono); font-variation-settings: "wdth" 85; font-size: 11px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--muted); }
+.index-head { display: grid; gap: 14px; }
+.index-head h1 {
+  margin: 0; font-family: var(--font-display); font-variation-settings: "wdth" 112; font-weight: 800;
+  text-transform: uppercase; font-size: clamp(2.6rem, 8vw, 4.4rem); line-height: 0.9; letter-spacing: 0.005em;
+}
+.index-head p { margin: 0; max-width: 34em; font-size: 1.125rem; line-height: 1.6; color: var(--muted); }
+.subscribe { display: flex; flex-wrap: wrap; align-items: center; gap: 10px 16px; font-family: var(--font-mono); font-variation-settings: "wdth" 85; font-size: 11.5px; }
+.subscribe code { background: var(--code-bg); padding: 6px 9px; border-radius: 3px; color: var(--ink); }
+.btn {
+  display: inline-flex; align-items: center; gap: 6px; min-height: 34px; padding: 0 12px;
+  border: 1px solid var(--rule); background: var(--surface); border-radius: 4px; cursor: pointer;
+  font-family: var(--font-mono); font-variation-settings: "wdth" 85; font-size: 11px; letter-spacing: 0.04em; color: var(--ink); text-decoration: none;
+}
+.btn:hover { border-color: var(--accent); color: var(--accent); }
+
+.filters { display: grid; gap: 14px; }
+.search { position: relative; }
+.search input {
+  width: 100%; min-height: 44px; padding: 0 14px; border: 1px solid var(--rule); border-radius: 4px;
+  background: var(--surface); color: var(--ink); font-family: var(--font-read); font-size: 1rem;
+}
+.search input:focus { outline: 2px solid var(--accent); outline-offset: 0; border-color: transparent; }
+.chips { display: flex; flex-wrap: wrap; gap: 8px; }
+.chip {
+  min-height: 32px; padding: 0 11px; border: 1px solid var(--rule); border-radius: 999px; background: transparent; cursor: pointer;
+  font-family: var(--font-mono); font-variation-settings: "wdth" 85; font-size: 11px; color: var(--muted);
+}
+.chip:hover { color: var(--ink); border-color: var(--muted); }
+.chip[aria-pressed="true"] { background: var(--accent); border-color: var(--accent); color: var(--paper); }
+
+.year { display: grid; gap: 0; }
+.year h2 { margin: 0 0 4px; font-family: var(--font-mono); font-variation-settings: "wdth" 85; font-weight: 400; font-size: 12px; letter-spacing: 0.1em; color: var(--muted); padding-bottom: 8px; border-bottom: 1px solid var(--ink); }
+.entry {
+  display: grid; grid-template-columns: 7.2rem minmax(0, 1fr); gap: 4px 20px;
+  padding-block: 22px; border-bottom: 1px solid var(--rule);
+}
+.entry .when { font-family: var(--font-mono); font-variation-settings: "wdth" 85; font-size: 12px; color: var(--muted); font-variant-numeric: tabular-nums; padding-top: 5px; display: flex; gap: 10px; }
+.entry .when b { font-weight: 400; color: var(--accent); }
+.entry .body { min-width: 0; display: grid; gap: 6px; }
+.entry h3 { margin: 0; font-size: 1.3rem; line-height: 1.3; font-weight: 600; text-wrap: balance; }
+.entry h3 a { color: var(--ink); text-decoration: none; }
+.entry h3 a:hover { color: var(--accent); text-decoration: underline; }
+.entry p { margin: 0; color: var(--muted); font-size: 1rem; line-height: 1.55; max-width: 38em; }
+.meta-line { display: flex; flex-wrap: wrap; gap: 4px 14px; font-family: var(--font-mono); font-variation-settings: "wdth" 85; font-size: 11px; color: var(--muted); }
+.meta-line .tag::before { content: "#"; opacity: 0.6; }
+.empty { padding: 28px 0; color: var(--muted); }
+.index-note { font-size: 0.875rem; color: var(--muted); border-top: 1px solid var(--rule); padding-top: 14px; }
+@media (max-width: 560px) {
+  .entry { grid-template-columns: minmax(0, 1fr); }
+  .entry .when { padding-top: 0; }
+}
+
+/* ---------- post ---------- */
+.post { padding-block: 40px 80px; }
+.post-grid { display: grid; grid-template-columns: minmax(0, 1fr); gap: 0 56px; max-width: 46rem; margin: 0 auto; }
+@media (min-width: 1140px) {
+  .post-grid { max-width: none; grid-template-columns: 14rem minmax(0, 44rem) minmax(0, 1fr); }
+  .post-grid > .rail { grid-column: 1; grid-row: 1 / span 3; }
+  .post-grid > .main { grid-column: 2; }
+  .toc-mobile { display: none; }
+}
+@media (max-width: 1139px) { .rail { display: none; } }
+.main { min-width: 0; }
+
+.toolbar { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 10px; margin-bottom: 36px; }
+.toolbar .back { font-family: var(--font-mono); font-variation-settings: "wdth" 85; font-size: 11.5px; text-decoration: none; letter-spacing: 0.04em; padding-block: 8px; }
+.toolbar .tools { display: flex; gap: 6px; }
+.size-btn { min-width: 40px; justify-content: center; }
+
+.post-head { display: grid; gap: 18px; padding-bottom: 28px; border-bottom: 1px solid var(--rule); margin-bottom: 36px; }
+.post-head h1 {
+  margin: 0; font-family: var(--font-read); font-weight: 650; font-optical-sizing: auto;
+  font-size: clamp(2rem, 5.2vw, 2.9rem); line-height: 1.12; letter-spacing: -0.012em; text-wrap: balance;
+}
+.dek { margin: 0; font-size: 1.25rem; line-height: 1.5; color: var(--muted); font-style: italic; text-wrap: pretty; }
+.byline { display: flex; flex-wrap: wrap; gap: 6px 18px; font-family: var(--font-mono); font-variation-settings: "wdth" 85; font-size: 11.5px; color: var(--muted); font-variant-numeric: tabular-nums; }
+.byline strong { color: var(--ink); font-weight: 500; }
+.byline .tags { display: flex; gap: 10px; flex-wrap: wrap; }
+.byline .tags a { color: var(--muted); text-decoration: none; }
+.byline .tags a::before { content: "#"; opacity: 0.6; }
+.byline .tags a:hover { color: var(--accent); }
+.series { border: 1px solid var(--rule); background: var(--surface); border-radius: 4px; padding: 14px 18px; font-size: 0.95rem; }
+.series p { margin: 0 0 6px; font-family: var(--font-mono); font-variation-settings: "wdth" 85; font-size: 11px; letter-spacing: 0.06em; text-transform: uppercase; color: var(--muted); }
+.series ol { margin: 0; padding-left: 1.4em; display: grid; gap: 2px; }
+.series li[aria-current="true"] { font-weight: 600; }
+.series .soon { color: var(--muted); }
+
+/* contents */
+.toc { position: sticky; top: calc(env(safe-area-inset-top, 0px) + 88px); display: grid; gap: 10px; font-size: 0.875rem; }
+.toc h2, .toc-mobile summary { font-family: var(--font-mono); font-variation-settings: "wdth" 85; font-weight: 400; font-size: 11px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--muted); margin: 0; }
+.toc ol { list-style: none; margin: 0; padding: 0; display: grid; gap: 2px; border-left: 1px solid var(--rule); }
+.toc a { display: block; padding: 5px 0 5px 14px; margin-left: -1px; border-left: 2px solid transparent; color: var(--muted); text-decoration: none; line-height: 1.35; }
+.toc a:hover { color: var(--ink); }
+.toc a.on { color: var(--ink); border-left-color: var(--accent); }
+.toc-mobile { border-block: 1px solid var(--rule); padding-block: 12px; margin-bottom: 32px; }
+.toc-mobile summary { cursor: pointer; padding-block: 4px; }
+.toc-mobile ol { margin: 10px 0 2px; padding-left: 1.4em; display: grid; gap: 6px; font-size: 0.95rem; }
+
+/* prose */
+.prose { font-size: calc(1.125rem * var(--step)); line-height: 1.72; max-width: 36em; }
+.prose > * { margin-block: 0 1.15em; }
+.prose h2 {
+  font-family: var(--font-display); font-variation-settings: "wdth" 92; font-weight: 650;
+  font-size: 1.42em; line-height: 1.2; letter-spacing: -0.003em; margin: 2.1em 0 0.65em; text-wrap: balance;
+  scroll-margin-top: calc(env(safe-area-inset-top, 0px) + 76px); position: relative;
+}
+.prose h2 .anchor { position: absolute; left: -1.1em; width: 1em; text-decoration: none; color: var(--muted); opacity: 0; font-weight: 400; }
+.prose h2:hover .anchor, .prose h2 .anchor:focus-visible { opacity: 1; }
+@media (max-width: 860px) { .prose h2 .anchor { position: static; opacity: 0.5; margin-left: 0.3em; } }
+.prose ul, .prose ol { padding-left: 1.3em; }
+.prose li + li { margin-top: 0.4em; }
+.prose code { font-family: var(--font-mono); font-variation-settings: "wdth" 80; font-size: 0.78em; background: var(--code-bg); padding: 0.12em 0.36em; border-radius: 3px; overflow-wrap: anywhere; }
+.prose strong { font-weight: 650; }
+.prose sup { line-height: 0; }
+.prose sup a { font-family: var(--font-mono); font-size: 0.68em; text-decoration: none; padding: 0 0.15em; scroll-margin-top: 100px; }
+.prose .lede::first-line { font-variant-caps: all-small-caps; letter-spacing: 0.04em; }
+
+/* code blocks */
+.code { margin-inline: 0; border: 1px solid var(--rule); border-radius: 5px; background: var(--code-bg); overflow: hidden; }
+.code header { display: flex; align-items: center; justify-content: space-between; gap: 10px; padding: 4px 6px 4px 14px; border-bottom: 1px solid var(--rule); font-family: var(--font-mono); font-variation-settings: "wdth" 85; font-size: 11px; color: var(--muted); }
+.code header .copy { min-height: 30px; border: 0; background: transparent; }
+.code pre { margin: 0; padding: 14px 16px 16px; overflow-x: auto; font-family: var(--font-mono); font-variation-settings: "wdth" 78; font-size: 0.74em; line-height: 1.65; tab-size: 2; }
+.code code { background: none; padding: 0; font-size: inherit; font-variation-settings: inherit; color: var(--ink); overflow-wrap: normal; }
+.hljs-keyword, .hljs-selector-tag, .hljs-built_in, .hljs-type { color: var(--syn-key); }
+.hljs-string, .hljs-template-variable, .hljs-regexp { color: var(--syn-str); }
+.hljs-comment, .hljs-quote { color: var(--syn-com); font-style: italic; }
+.hljs-number, .hljs-literal { color: var(--syn-num); }
+.hljs-attr, .hljs-attribute, .hljs-variable, .hljs-meta, .hljs-title { color: var(--syn-attr); }
+.hljs-bullet, .hljs-punctuation { color: var(--muted); }
+
+/* callouts, tables, figures */
+.callout { border: 1px solid var(--rule); background: var(--surface); border-radius: 5px; padding: 0.9em 1.1em; font-size: 0.93em; line-height: 1.6; }
+.callout > b:first-child { display: block; font-family: var(--font-mono); font-variation-settings: "wdth" 85; font-weight: 500; font-size: 0.66em; letter-spacing: 0.1em; text-transform: uppercase; color: var(--accent); margin-bottom: 0.35em; }
+.callout.warn > b:first-child { color: var(--redline); }
+.callout p { margin: 0; }
+.table { overflow-x: auto; }
+.table table { width: 100%; min-width: 30rem; border-collapse: collapse; font-size: 0.86em; line-height: 1.5; }
+.table th { text-align: left; font-family: var(--font-mono); font-variation-settings: "wdth" 85; font-weight: 400; font-size: 0.72em; letter-spacing: 0.08em; text-transform: uppercase; color: var(--muted); border-bottom: 1px solid var(--ink); padding: 0 12px 8px 0; }
+.table td { border-bottom: 1px solid var(--rule); padding: 10px 12px 10px 0; vertical-align: top; }
+.table td:first-child { white-space: nowrap; }
+figure.fig { margin-inline: 0; }
+.fig .scroll { overflow-x: auto; border-block: 1px solid var(--rule); padding-block: 14px; }
+.fig svg { display: block; width: 100%; min-width: 540px; height: auto; }
+.fig figcaption { margin-top: 10px; font-size: 0.85em; line-height: 1.55; color: var(--muted); }
+.fig figcaption b { font-family: var(--font-mono); font-variation-settings: "wdth" 85; font-weight: 500; font-size: 0.82em; letter-spacing: 0.06em; text-transform: uppercase; color: var(--ink); margin-right: 0.4em; }
+.fig .t { font-family: var(--font-mono); font-size: 11px; fill: var(--ink); }
+.fig .t.m { fill: var(--muted); }
+.fig .bar { fill: var(--accent); }
+.fig .bar.b2 { fill: var(--accent); opacity: 0.55; }
+.fig .gap { fill: var(--redline); opacity: 0.12; }
+.fig .gapt { fill: var(--redline); }
+.fig .axis { stroke: var(--muted); stroke-width: 1; fill: none; }
+.fig .grid { stroke: var(--rule); stroke-width: 1; }
+.fig .mark { stroke: var(--ink); stroke-width: 1.5; }
+.fig .end { stroke: var(--redline); stroke-width: 1.5; stroke-dasharray: 4 3; }
+
+/* end matter */
+.notes { border-top: 1px solid var(--rule); margin-top: 2.6em; padding-top: 1.2em; font-size: 0.86em; line-height: 1.6; color: var(--muted); }
+.notes h2, .revisions h2 { font-family: var(--font-mono); font-variation-settings: "wdth" 85; font-weight: 400; font-size: 0.72em; letter-spacing: 0.1em; text-transform: uppercase; margin: 0 0 0.8em; color: var(--muted); }
+.notes ol { padding-left: 1.4em; margin: 0; display: grid; gap: 0.6em; }
+.notes li { scroll-margin-top: 100px; }
+.notes li:target { color: var(--ink); }
+.notes .ret { text-decoration: none; margin-left: 0.3em; }
+.revisions { font-size: 0.86em; color: var(--muted); }
+.revisions table { border-collapse: collapse; font-variant-numeric: tabular-nums; }
+.revisions td { padding: 4px 16px 4px 0; vertical-align: top; }
+.revisions td:first-child { font-family: var(--font-mono); font-variation-settings: "wdth" 85; font-size: 0.85em; white-space: nowrap; color: var(--accent); }
+
+.after { display: grid; gap: 28px; margin-top: 48px; padding-top: 28px; border-top: 1px solid var(--ink); max-width: 40rem; }
+.share { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; }
+.share .label { font-family: var(--font-mono); font-variation-settings: "wdth" 85; font-size: 11px; letter-spacing: 0.08em; text-transform: uppercase; color: var(--muted); margin-right: 6px; }
+.author { display: grid; grid-template-columns: 52px minmax(0, 1fr); gap: 16px; align-items: start; }
+.author .mark { width: 52px; height: 52px; border-radius: 50%; background: var(--accent); color: var(--paper); display: grid; place-items: center; font-family: var(--font-display); font-variation-settings: "wdth" 110; font-weight: 800; font-size: 17px; }
+.author p { margin: 0; font-size: 0.98rem; line-height: 1.55; }
+.author p + p { margin-top: 6px; color: var(--muted); font-size: 0.9rem; }
+.pager { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+.pager a { display: grid; gap: 4px; padding: 14px 16px; border: 1px solid var(--rule); border-radius: 5px; text-decoration: none; color: var(--ink); background: var(--surface); min-width: 0; }
+.pager a:hover { border-color: var(--accent); }
+.pager a span { font-family: var(--font-mono); font-variation-settings: "wdth" 85; font-size: 10.5px; letter-spacing: 0.08em; text-transform: uppercase; color: var(--muted); }
+.pager a strong { font-weight: 600; font-size: 0.98rem; line-height: 1.35; }
+.pager .next { text-align: right; grid-column: 2; }
+@media (max-width: 560px) { .pager { grid-template-columns: minmax(0, 1fr); } .pager .next { grid-column: 1; text-align: left; } }
+.related h2 { font-family: var(--font-mono); font-variation-settings: "wdth" 85; font-weight: 400; font-size: 11px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--muted); margin: 0 0 8px; }
+.related ul { list-style: none; margin: 0; padding: 0; display: grid; }
+.related li { padding-block: 10px; border-bottom: 1px solid var(--rule); display: flex; justify-content: space-between; gap: 16px; }
+.related li a { min-width: 0; }
+.related li span { font-family: var(--font-mono); font-variation-settings: "wdth" 85; font-size: 11px; color: var(--muted); white-space: nowrap; padding-top: 4px; }
+
+.foot { border-top: 1px solid var(--rule); }
+.foot .wrap { display: flex; flex-wrap: wrap; justify-content: space-between; gap: 10px 24px; padding-block: 22px 28px; font-family: var(--font-mono); font-variation-settings: "wdth" 85; font-size: 11px; color: var(--muted); }
+.foot a { color: var(--muted); }
+.toast { position: fixed; left: 50%; bottom: calc(env(safe-area-inset-bottom, 0px) + 20px); transform: translateX(-50%); background: var(--ink); color: var(--paper); padding: 8px 14px; border-radius: 4px; font-family: var(--font-mono); font-variation-settings: "wdth" 85; font-size: 11.5px; z-index: 20; }
+</style>
+
+<header class="site">
+  <div class="wrap gutter">
+    <a class="brand" href="#writing"><strong>Ricardo Herrera</strong><span>Writing · Sheet 04</span></a>
+    <nav aria-label="Site">
+      <a href="#writing" id="navWriting">Writing</a>
+      <a href="https://claude.ai/artifact/1nfNLuhanvDoHRJFYF16i1" target="_blank" rel="noopener">YN-1 ↗</a>
+      <a href="#writing" id="navRss" title="Copy the feed URL">RSS</a>
+    </nav>
+  </div>
+  <div class="progress" id="progress" aria-hidden="true"></div>
+</header>
+
+<main id="view" class="gutter"></main>
+
+<footer class="foot">
+  <div class="wrap gutter">
+    <span>© 2026 Ricardo Herrera · Text CC BY 4.0 · Code samples MIT</span>
+    <span><a href="#writing">All writing</a> · <a href="https://claude.ai/artifact/1nfNLuhanvDoHRJFYF16i1" target="_blank" rel="noopener">Back to the YN-1</a></span>
+  </div>
+</footer>
+
+<div class="toast" id="toast" role="status" hidden></div>
+
+<!-- ============================ POST BODIES ============================ -->
+<template id="body-spot-interruptions">
+<p class="lede">Most spot horror stories have the same shape. A node disappears, a few pods with no disruption budget go with it, the remaining replicas take the full load, and someone gets paged for a latency spike that resolves itself four minutes later. The postmortem blames spot. The real cause was a cluster that assumed nodes live forever.</p>
+<p>EC2 gives you a two-minute warning before it reclaims a Spot instance. That is plenty of time to reschedule a stateless pod. Whether it is enough depends on what you did before the warning arrived. This is the checklist I use, in the order I apply it.</p>
+
+<h2 id="spot-interruptions--the-two-minute-notice">The two-minute notice</h2>
+<p>When AWS needs the capacity back, it publishes a Spot Instance Interruption Warning to EventBridge and the instance metadata service, then reclaims the instance about 120 seconds later. Karpenter can consume these events from an SQS queue. With interruption handling on, it taints and drains the node as soon as the warning lands, and launches replacement capacity in parallel instead of waiting for pods to go Pending.<sup><a href="#spot-interruptions--fn1" id="spot-interruptions--ref1" aria-describedby="spot-interruptions--notes-label">1</a></sup></p>
+
+<figure class="fig">
+  <div class="scroll">
+    <svg viewBox="0 0 680 236" role="img" aria-label="Timeline from 0 to 120 seconds. The old node drains from 0 to 65 seconds. A replacement node boots from 5 to 75 seconds, and pods become ready on it from 75 to 95 seconds. Between 65 and 95 seconds the surviving replicas carry the load. The instance is reclaimed at 120 seconds.">
+      <g class="grid">
+        <line x1="150" y1="18" x2="150" y2="190"/><line x1="275" y1="18" x2="275" y2="190"/><line x1="400" y1="18" x2="400" y2="190"/><line x1="525" y1="18" x2="525" y2="190"/>
+      </g>
+      <rect class="gap" x="420.8" y="18" width="125" height="172"/>
+      <text class="t gapt" x="483.3" y="176" text-anchor="middle">other replicas carry load</text>
+      <text class="t" x="0" y="52">Drain old node</text>
+      <rect class="bar" x="150" y="40" width="270.8" height="16" rx="2"/>
+      <text class="t m" x="428" y="52">preStop + shutdown</text>
+      <text class="t" x="0" y="92">Boot replacement</text>
+      <rect class="bar b2" x="170.8" y="80" width="291.7" height="16" rx="2"/>
+      <text class="t" x="0" y="132">Pods ready on it</text>
+      <rect class="bar" x="462.5" y="120" width="83.3" height="16" rx="2"/>
+      <line class="mark" x1="150" y1="14" x2="150" y2="196"/>
+      <text class="t" x="150" y="10" text-anchor="middle">warning</text>
+      <line class="end" x1="650" y1="14" x2="650" y2="196"/>
+      <text class="t gapt" x="650" y="10" text-anchor="end">reclaimed</text>
+      <line class="axis" x1="150" y1="196" x2="650" y2="196"/>
+      <g class="t m" text-anchor="middle">
+        <text x="150" y="216">0 s</text><text x="275" y="216">30</text><text x="400" y="216">60</text><text x="525" y="216">90</text><text x="650" y="216">120</text>
+      </g>
+    </svg>
+  </div>
+  <figcaption><b>Figure 1</b>One interruption, to scale. Durations are illustrative, not measured. The shaded window is the time between the old pods leaving and the new ones becoming ready.</figcaption>
+</figure>
+
+<p>Two things follow from that timeline. Replacement capacity takes time to boot, so there is usually a window where the surviving replicas carry the load alone. Size for it. And every pod on the node has to finish shutting down inside the notice, so a 300-second termination grace period is a promise you can't keep.</p>
+
+<aside class="callout"><b>Note</b><p>Interruption handling is off until you configure it. In the Karpenter Helm chart, set <code>settings.interruptionQueue</code> to the name of an SQS queue that your EventBridge rules feed.</p></aside>
+
+<h2 id="spot-interruptions--diversify">Diversify instance types</h2>
+<p>Interruption rates are per capacity pool: one instance type in one Availability Zone. The more pools a NodePool can draw from, the more likely the allocation strategy finds one with spare capacity, and the less likely a single reclaim event takes several of your nodes at once.</p>
+<p>The common mistake is pinning instance types. Constrain on what the workload actually needs (architecture, generation, a size range) and let everything that fits in.</p>
+
+<figure class="code">
+<header><span>nodepool.yaml</span><button type="button" class="btn copy">Copy</button></header>
+<pre><code class="language-yaml">apiVersion: karpenter.sh/v1
+kind: NodePool
+metadata:
+  name: general-spot
+spec:
+  template:
+    spec:
+      nodeClassRef:
+        group: karpenter.k8s.aws
+        kind: EC2NodeClass
+        name: default
+      requirements:
+        - key: karpenter.sh/capacity-type
+          operator: In
+          values: ["spot", "on-demand"]
+        - key: kubernetes.io/arch
+          operator: In
+          values: ["amd64", "arm64"]
+        - key: karpenter.k8s.aws/instance-category
+          operator: In
+          values: ["c", "m", "r"]
+        - key: karpenter.k8s.aws/instance-generation
+          operator: Gt
+          values: ["5"]
+        - key: karpenter.k8s.aws/instance-cpu
+          operator: In
+          values: ["4", "8", "16", "32"]
+  disruption:
+    consolidationPolicy: WhenEmptyOrUnderutilized
+    consolidateAfter: 1m</code></pre>
+</figure>
+
+<p>Allowing <code>arm64</code> roughly doubles the pool count, but only if every image the pool might run is multi-arch. Check before you add it. Listing both capacity types lets Karpenter fall back to on-demand when no spot offering fits, instead of leaving pods Pending.<sup><a href="#spot-interruptions--fn2" id="spot-interruptions--ref2">2</a></sup></p>
+
+<h2 id="spot-interruptions--boring-drains">Make the drain boring</h2>
+<p>A drain is only as graceful as the pods on the node. Three settings decide whether an interruption is invisible or a page.</p>
+
+<div class="table">
+<table>
+  <thead><tr><th>Setting</th><th>What it protects</th><th>Where I start</th></tr></thead>
+  <tbody>
+    <tr><td><code>PodDisruptionBudget</code></td><td>Pods leave one at a time while replacements come up elsewhere</td><td><code>maxUnavailable: 1</code>, or 10–25% for large deployments</td></tr>
+    <tr><td><code>preStop</code> sleep</td><td>The load balancer stops sending new requests before the process exits</td><td>10–15 s, longer than the target's deregistration lag</td></tr>
+    <tr><td><code>terminationGracePeriodSeconds</code></td><td>Total time for the preStop hook plus graceful shutdown</td><td>Under 90 s, so it fits inside the notice</td></tr>
+  </tbody>
+</table>
+</div>
+
+<p>A PodDisruptionBudget can't stop AWS from taking the instance back. What it does is pace the drain. Keep the budget loose enough that the drain finishes inside the window, or the last pods are killed instead of evicted.</p>
+
+<figure class="code">
+<header><span>deployment.yaml (excerpt)</span><button type="button" class="btn copy">Copy</button></header>
+<pre><code class="language-yaml">spec:
+  template:
+    spec:
+      terminationGracePeriodSeconds: 60
+      containers:
+        - name: api
+          lifecycle:
+            preStop:
+              sleep:
+                seconds: 15
+      topologySpreadConstraints:
+        - maxSkew: 1
+          topologyKey: topology.kubernetes.io/zone
+          whenUnsatisfiable: ScheduleAnyway
+          labelSelector:
+            matchLabels: { app: api }
+        - maxSkew: 1
+          topologyKey: karpenter.sh/capacity-type
+          whenUnsatisfiable: ScheduleAnyway
+          labelSelector:
+            matchLabels: { app: api }</code></pre>
+</figure>
+
+<p>The native <code>sleep</code> action saves you from shipping a shell in the image just to wait.<sup><a href="#spot-interruptions--fn3" id="spot-interruptions--ref3">3</a></sup> The second spread constraint is the one people skip, and it matters most in the next section.</p>
+
+<h2 id="spot-interruptions--on-demand-floor">Keep an on-demand floor</h2>
+<p>Spot reclaims come in waves. When a pool gets tight, several instances in it go at once. Spreading replicas across capacity types means a wave can never take all of them. With <code>karpenter.sh/capacity-type</code> as a topology key and <code>maxSkew: 1</code>, Karpenter launches a mix of spot and on-demand nodes to satisfy the constraint.</p>
+<p>For services where a cold start hurts, I add a small on-demand NodePool with a higher <code>weight</code>, sized to hold the minimum replica count. It costs a little. It also means the worst case is degraded, not down.</p>
+
+<h2 id="spot-interruptions--what-i-watch">What I watch</h2>
+<p>An interruption should show up on a dashboard, not in a page. These are the signals that tell me the setup is working:</p>
+<ul>
+  <li><strong>Interruption events, as annotations.</strong> Overlay them on the service's latency and error panels. If the lines don't move when an annotation appears, you're done.</li>
+  <li><strong>Pending time after an interruption.</strong> How long evicted pods wait for a node. If it grows, the NodePool is too narrow.</li>
+  <li><strong>Fallback rate.</strong> The share of nodes launched as on-demand. A rising rate means spot capacity in your pools is getting scarce, and your savings with it.</li>
+</ul>
+
+<figure class="code">
+<header><span>shell</span><button type="button" class="btn copy">Copy</button></header>
+<pre><code class="language-bash"># Interruption warnings Karpenter acted on recently
+kubectl get events -A --field-selector reason=SpotInterrupted
+
+# Current nodes with capacity type and zone
+kubectl get nodes -L karpenter.sh/capacity-type,topology.kubernetes.io/zone</code></pre>
+</figure>
+
+<h2 id="spot-interruptions--what-stays-off">What stays off spot</h2>
+<p>Anything that can't lose its node in two minutes: StatefulSets without fast replica promotion, long batch jobs without checkpoints, and the cluster's own controllers. Karpenter itself should run on capacity it doesn't manage, such as a small managed node group or Fargate. Otherwise an interruption can take out the thing that handles interruptions.</p>
+<p>None of this is specific to spot. Nodes fail for plenty of reasons, and a cluster that handles a two-minute warning gracefully handles a kernel panic better too. Spot just makes you prove it every week.</p>
+<p>Part 2 covers the cost side: how to measure what spot is actually saving once you count the on-demand fallback and the extra headroom.</p>
+
+<section class="notes" aria-labelledby="spot-interruptions--notes-label">
+  <h2 id="spot-interruptions--notes-label">Notes</h2>
+  <ol>
+    <li id="spot-interruptions--fn1">The same queue also carries scheduled maintenance events and instance state changes, which Karpenter handles the same way: cordon, drain, replace. <a class="ret" href="#spot-interruptions--ref1" aria-label="Back to reference 1">↩</a></li>
+    <li id="spot-interruptions--fn2">When a NodePool allows both, Karpenter prefers spot and uses on-demand only when no spot offering satisfies the pod's requirements. <a class="ret" href="#spot-interruptions--ref2" aria-label="Back to reference 2">↩</a></li>
+    <li id="spot-interruptions--fn3">The <code>sleep</code> lifecycle action is on by default from Kubernetes 1.30. On older clusters, use an <code>exec</code> hook that runs <code>sleep</code> from the image. <a class="ret" href="#spot-interruptions--ref3" aria-label="Back to reference 3">↩</a></li>
+  </ol>
+</section>
+</template>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+<script>
+// Canonical address of the live site. Change to the real domain before launch.
+const SITE = "https://ricardoherrera.dev";
+const FEED = SITE + "/writing/feed.xml";
+const REPO = "https://github.com/ricardoherrera/site"; // used for "suggest a correction"
+
+// Newest first. rev mirrors the revision letters on sheet 04 of the YN-1.
+const POSTS = [
+  { slug: "spot-interruptions", rev: "F", date: "2026-10-28", updated: "2026-10-30",
+    title: "Spot interruptions are a scheduling problem",
+    dek: "Two minutes is enough to move a pod if the cluster was built expecting to. Notes on running stateless production workloads on EC2 Spot with Karpenter.",
+    tags: ["kubernetes", "aws", "reliability"],
+    series: { name: "Running on spot", parts: [["spot-interruptions", "Spot interruptions are a scheduling problem"], [null, "Measuring what spot actually saves"]] },
+    revisions: [["2026-10-30", "Clarified which Kubernetes versions support the native sleep action."], ["2026-10-28", "Published."]] },
+  { slug: "thanos-retention-cost", rev: "E", date: "2026-09-14",
+    title: "What five years of metrics retention actually costs",
+    dek: "Object storage is cheap. Compaction, downsampling and the queries people run against old data are not.",
+    tags: ["observability", "cost"] },
+  { slug: "self-service-namespaces", rev: "D", date: "2026-07-02",
+    title: "Self-service namespaces without a ticket queue",
+    dek: "Giving teams their own space on a shared cluster, with guardrails they don't have to ask for.",
+    tags: ["kubernetes", "platform"] },
+  { slug: "slo-burn-alerting", rev: "C", date: "2026-04-19",
+    title: "The quiet on-call: alerting on error budget burn",
+    dek: "Moving pages from symptoms to SLO burn rates, and what happened to alert volume.",
+    tags: ["reliability", "observability"] },
+  { slug: "colo-without-a-window", rev: "B", date: "2025-11-30",
+    title: "Leaving a colo without a maintenance window",
+    dek: "A migration plan built around running both sides at once, and the parts that still needed a cutover.",
+    tags: ["aws", "migration"] },
+  { slug: "runbooks-at-3am", rev: "A", date: "2025-06-08",
+    title: "Runbooks someone will actually open at 3 a.m.",
+    dek: "Shorter than you think, linked from the alert, and tested like code.",
+    tags: ["reliability", "writing"] },
+];
+
+const $ = (s, r = document) => r.querySelector(s);
+const view = $("#view");
+const reduce = matchMedia("(prefers-reduced-motion: reduce)").matches;
+const esc = (s) => String(s).replace(/[&<>"]/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" })[c]);
+const fmtLong = (iso) => new Date(iso + "T12:00:00").toLocaleDateString("en-GB", { day: "numeric", month: "long", year: "numeric" });
+const bodyOf = (p) => document.getElementById("body-" + p.slug);
+function minutes(p) {
+  const t = bodyOf(p);
+  if (!t) return 2;
+  const words = t.content.textContent.trim().split(/\s+/).length;
+  return Math.max(1, Math.round(words / 230));
+}
+POSTS.forEach((p) => (p.min = minutes(p)));
+
+let toastTimer;
+function toast(msg) {
+  const t = $("#toast"); t.textContent = msg; t.hidden = false;
+  clearTimeout(toastTimer); toastTimer = setTimeout(() => (t.hidden = true), 1800);
+}
+function copyText(text, el, done = "Copied") {
+  const ok = () => toast(done);
+  const fallback = () => {
+    if (el) { const r = document.createRange(); r.selectNodeContents(el); const s = getSelection(); s.removeAllRanges(); s.addRange(r); toast("Selected. Press Ctrl+C or ⌘C"); }
+    else toast(text);
+  };
+  try { navigator.clipboard.writeText(text).then(ok, fallback); } catch (e) { fallback(); }
+}
+
+// ---------- reader text size
+const SIZES = [0.92, 1, 1.08, 1.17];
+let sizeIdx = 1;
+try { const v = +localStorage.getItem("reader-size"); if (v >= 0 && v < SIZES.length) sizeIdx = v; } catch (e) {}
+function applySize() {
+  document.documentElement.style.setProperty("--step", SIZES[sizeIdx]);
+  try { localStorage.setItem("reader-size", sizeIdx); } catch (e) {}
+  document.querySelectorAll("[data-size]").forEach((b) => (b.disabled = (b.dataset.size === "-" && sizeIdx === 0) || (b.dataset.size === "+" && sizeIdx === SIZES.length - 1)));
+}
+
+// ---------- index
+let activeTag = null, query = "";
+function showIndex() {
+  current = null;
+  document.title = "Writing · Ricardo Herrera";
+  $("#navWriting").setAttribute("aria-current", "page");
+  const tags = [...new Set(POSTS.flatMap((p) => p.tags))].sort();
+  view.innerHTML = `
+  <div class="index">
+    <div class="index-head">
+      <span class="eyebrow">Sheet 04 · Revision log</span>
+      <h1>Writing</h1>
+      <p>Long-form notes on platform engineering, reliability and running infrastructure, plus the occasional detour. Written for other engineers. Every post has a stable link and a change history.</p>
+      <div class="subscribe"><span>Subscribe by feed</span><code id="feedUrl">${esc(FEED)}</code><button type="button" class="btn" id="copyFeed">Copy feed URL</button></div>
+    </div>
+    <div class="filters">
+      <div class="search"><label class="sr-only" for="q">Search posts</label><input id="q" type="search" placeholder="Search titles, summaries and topics" value="${esc(query)}" autocomplete="off"></div>
+      <div class="chips" role="group" aria-label="Filter by topic">
+        <button type="button" class="chip" data-tag="" aria-pressed="${!activeTag}">All</button>
+        ${tags.map((t) => `<button type="button" class="chip" data-tag="${t}" aria-pressed="${activeTag === t}">${t}</button>`).join("")}
+      </div>
+    </div>
+    <div id="list"></div>
+    <p class="index-note">These entries are examples to show the layout. Only the first post has full text.</p>
+  </div>`;
+  $("#q").addEventListener("input", (e) => { query = e.target.value; renderList(); });
+  view.querySelectorAll(".chip").forEach((c) => c.addEventListener("click", () => {
+    activeTag = c.dataset.tag || null;
+    view.querySelectorAll(".chip").forEach((x) => x.setAttribute("aria-pressed", String((x.dataset.tag || null) === activeTag)));
+    renderList();
+  }));
+  $("#copyFeed").addEventListener("click", () => copyText(FEED, $("#feedUrl"), "Feed URL copied"));
+  renderList();
+  window.scrollTo(0, 0);
+  setProgress(0);
+}
+function renderList() {
+  const q = query.trim().toLowerCase();
+  const items = POSTS.filter((p) => (!activeTag || p.tags.includes(activeTag)) &&
+    (!q || (p.title + " " + p.dek + " " + p.tags.join(" ")).toLowerCase().includes(q)));
+  const list = $("#list");
+  if (!items.length) { list.innerHTML = `<p class="empty">No posts match. Try another word or clear the topic filter.</p>`; return; }
+  const years = {};
+  items.forEach((p) => (years[p.date.slice(0, 4)] ||= []).push(p));
+  list.innerHTML = Object.keys(years).sort().reverse().map((y) => `
+    <section class="year" aria-label="${y}">
+      <h2>${y}</h2>
+      ${years[y].map((p) => `
+      <article class="entry">
+        <div class="when"><b title="Revision">${p.rev}</b><time datetime="${p.date}">${p.date.slice(5)}</time></div>
+        <div class="body">
+          <h3><a href="#${p.slug}">${esc(p.title)}</a></h3>
+          <p>${esc(p.dek)}</p>
+          <div class="meta-line"><span>${p.min} min read</span>${p.tags.map((t) => `<span class="tag">${t}</span>`).join("")}</div>
+        </div>
+      </article>`).join("")}
+    </section>`).join("");
+}
+
+// ---------- post
+let current = null, tocObserver = null;
+function renderPost(p) {
+  current = p.slug;
+  $("#navWriting").removeAttribute("aria-current");
+  document.title = `${p.title} · Ricardo Herrera`;
+  const i = POSTS.indexOf(p), newer = POSTS[i - 1], older = POSTS[i + 1];
+  const related = POSTS.filter((x) => x !== p && x.tags.some((t) => p.tags.includes(t))).slice(0, 3);
+  const permalink = `${SITE}/writing/${p.slug}`;
+  const series = p.series ? `
+    <nav class="series" aria-label="Series">
+      <p>Series · ${esc(p.series.name)} · part ${p.series.parts.findIndex(([s]) => s === p.slug) + 1} of ${p.series.parts.length}</p>
+      <ol>${p.series.parts.map(([s, t]) => s === p.slug ? `<li aria-current="true">${esc(t)}</li>` : s ? `<li><a href="#${s}">${esc(t)}</a></li>` : `<li class="soon">${esc(t)} <span class="mono">(next)</span></li>`).join("")}</ol>
+    </nav>` : "";
+  view.innerHTML = `
+  <div class="post wrap">
+    <div class="post-grid">
+      <aside class="rail"><nav class="toc" aria-labelledby="tocH"><h2 id="tocH">Contents</h2><ol id="tocList"></ol></nav></aside>
+      <div class="main">
+        <div class="toolbar">
+          <a class="back" href="#writing">← All writing</a>
+          <div class="tools" role="group" aria-label="Reading options">
+            <button type="button" class="btn size-btn" data-size="-" aria-label="Smaller text">A−</button>
+            <button type="button" class="btn size-btn" data-size="+" aria-label="Larger text">A+</button>
+          </div>
+        </div>
+        <article>
+          <header class="post-head">
+            <h1>${esc(p.title)}</h1>
+            <p class="dek">${esc(p.dek)}</p>
+            <div class="byline">
+              <span><strong>Ricardo Herrera</strong></span>
+              <span>Published <time datetime="${p.date}">${fmtLong(p.date)}</time></span>
+              ${p.updated ? `<span>Updated <time datetime="${p.updated}">${fmtLong(p.updated)}</time></span>` : ""}
+              <span>${p.min} min read</span>
+              <span class="tags">${p.tags.map((t) => `<a href="#writing" data-tag="${t}">${t}</a>`).join("")}</span>
+            </div>
+            ${series}
+          </header>
+          <details class="toc-mobile" id="tocMobile"><summary>Contents</summary><ol></ol></details>
+          <div class="prose" id="prose"></div>
+          ${p.revisions ? `<section class="revisions prose" aria-labelledby="revH"><h2 id="revH">Revisions</h2><table>${p.revisions.map(([d, t]) => `<tr><td>${d}</td><td>${esc(t)}</td></tr>`).join("")}</table></section>` : ""}
+        </article>
+        <div class="after">
+          <div class="share">
+            <span class="label">Share</span>
+            <button type="button" class="btn" id="copyLink">Copy link</button>
+            <a class="btn" target="_blank" rel="noopener" href="https://news.ycombinator.com/submitlink?u=${encodeURIComponent(permalink)}&t=${encodeURIComponent(p.title)}">Hacker News ↗</a>
+            <a class="btn" target="_blank" rel="noopener" href="https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(permalink)}">LinkedIn ↗</a>
+            <a class="btn" target="_blank" rel="noopener" href="https://bsky.app/intent/compose?text=${encodeURIComponent(p.title + " " + permalink)}">Bluesky ↗</a>
+          </div>
+          <div class="author">
+            <div class="mark" aria-hidden="true">RH</div>
+            <div>
+              <p><strong>Ricardo Herrera</strong> is a senior site reliability engineer. He builds Kubernetes platforms, observability stacks and the automation that keeps them boring.</p>
+              <p>Found a mistake? <a href="${REPO}/issues/new?title=${encodeURIComponent("Correction: " + p.title)}" target="_blank" rel="noopener">Open an issue</a> and I'll fix it and note the change above.</p>
+            </div>
+          </div>
+          <nav class="pager" aria-label="More posts">
+            ${newer ? `<a href="#${newer.slug}"><span>← Newer</span><strong>${esc(newer.title)}</strong></a>` : ""}
+            ${older ? `<a class="next" href="#${older.slug}"><span>Older →</span><strong>${esc(older.title)}</strong></a>` : ""}
+          </nav>
+          ${related.length ? `<div class="related"><h2>Related</h2><ul>${related.map((r) => `<li><a href="#${r.slug}">${esc(r.title)}</a><span>${r.date}</span></li>`).join("")}</ul></div>` : ""}
+        </div>
+      </div>
+    </div>
+  </div>`;
+
+  const prose = $("#prose");
+  const tpl = bodyOf(p);
+  if (tpl) prose.append(tpl.content.cloneNode(true));
+  else prose.innerHTML = `<aside class="callout"><b>Example entry</b><p>This post hasn't been written yet. It's here to show how the index and the post page handle a shorter piece without a contents list.</p></aside><p>${esc(p.dek)}</p>`;
+
+  // heading anchors + contents
+  const heads = [...prose.querySelectorAll("h2[id]")];
+  heads.forEach((h) => { const a = document.createElement("a"); a.className = "anchor"; a.href = "#" + h.id; a.textContent = "#"; a.setAttribute("aria-label", "Link to this section"); h.prepend(a); });
+  const tocItems = heads.map((h) => `<li><a href="#${h.id}" data-id="${h.id}">${esc(h.textContent.replace(/^#/, ""))}</a></li>`).join("");
+  $("#tocList").innerHTML = tocItems;
+  $("#tocMobile ol").innerHTML = tocItems;
+  if (heads.length < 3) { $("#tocMobile").hidden = true; $(".rail").style.visibility = "hidden"; }
+  if (tocObserver) tocObserver.disconnect();
+  tocObserver = new IntersectionObserver((entries) => {
+    entries.forEach((e) => { if (e.isIntersecting) document.querySelectorAll(".toc a").forEach((a) => a.classList.toggle("on", a.dataset.id === e.target.id)); });
+  }, { rootMargin: "-15% 0px -75% 0px" });
+  heads.forEach((h) => tocObserver.observe(h));
+
+  // code
+  prose.querySelectorAll(".code").forEach((fig) => {
+    const code = fig.querySelector("code");
+    if (window.hljs) { try { hljs.highlightElement(code); } catch (e) {} }
+    fig.querySelector(".copy").addEventListener("click", () => copyText(code.textContent, code, "Code copied"));
+  });
+
+  view.querySelectorAll("[data-size]").forEach((b) => b.addEventListener("click", () => {
+    sizeIdx = Math.max(0, Math.min(SIZES.length - 1, sizeIdx + (b.dataset.size === "+" ? 1 : -1))); applySize();
+  }));
+  view.querySelectorAll(".byline .tags a").forEach((a) => a.addEventListener("click", () => { activeTag = a.dataset.tag; query = ""; }));
+  $("#copyLink").addEventListener("click", () => copyText(permalink, null, "Link copied"));
+  applySize();
+}
+
+// ---------- routing (#writing, #<slug>, #<slug>--<section>)
+function route() {
+  const h = decodeURIComponent(location.hash.slice(1));
+  if (!h || h === "writing") { if (current !== null || !view.firstChild) showIndex(); return; }
+  const slug = h.split("--")[0];
+  const p = POSTS.find((x) => x.slug === slug);
+  if (!p) { showIndex(); return; }
+  const fresh = current !== slug;
+  if (fresh) renderPost(p);
+  const target = h.includes("--") ? document.getElementById(h) : null;
+  if (target) requestAnimationFrame(() => target.scrollIntoView({ behavior: reduce || fresh ? "auto" : "smooth", block: "start" }));
+  else if (fresh) window.scrollTo(0, 0);
+  onScroll();
+}
+addEventListener("hashchange", route);
+$("#navRss").addEventListener("click", (e) => { e.preventDefault(); copyText(FEED, null, "Feed URL copied"); });
+
+// ---------- reading progress
+const bar = $("#progress");
+function setProgress(v) { bar.style.transform = `scaleX(${v})`; }
+function onScroll() {
+  const art = current && view.querySelector("article");
+  if (!art) return setProgress(0);
+  const r = art.getBoundingClientRect();
+  const total = r.height - innerHeight * 0.6;
+  setProgress(Math.max(0, Math.min(1, total > 0 ? -r.top / total : 1)));
+}
+addEventListener("scroll", onScroll, { passive: true });
+addEventListener("resize", onScroll);
+
+route();
+</script>
+
+</body></html>

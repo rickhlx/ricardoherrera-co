@@ -1,6 +1,6 @@
 ---
 import Writing from "../../layouts/Writing.astro";
-import { getPosts, iso } from "../../lib/posts.mjs";
+import { getPosts, iso, url } from "../../lib/posts.mjs";
 
 const posts = await getPosts();
 const tags = [...new Set(posts.flatMap((p) => p.data.tags))].sort();
@@ -43,10 +43,10 @@ const feedUrl = new URL("writing/feed.xml", site);
         <section class="year" aria-label={String(year)}>
           <h2>{year}</h2>
           {items.map((p) => (
-            <article class="entry" data-tags={p.data.tags.join(" ")} data-text={`${p.data.title} ${p.data.dek} ${p.data.tags.join(" ")}`.toLowerCase()}>
+            <article class="entry" data-tags={JSON.stringify(p.data.tags)} data-text={`${p.data.title} ${p.data.dek} ${p.data.tags.join(" ")}`.toLowerCase()}>
               <div class="when"><b title="Revision">{p.rev}</b><time datetime={iso(p.data.date)}>{iso(p.data.date).slice(5)}</time></div>
               <div class="body">
-                <h3><a href={`${p.id}/`}>{p.data.title}</a> {p.data.draft && <span class="draft-badge">Draft</span>}</h3>
+                <h3><a href={url(`writing/${p.id}/`)}>{p.data.title}</a> {p.data.draft && <span class="draft-badge">Draft</span>}</h3>
                 <p>{p.data.dek}</p>
                 <div class="meta-line"><span>{p.minutes} min read</span>{p.data.tags.map((t) => <span class="tag">{t}</span>)}</div>
               </div>
@@ -72,7 +72,7 @@ const feedUrl = new URL("writing/feed.xml", site);
       document.querySelectorAll<HTMLElement>(".year").forEach((y) => {
         let inYear = 0;
         y.querySelectorAll<HTMLElement>(".entry").forEach((e) => {
-          const ok = (!tag || e.dataset.tags!.split(" ").includes(tag)) && (!text || e.dataset.text!.includes(text));
+          const ok = (!tag || (JSON.parse(e.dataset.tags!) as string[]).includes(tag)) && (!text || e.dataset.text!.includes(text));
           e.hidden = !ok;
           if (ok) inYear++;
         });

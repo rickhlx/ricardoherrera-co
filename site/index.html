@@ -327,6 +327,8 @@ body[data-mode="computer"] #gl.over { cursor: pointer; }
 .term-out a { color: #d7ffe8; text-decoration: underline; text-underline-offset: 3px; cursor: pointer; }
 .term-out a:hover { color: #fff; }
 .term-out .head { color: #f2ffb0; }
+.term-out .crt-face { display: block; width: 10em; height: 10em; margin: 0.3em 0 0.5em; image-rendering: pixelated; filter: drop-shadow(0 0 5px rgba(143, 240, 184, 0.5)); }
+.term.flat .crt-face { filter: none; }
 .term form { display: flex; gap: 0.6em; align-items: baseline; margin: 0; }
 .term label { white-space: nowrap; color: var(--phosphor); }
 .term input {
@@ -1340,12 +1342,61 @@ function out(parts, cls) {
   for (const p of [].concat(parts)) {
     if (typeof p === "string") line.append(p);
     else if (p.go) { const a = document.createElement("a"); a.href = `#${p.go}`; a.textContent = p.text; line.append(a); }
+    else if (p.node) line.append(p.node);
     else if (p.href) { const a = document.createElement("a"); a.href = p.href; a.textContent = p.text; if (/^https?:/.test(p.href)) { a.target = "_blank"; a.rel = "noopener"; } line.append(a); }
     else if (p.run) { const a = document.createElement("a"); a.href = "#terminal"; a.textContent = p.text; a.addEventListener("click", (e) => { e.preventDefault(); e.stopPropagation(); exec(p.run); }); line.append(a); }
     else { const s = document.createElement("span"); s.className = p.cls; s.textContent = p.text; line.append(s); }
   }
   termOut.append(line);
   termOut.scrollTop = termOut.scrollHeight;
+}
+// whoami: the yellow-wall portrait redrawn on the phosphor screen. Built once from photos/portrait.jpg:
+// sampled down to 80×80, the yellow wall keyed out to black, contrast stretched over the figure, brightness
+// quantised to 8 phosphor levels,
+// and every pixel drawn as a 2×2 cell whose lower row is dimmed for scanlines.
+let crtFaceURL = null;
+function crtFace() {
+  const N = 80, cv = document.createElement("canvas");
+  cv.width = cv.height = N * 2; cv.className = "crt-face"; cv.setAttribute("role", "img");
+  cv.setAttribute("aria-label", "Ricardo Herrera, drawn in green phosphor");
+  const paint = (src) => { const g = cv.getContext("2d"); const im = new Image(); im.onload = () => g.drawImage(im, 0, 0); im.src = src; };
+  if (crtFaceURL) { paint(crtFaceURL); return cv; }
+  const photo = new Image();
+  photo.onload = () => {
+    const sm = document.createElement("canvas"); sm.width = sm.height = N;
+    const sg = sm.getContext("2d", { willReadFrequently: true });
+    sg.drawImage(photo, 0, 0, N, N);
+    const px = sg.getImageData(0, 0, N, N).data;
+    const out = document.createElement("canvas"); out.width = out.height = N * 2;
+    const og = out.getContext("2d");
+    og.fillStyle = "#07110c"; og.fillRect(0, 0, N * 2, N * 2);
+    // Key out the wall, then stretch brightness across the figure only (5th to 95th percentile) so the face keeps detail.
+    const lum = new Float32Array(N * N).fill(-1);
+    for (let k = 0; k < N * N; k++) {
+      const r = px[k * 4], gr = px[k * 4 + 1], b = px[k * 4 + 2];
+      const mx = Math.max(r, gr, b), mn = Math.min(r, gr, b), sat = mx ? (mx - mn) / mx : 0;
+      const hue = mx === mn ? 0 : mx === r ? 60 * (((gr - b) / (mx - mn)) % 6) : mx === gr ? 60 * ((b - r) / (mx - mn) + 2) : 60 * ((r - gr) / (mx - mn) + 4);
+      if (hue > 36 && hue < 60 && sat > 0.8 && mx > 170) continue;              // the yellow wall (hue ~45°); skin is ~20°
+      lum[k] = (0.299 * r + 0.587 * gr + 0.114 * b) / 255;
+    }
+    const sorted = Array.from(lum).filter((v) => v >= 0).sort((a, b) => a - b);
+    const lo = sorted[Math.floor(sorted.length * 0.05)], hi = sorted[Math.floor(sorted.length * 0.95)];
+    for (let y = 0; y < N; y++) for (let x = 0; x < N; x++) {
+      const v = lum[y * N + x];
+      if (v < 0) continue;
+      const l = Math.pow(Math.min(1, Math.max(0, (v - lo) / (hi - lo))), 1.35);
+      const q = Math.round(l * 7) / 7;
+      const a = 0.12 + q * 0.88;
+      og.fillStyle = `rgba(143, 240, 184, ${a})`;
+      og.fillRect(x * 2, y * 2, 2, 1);
+      og.fillStyle = `rgba(143, 240, 184, ${a * 0.35})`;
+      og.fillRect(x * 2, y * 2 + 1, 2, 1);
+    }
+    crtFaceURL = out.toDataURL();
+    paint(crtFaceURL);
+  };
+  photo.src = "photos/portrait.jpg";
+  return cv;
 }
 function bootTerm() {
   if (booted) return; booted = true;
@@ -1377,6 +1428,7 @@ function exec(raw) {
       out(["clear · ", { run: "exit", text: "exit" }]);
       break;
     case "whoami":
+      out({ node: crtFace() });
       out({ cls: "head", text: "Ricardo Herrera" });
       out("Senior SRE. I build Kubernetes platforms, observability and the automation that keeps them boring.");
       out(["More on sheet 02: ", { go: "about", text: "open about" }]);

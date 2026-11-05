@@ -6,7 +6,7 @@ Personal site of Ricardo Herrera. The homepage is the **YN-1**, a fictional 1970
 
 | Path | What |
 | --- | --- |
-| `site/` | The hand-built YN-1 homepage: `index.html` (three.js 0.160 from jsDelivr), drawings, photos, the model (`yn1.glb.json`), social card and icons. Astro copies it into the build unchanged. |
+| `site/` | The hand-built YN-1 homepage: `index.html` (three.js 0.160 from jsDelivr), drawings, photos, the blog avatar (`avatar.webp`), the model (`yn1.glb.json`), social card and icons. Astro copies it into the build unchanged. |
 | `src/content/writing/` | Blog posts, one Markdown file each. The file name is the URL: `spot-interruptions.md` → `/writing/spot-interruptions/` |
 | `src/pages/writing/` | The writing index, the post page and the RSS feed (`/writing/feed.xml`) |
 | `src/layouts/`, `src/styles/`, `src/lib/` | Writing layout, styles, Markdown extensions (`markdown.mjs`) and post helpers |

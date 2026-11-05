@@ -34,7 +34,7 @@ const jsonLd = {
   description: d.dek,
   datePublished: d.date.toISOString(),
   dateModified: (d.updated ?? d.date).toISOString(),
-  author: { "@type": "Person", name: "Ricardo Herrera", url: site.href },
+  author: { "@type": "Person", name: "Ricardo Herrera", url: site.href, image: new URL("avatar.webp", site).href },
   mainEntityOfPage: permalink.href,
   keywords: d.tags.join(", "),
 };
@@ -74,7 +74,7 @@ const jsonLd = {
             <h1>{d.title} {d.draft && <span class="draft-badge">Draft</span>}</h1>
             <p class="dek">{d.dek}</p>
             <div class="byline">
-              <span><strong>Ricardo Herrera</strong></span>
+              <span class="who"><img class="avatar" src={url("avatar.webp")} alt="" width="24" height="24"><strong>Ricardo Herrera</strong></span>
               <span>Published <time datetime={iso(d.date)}>{longDate(d.date)}</time></span>
               {d.updated && <span>Updated <time datetime={iso(d.updated)}>{longDate(d.updated)}</time></span>}
               <span>{post.minutes} min read</span>
@@ -123,7 +123,7 @@ const jsonLd = {
             <a class="btn" target="_blank" rel="noopener" href={`https://bsky.app/intent/compose?text=${enc(`${d.title} ${permalink.href}`)}`}>Bluesky ↗</a>
           </div>
           <div class="author">
-            <div class="mark" aria-hidden="true">RH</div>
+            <img class="avatar" src={url("avatar.webp")} alt="Ricardo Herrera" width="52" height="52" loading="lazy">
             <div>
               <p><strong>Ricardo Herrera</strong> is a senior site reliability engineer. He builds Kubernetes platforms, observability stacks and the automation that keeps them boring.</p>
               <p>Found a mistake? <a href={`${REPO}/issues/new?title=${enc(`Correction: ${d.title}`)}`} target="_blank" rel="noopener">Open an issue</a> and I'll fix it and note the change above.</p>

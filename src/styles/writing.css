@@ -131,6 +131,9 @@ button { font: inherit; color: inherit; }
 .dek { margin: 0; font-size: 1.25rem; line-height: 1.5; color: var(--muted); font-style: italic; text-wrap: pretty; }
 .byline { display: flex; flex-wrap: wrap; gap: 6px 18px; font-family: var(--font-mono); font-variation-settings: "wdth" 85; font-size: 11.5px; color: var(--muted); font-variant-numeric: tabular-nums; }
 .byline strong { color: var(--ink); font-weight: 500; }
+.byline .who { display: inline-flex; align-items: center; gap: 8px; }
+.avatar { display: block; border-radius: 50%; object-fit: cover; background: var(--code-bg); box-shadow: 0 0 0 1px var(--rule); }
+.byline .avatar { width: 24px; height: 24px; margin-block: -6px; }
 .byline .tags { display: flex; gap: 10px; flex-wrap: wrap; }
 .byline .tags a { color: var(--muted); text-decoration: none; }
 .byline .tags a::before { content: "#"; opacity: 0.6; }
@@ -225,7 +228,7 @@ figure.fig { margin-inline: 0; }
 .share { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; }
 .share .label { font-family: var(--font-mono); font-variation-settings: "wdth" 85; font-size: 11px; letter-spacing: 0.08em; text-transform: uppercase; color: var(--muted); margin-right: 6px; }
 .author { display: grid; grid-template-columns: 52px minmax(0, 1fr); gap: 16px; align-items: start; }
-.author .mark { width: 52px; height: 52px; border-radius: 50%; background: var(--accent); color: var(--paper); display: grid; place-items: center; font-family: var(--font-display); font-variation-settings: "wdth" 110; font-weight: 800; font-size: 17px; }
+.author .avatar { width: 52px; height: 52px; }
 .author p { margin: 0; font-size: 0.98rem; line-height: 1.55; }
 .author p + p { margin-top: 6px; color: var(--muted); font-size: 0.9rem; }
 .pager { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }

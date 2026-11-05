@@ -1257,7 +1257,12 @@ function hit(e) {
   ndc.set(((e.clientX - r.left) / r.width) * 2 - 1, -((e.clientY - r.top) / r.height) * 2 + 1);
   ray.setFromCamera(ndc, camera);
   const targets = Object.values(parts).flatMap((p) => p.meshes).concat(SHEETS.map((k) => sheets[k].ghost), sticky.meshes);
+  // Test against each part's resting pose, not its hover lift: otherwise a part lifts out from
+  // under the cursor at its edge, loses hover, drops back, and flickers.
+  const lifted = Object.values(parts).map((p) => [p, p.root.position.clone()]);
+  for (const [p] of lifted) { p.root.position.copy(p.home).addScaledVector(p.ex, p.t); p.root.updateMatrixWorld(true); }
   const h = ray.intersectObjects(targets, false)[0];
+  for (const [p, pos] of lifted) { p.root.position.copy(pos); p.root.updateMatrixWorld(true); }
   if (!h) return null;
   if (h.object.userData.sheet) return { sheet: h.object.userData.sheet };
   if (h.object.userData.sticky) return { sticky: true };
@@ -1493,9 +1498,10 @@ function tick(now) {
   for (const p of Object.values(parts)) {
     const want = exploded ? 1 : 0;
     p.t += (want - p.t) * (reduce ? 1 : 0.07);
-    const lift = (p.key === picked && p.key !== "display") || (p.key === hovered && mode === "computer") ? 1 : 0;
+    // Ease the lift distance itself, so leaving hover settles back instead of jumping to the "picked" height first.
+    const lift = p.key === picked && p.key !== "display" ? 0.35 : p.key === hovered && mode === "computer" ? 0.08 : 0;
     p.lift += (lift - p.lift) * (reduce ? 1 : 0.15);
-    p.root.position.copy(p.home).addScaledVector(p.ex, Math.max(p.t, p.lift * (p.key === hovered && p.key !== picked ? 0.08 : 0.35)));
+    p.root.position.copy(p.home).addScaledVector(p.ex, Math.max(p.t, p.lift));
     const hot = p.key === hovered || p.key === picked;
     for (const m of p.lines) m.color.setHex(hot ? 0xffab7a : 0xeef4ff);
     for (const m of p.hidden) m.color.setHex(hot ? 0xffab7a : 0xeef4ff);

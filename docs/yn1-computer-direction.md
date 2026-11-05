@@ -13,7 +13,7 @@ The homepage is a fictional 1970s workstation, the **YN-1**, modeled in Blender.
 - **Look around:** drag to turn the computer and scroll to zoom. Hovering over a part lifts it and turns it orange; there is no label box.
 - **Click a part:** the camera flies to that part's drawing sheet, one of six blueprint sheets hanging in a ring around the computer.
 - **"Take apart":** explodes the model. This uncovers the logic board.
-- **Click the screen:** the camera zooms in and the screen becomes a working terminal. Commands are `help`, `whoami`, `ls`, `cat`, `git log`, `git show`, `open <sheet>`, `take apart`, `crt on|off` and `exit`. Work history is shown as a `git log`, with the current role at `HEAD`. `whoami` prints the yellow-wall portrait redrawn in green phosphor with scanlines, made in the browser from `site/photos/portrait.jpg`.
+- **Click the screen:** the camera zooms in and the screen becomes a working terminal. Commands are `help`, `whoami`, `ls`, `cat`, `unlock`, `lock`, `git log`, `git show`, `open <sheet>`, `take apart`, `crt on|off` and `exit`. Work history is shown as a `git log`, with the current role at `HEAD`. `ls` also lists `do-not-open.txt`, which is locked: `unlock` asks for a password, which is the code written on the back of the sticky note (peel it on the desk). It opens a short operator's log easter egg; `lock` closes it again. `whoami` prints the yellow-wall portrait redrawn in green phosphor with scanlines, made in the browser from `site/photos/portrait.jpg`.
 
 | Part | Opens | Sheet |
 | --- | --- | --- |

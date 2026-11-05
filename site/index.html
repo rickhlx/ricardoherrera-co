@@ -1050,7 +1050,7 @@ meshes.forEach((o) => {
   }
 }
 // A sticky note on the floor beside the keyboard, with a random to-do. Peel it back to find a code written on the back.
-const STICKY_CODE = "616182";   // written on the back of the note (not used for anything yet)
+const STICKY_CODE = "616182";   // written on the back of the note; the password for do-not-open.txt in the terminal
 const TODOS = [
   "renew the TLS cert before it renews me",
   "rewind the backup tapes",
@@ -1332,8 +1332,45 @@ async function loadPosts() {
   if (rev) rev.textContent = POSTS[0].rev;
 }
 loadPosts();
-const FILES = ["about.txt", "contact.txt", "work/", "writing/", "archive/"];
-const CMDS = ["help", "whoami", "ls", "cat", "git log", "git show", "open", "take apart", "put together", "crt", "look", "clear", "exit"];
+const FILES = ["about.txt", "contact.txt", "do-not-open.txt", "work/", "writing/", "archive/"];
+const CMDS = ["help", "whoami", "ls", "cat", "unlock", "lock", "git log", "git show", "open", "take apart", "put together", "crt", "look", "clear", "exit"];
+
+// A locked file. The password is the code on the back of the sticky note on the desk (peel it back).
+const LOCKED = { "do-not-open.txt": { code: STICKY_CODE, open: false } };
+function printLog() {
+  out({ cls: "head", text: "OPERATOR'S LOG · YN-1 · DO NOT OPEN" });
+  out({ cls: "dim", text: "You found the password on a sticky note. So did the auditors." });
+  out("");
+  out("02:14  pager went off. it was the pager test.");
+  out("02:15  the pager test passed. went back to sleep.");
+  out("day 412 without an incident. also, the incident counter was down.");
+  out("change freeze starts friday. so do the changes.");
+  out("rotated the password. wrote the new one on the same sticky note.");
+  out("");
+  out(["Thanks for snooping. People who read the logs are my kind of people. ", { href: "mailto:ricardo@ricardoherrera.co", text: "say hi" }, "."]);
+}
+let prompt = null;   // { file, tries } while unlock is asking for a password
+const termLabel = document.querySelector('label[for="termIn"]');
+function askPassword(file) {
+  prompt = { file, tries: 0 };
+  termLabel.textContent = "Password:"; termIn.type = "password"; termIn.setAttribute("aria-label", "Password");
+}
+function endPrompt() {
+  prompt = null;
+  termLabel.textContent = "yn1:~$"; termIn.type = "text"; termIn.setAttribute("aria-label", "Command");
+}
+function tryPassword(value) {
+  out([{ cls: "dim", text: "Password: " }]);
+  if (value.trim() === LOCKED[prompt.file].code) {
+    LOCKED[prompt.file].open = true; endPrompt();
+    out({ cls: "dim", text: "unlocked." }); out(""); printLog();
+    return;
+  }
+  prompt.tries++;
+  if (prompt.tries >= 3) { endPrompt(); out({ cls: "err", text: "unlock: 3 incorrect password attempts" }); return; }
+  out({ cls: "err", text: "Sorry, try again." });
+  if (prompt.tries === 2) out({ cls: "dim", text: "hint: the operator never could remember it. check the desk." });
+}
 let booted = false, hist = [], hi = 0;
 
 function out(parts, cls) {
@@ -1408,6 +1445,7 @@ function bootTerm() {
   out("");
 }
 function exec(raw) {
+  if (prompt) endPrompt();   // a clicked command link abandons an open password prompt
   const line = raw.trim();
   out([{ cls: "dim", text: "yn1:~$ " }, { cls: "cmd", text: line }]);
   if (!line) return;
@@ -1419,6 +1457,7 @@ function exec(raw) {
       out([{ run: "whoami", text: "whoami" }, "           who built this machine"]);
       out([{ run: "ls", text: "ls" }, " [dir]          list files: work, writing, archive"]);
       out([{ run: "cat about.txt", text: "cat" }, " <file>        read a file"]);
+      out([{ run: "unlock do-not-open.txt", text: "unlock" }, " <file>      open a locked file (", { run: "lock do-not-open.txt", text: "lock" }, " to close it again)"]);
       out([{ run: "git log", text: "git log" }, "            work history, newest first"]);
       out(["git show <sha>     one role in detail"]);
       out([{ run: "open about", text: "open" }, " <sheet>      fly to a drawing: index about work writing archive contact"]);
@@ -1449,9 +1488,20 @@ function exec(raw) {
       const f = arg.replace(/^\.\//, "");
       const m = f.match(/^writing\/(\d+)$/);
       if (f === "about.txt") { out("Site reliability engineer, 10+ years in infrastructure."); out("Now: senior SRE at Radar (since January 2026) and co-founder of Glamer."); out("Go, Terraform, FluxCD. Self-service over tickets."); }
+      else if (LOCKED[f] && !LOCKED[f].open) { out({ cls: "err", text: `cat: ${f}: permission denied (locked)` }); out(["try ", { run: `unlock ${f}`, text: `unlock ${f}` }]); }
+      else if (f === "do-not-open.txt") printLog();
       else if (f === "contact.txt") { out(["email     ", { href: "mailto:ricardo@ricardoherrera.co", text: "ricardo@ricardoherrera.co" }]); out(["linkedin  ", { href: "https://www.linkedin.com/in/ricardohe/", text: "linkedin.com/in/ricardohe" }]); out(["x         ", { href: "https://x.com/rickhlx", text: "x.com/rickhlx" }]); out(["github    ", { href: "https://github.com/rickhlx", text: "github.com/rickhlx" }]); }
       else if (m && POSTS[m[1] - 1]) { const p = POSTS[m[1] - 1]; out({ cls: "head", text: p.title }); out({ cls: "dim", text: `rev ${p.rev} · ${p.date}` }); out(p.dek); out([{ href: p.url, text: "read the post →" }, "   ", { go: "writing", text: "all posts → sheet 04" }]); }
       else out({ cls: "err", text: `cat: ${f || "?"}: no such file. Try ls.` });
+      break;
+    }
+    case "unlock": case "lock": {
+      const f = (arg || "do-not-open.txt").replace(/^\.\//, "");
+      const L = LOCKED[f];
+      if (!L) out({ cls: "err", text: `${cmd.toLowerCase()}: ${f}: ${FILES.includes(f) ? "not a locked file" : "no such file"}` });
+      else if (cmd.toLowerCase() === "lock") { L.open = false; out({ cls: "dim", text: `${f} locked.` }); }
+      else if (L.open) out([{ cls: "dim", text: `${f} is already unlocked: ` }, { run: `cat ${f}`, text: `cat ${f}` }]);
+      else askPassword(f);
       break;
     }
     case "git":
@@ -1484,14 +1534,18 @@ function exec(raw) {
     default: out({ cls: "err", text: `${cmd}: command not found. Try help.` });
   }
 }
-$("termForm").addEventListener("submit", (e) => { e.preventDefault(); exec(termIn.value); termIn.value = ""; });
+$("termForm").addEventListener("submit", (e) => { e.preventDefault(); if (prompt) tryPassword(termIn.value); else exec(termIn.value); termIn.value = ""; });
 termIn.addEventListener("keydown", (e) => {
+  if (prompt) {   // password entry: no history or completion; Esc cancels instead of leaving the terminal
+    if (e.key === "Escape") { e.preventDefault(); e.stopPropagation(); termIn.value = ""; endPrompt(); out({ cls: "dim", text: "unlock: cancelled" }); }
+    return;
+  }
   if (e.key === "ArrowUp") { e.preventDefault(); hi = Math.max(0, hi - 1); termIn.value = hist[hi] || ""; }
   else if (e.key === "ArrowDown") { e.preventDefault(); hi = Math.min(hist.length, hi + 1); termIn.value = hist[hi] || ""; }
   else if (e.key === "Tab") {
     e.preventDefault();
     const v = termIn.value;
-    const pool = v.startsWith("cat ") ? FILES.map((f) => `cat ${f}`) : v.startsWith("open ") ? SHEETS.map((s) => `open ${s}`) : CMDS;
+    const pool = v.startsWith("cat ") ? FILES.map((f) => `cat ${f}`) : /^(un)?lock /.test(v) ? Object.keys(LOCKED).map((f) => `${v.split(" ")[0]} ${f}`) : v.startsWith("open ") ? SHEETS.map((s) => `open ${s}`) : CMDS;
     const m = pool.filter((c) => c.startsWith(v));
     if (m.length === 1) termIn.value = m[0] + (m[0].endsWith("/") ? "" : " ");
     else if (m.length > 1) out({ cls: "dim", text: m.join("   ") });

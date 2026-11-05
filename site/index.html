@@ -369,7 +369,7 @@ body[data-mode="computer"] #gl.over { cursor: pointer; }
 /* ---------- the contact sheet and loupe (item 7) ---------- */
 .cs {
   position: fixed; inset: 0; z-index: 30; color: var(--ink);
-  background: radial-gradient(ellipse 80% 70% at 50% 42%, #171a20, #050607 75%);
+  background: radial-gradient(ellipse 80% 70% at 50% 40%, #0c1626, #030508 75%);
   display: flex; flex-direction: column; align-items: center; gap: 12px; overflow: auto;
   padding: calc(env(safe-area-inset-top, 0px) + 18px) max(16px, env(safe-area-inset-right, 0px)) calc(env(safe-area-inset-bottom, 0px) + 16px) max(16px, env(safe-area-inset-left, 0px));
   opacity: 0; transition: opacity 0.35s ease;
@@ -377,82 +377,75 @@ body[data-mode="computer"] #gl.over { cursor: pointer; }
 .cs.on { opacity: 1; }
 .cs-top, .cs-ctrl { width: min(1080px, 100%); display: flex; justify-content: space-between; align-items: center; gap: 12px; }
 .cs-top { font-size: 10.5px; letter-spacing: 0.08em; text-transform: uppercase; color: #6f7a8c; }
-.cs-body { width: min(980px, 100%, calc((100dvh - 330px) * 2.15)); min-width: min(320px, 100%); display: grid; gap: 12px; margin: auto 0; }
-/* The table holds the sheet and the loupe; loupe coordinates are table coordinates. */
-.cs-table { position: relative; touch-action: none; user-select: none; -webkit-user-select: none; padding: 6px 0; }
+.cs-body { width: min(980px, 100%); display: grid; gap: 14px; justify-items: center; margin: auto 0; }
+/* The preview: one frame at a time, seen as through the old viewfinder. */
+.cs-view { width: min(840px, 100%, calc((100dvh - 380px) * 1.5)); min-width: min(280px, 100%); display: grid; gap: 10px; }
+.cs-frame { position: relative; aspect-ratio: 3 / 2; border-radius: 22px; overflow: hidden; background: #222; }
+.cs-frame img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
+.cs-vig { position: absolute; inset: 0; border-radius: inherit; box-shadow: inset 0 0 140px 50px rgba(0, 0, 0, 0.85); pointer-events: none; }
+.cs-c { position: absolute; width: 5.5%; aspect-ratio: 1; border: 0 solid rgba(255, 248, 220, 0.92); pointer-events: none; }
+.cs-c.tl { left: 8%; top: 10.7%; border-left-width: 2px; border-top-width: 2px; }
+.cs-c.tr { right: 8%; top: 10.7%; border-right-width: 2px; border-top-width: 2px; }
+.cs-c.bl { left: 8%; bottom: 10.7%; border-left-width: 2px; border-bottom-width: 2px; }
+.cs-c.br { right: 8%; bottom: 10.7%; border-right-width: 2px; border-bottom-width: 2px; }
+.cs-patch { position: absolute; left: 50%; top: 50%; width: 13%; aspect-ratio: 110 / 72; transform: translate(-50%, -50%); border: 1px solid rgba(255, 236, 190, 0.7); background: rgba(255, 214, 140, 0.14); pointer-events: none; }
+.cs-read { display: flex; justify-content: space-between; align-items: baseline; gap: 12px; font-size: 13px; letter-spacing: 0.08em; color: var(--redline); text-shadow: 0 0 8px rgba(255, 171, 122, 0.55); }
+.cs-cap { margin: 0; font-size: 12px; letter-spacing: 0.04em; color: var(--ink-dim); }
+.cs-hint { margin: 0; font-size: 11px; letter-spacing: 0.04em; color: #6f7a8c; }
+/* The strip: drawn as a blueprint, frames printed small and coarse in blueprint blue. The loupe shows the real photo. */
+.cs-table { position: relative; width: 100%; touch-action: none; user-select: none; -webkit-user-select: none; }
 .cs-table.mouse { cursor: none; }
-.cs-paper {
-  position: relative; background: #ecebe3; padding: 5.4% 3.4% 3.4%;
-  box-shadow: 0 34px 60px -24px rgba(0, 0, 0, 0.9), 0 2px 6px rgba(0, 0, 0, 0.5);
-  transform: rotate(-0.6deg);
+.cs-sheet {
+  position: relative; padding: 30px 14px 14px; border: 1px solid rgba(238, 244, 255, 0.55);
+  background: repeating-linear-gradient(0deg, rgba(238, 244, 255, 0.06) 0 1px, transparent 1px 20px), repeating-linear-gradient(90deg, rgba(238, 244, 255, 0.06) 0 1px, transparent 1px 20px), #123e78;
 }
-.cs-hand { position: absolute; top: 1.1%; font-family: "Caveat", cursive; font-weight: 600; font-size: clamp(15px, 2.3vw, 24px); line-height: 1.2; color: #50545c; }
-.cs-hand.l { left: 3.6%; transform: rotate(-1deg); }
-.cs-hand.r { right: 3.6%; color: #c8372d; transform: rotate(2deg); }
-.cs-print { display: grid; gap: 2.6%; padding: 2.2% 1.8%; background: #0b0b0b; }
-/* A strip of film printed by contact: black rebate, sprocket holes, edge numbers printed light. */
+.cs-hand { position: absolute; top: 3px; font-family: "Caveat", cursive; font-weight: 600; font-size: 20px; line-height: 1.2; color: rgba(238, 244, 255, 0.85); }
+.cs-hand.l { left: 14px; transform: rotate(-1deg); }
+.cs-hand.r { right: 14px; color: var(--redline); transform: rotate(2deg); }
 .cs-strip {
-  position: relative; display: flex; gap: 6px; padding: 21px 6px;
+  position: relative; display: flex; gap: 5px; padding: 22px 6px 20px; border: 1.5px solid var(--ink);
   background:
-    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='9'%3E%3Crect x='4' y='0' width='8' height='9' rx='1.6' fill='%23222'/%3E%3C/svg%3E") left 0 top 10px / 16px 9px repeat-x,
-    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='9'%3E%3Crect x='4' y='0' width='8' height='9' rx='1.6' fill='%23222'/%3E%3C/svg%3E") left 0 bottom 3px / 16px 9px repeat-x,
-    #030303;
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='9'%3E%3Crect x='4.5' y='0.5' width='7' height='8' rx='1.5' fill='none' stroke='%23eef4ff' stroke-opacity='.75'/%3E%3C/svg%3E") left 0 top 9px / 16px 9px repeat-x,
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='9'%3E%3Crect x='4.5' y='0.5' width='7' height='8' rx='1.5' fill='none' stroke='%23eef4ff' stroke-opacity='.75'/%3E%3C/svg%3E") left 0 bottom 3px / 16px 9px repeat-x;
 }
-.cs-cell { position: relative; flex: 1; aspect-ratio: 3 / 2; padding: 0; border: 0; background: #111; color: inherit; font: inherit; cursor: inherit; }
+.cs-cell { position: relative; flex: 1; aspect-ratio: 3 / 2; padding: 0; border: 1px solid rgba(238, 244, 255, 0.85); background: #0b2a55; color: inherit; font: inherit; cursor: inherit; }
+.cs-cell.blank { flex: 0.5; aspect-ratio: auto; background: repeating-linear-gradient(45deg, transparent 0 5px, rgba(238, 244, 255, 0.28) 5px 6px); }
 .cs-img { position: absolute; inset: 0; overflow: hidden; }
-.cs-img img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
-/* Portrait frames lie on their side in the strip, as they do on a real sheet. */
+.cs-img img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; image-rendering: pixelated; }
+.cs-lens .cs-img img { image-rendering: auto; }
+/* Portrait frames lie on their side in the strip, as they do on a real contact sheet. */
 .cs-cell.tall .cs-img img { left: 50%; top: 50%; width: 66.667%; height: 150%; transform: translate(-50%, -50%) rotate(-90deg); }
-.cs-cell.blank { background: linear-gradient(100deg, rgba(255, 150, 70, 0.5), rgba(150, 40, 12, 0.25) 38%, transparent 70%), #090909; }
-.cs-cell.blank.end { background: linear-gradient(280deg, rgba(255, 150, 70, 0.32), transparent 45%), #090909; }
-.cs-edge { position: absolute; left: 4px; top: -20px; font-family: "Martian Mono", ui-monospace, monospace; font-size: 7.5px; line-height: 9px; letter-spacing: 0.08em; color: rgba(236, 232, 214, 0.72); white-space: pre; pointer-events: none; }
-/* China-marker ring around the picked frame, drawn in when it is picked. */
+.cs-edge { position: absolute; left: 3px; top: -21px; font-family: "Martian Mono", ui-monospace, monospace; font-size: 7.5px; line-height: 9px; letter-spacing: 0.08em; color: rgba(238, 244, 255, 0.8); white-space: pre; pointer-events: none; }
+/* Redline ring around the picked frame, drawn in when it is picked. */
 .cs-ring { position: absolute; left: -9%; top: -16%; width: 118%; height: 132%; overflow: visible; pointer-events: none; z-index: 1; }
-.cs-ring path { fill: none; stroke: #e2412f; stroke-width: 1.5; stroke-linecap: round; stroke-dasharray: 100 100; stroke-dashoffset: 100; opacity: 0; transition: stroke-dashoffset 0.55s ease, opacity 0.2s; }
-.cs-cell.sel .cs-ring path { stroke-dashoffset: 0; opacity: 0.92; }
+.cs-ring path { fill: none; stroke: var(--redline); stroke-width: 1.5; stroke-linecap: round; stroke-dasharray: 100 100; stroke-dashoffset: 100; opacity: 0; transition: stroke-dashoffset 0.55s ease, opacity 0.2s; }
 .cs-cell.sel { z-index: 2; }
+.cs-cell.sel .cs-ring path { stroke-dashoffset: 0; opacity: 0.95; }
 .cs-cell:focus-visible { outline: 2px solid var(--redline); outline-offset: 3px; }
-/* The loupe: a magnified copy of the sheet seen through a round lens. */
+/* The loupe: a magnified copy of the strip, in full colour, seen through a round lens. */
 .cs-loupe {
-  --d: 220px; position: absolute; left: 0; top: 0; z-index: 3; width: var(--d); height: var(--d); border-radius: 50%; overflow: hidden; pointer-events: none;
-  background: #0b0b0b;
-  box-shadow: 0 0 0 calc(var(--d) * 0.04) #121417, 0 0 0 calc(var(--d) * 0.04 + 1.5px) rgba(255, 255, 255, 0.2), 0 calc(var(--d) * 0.1) calc(var(--d) * 0.18) rgba(0, 0, 0, 0.6);
+  --d: 180px; position: absolute; left: 0; top: 0; z-index: 3; width: var(--d); height: var(--d); border-radius: 50%; overflow: hidden; pointer-events: none;
+  background: #0b2a55;
+  box-shadow: 0 0 0 calc(var(--d) * 0.04) #121417, 0 0 0 calc(var(--d) * 0.04 + 1.5px) rgba(255, 255, 255, 0.25), 0 calc(var(--d) * 0.1) calc(var(--d) * 0.18) rgba(0, 0, 0, 0.6);
 }
 .cs-loupe::after {
   content: ""; position: absolute; inset: 0; border-radius: 50%;
   background: radial-gradient(circle at 30% 24%, rgba(255, 255, 255, 0.24), rgba(255, 255, 255, 0) 30%), radial-gradient(circle, transparent 60%, rgba(0, 0, 0, 0.42) 100%);
   box-shadow: inset 0 0 0 1px rgba(0, 0, 0, 0.7), inset 0 0 18px rgba(0, 0, 0, 0.35);
 }
-.cs-lens { position: absolute; left: 0; top: 0; transform-origin: 0 0; padding: 6px 0; }
-.cs-read { display: flex; justify-content: space-between; align-items: baseline; gap: 12px; font-size: 13px; letter-spacing: 0.08em; color: var(--redline); text-shadow: 0 0 8px rgba(255, 171, 122, 0.55); }
-.cs-cap { margin: 0; font-size: 12px; letter-spacing: 0.04em; color: var(--ink-dim); }
-.cs-hint { margin: 0; font-size: 11px; letter-spacing: 0.04em; color: #6f7a8c; }
+.cs-lens { position: absolute; left: 0; top: 0; transform-origin: 0 0; }
 .cs-ctrl > div { display: flex; gap: 8px; }
 .cs button.btn { min-width: 44px; min-height: 44px; padding: 0 16px; background: transparent; border: 1px solid var(--void-mark); color: var(--ink); cursor: pointer; font-size: 10.5px; letter-spacing: 0.06em; text-transform: uppercase; }
 .cs button.btn:hover { border-color: var(--ink-dim); }
 .cs button.btn.hot { border-color: var(--redline); color: var(--redline); }
-/* Enlargement: a work print of the picked frame. */
-.cs-enl { position: fixed; inset: 0; z-index: 5; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 14px; padding: 16px; background: rgba(3, 4, 6, 0.9); }
-.cs-enl[hidden] { display: none; }
-.cs-enl figure { margin: 0; padding: 12px 12px 0; background: #f1f0e9; box-shadow: 0 30px 60px -20px rgba(0, 0, 0, 0.9); transform: rotate(0.5deg); }
-.cs-enl img { display: block; max-width: min(1000px, calc(100vw - 56px)); max-height: calc(100dvh - 190px); width: auto; height: auto; }
-.cs-enl figcaption { font-family: "Caveat", cursive; font-weight: 600; font-size: 22px; line-height: 1; color: #50545c; padding: 10px 2px 12px; }
 @media (max-width: 600px) {
-  /* Phones: the strips run down the sheet, side by side. */
-  .cs-body { width: 100%; }
-  .cs-paper { padding: 11% 4% 4%; }
-  .cs-print { grid-template-columns: 1fr 1fr; gap: 10px; padding: 8px; }
-  .cs-strip {
-    flex-direction: column; padding: 6px 19px;
-    background:
-      url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='9' height='16'%3E%3Crect x='0' y='4' width='9' height='8' rx='1.6' fill='%23222'/%3E%3C/svg%3E") left 3px top 0 / 9px 16px repeat-y,
-      url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='9' height='16'%3E%3Crect x='0' y='4' width='9' height='8' rx='1.6' fill='%23222'/%3E%3C/svg%3E") right 3px top 0 / 9px 16px repeat-y,
-      #030303;
-  }
-  .cs-cell { flex: none; }
-  .cs-edge { display: none; }
+  .cs-frame { border-radius: 14px; }
   .cs-read { font-size: 11px; }
   .cs-top span + span { display: none; }
+  .cs-sheet { padding: 26px 8px 8px; }
+  .cs-hand { font-size: 17px; }
+  .cs-strip { gap: 3px; padding: 13px 3px; background-size: 10px 6px, 10px 6px; background-position: left 0 top 4px, left 0 bottom 3px; }
+  .cs-edge { display: none; }
 }
 @media (prefers-reduced-motion: reduce) { .cs, .cs-ring path { transition: none; } }
 </style>
@@ -815,28 +808,31 @@ body[data-mode="computer"] #gl.over { cursor: pointer; }
 <div class="cs" id="cs" role="dialog" aria-modal="true" aria-label="Contact sheet and loupe" hidden>
   <div class="cs-top"><span>YN-1 · Item 7 · Contact sheet</span><span>Roll 07 · Photographs</span></div>
   <div class="cs-body">
+    <div class="cs-view">
+      <div class="cs-frame" id="csFrame">
+        <img id="csImg" alt="">
+        <i class="cs-vig" aria-hidden="true"></i>
+        <i class="cs-c tl" aria-hidden="true"></i><i class="cs-c tr" aria-hidden="true"></i><i class="cs-c bl" aria-hidden="true"></i><i class="cs-c br" aria-hidden="true"></i>
+        <i class="cs-patch" aria-hidden="true"></i>
+      </div>
+      <div class="cs-read"><span id="csSet"></span><span id="csNo" aria-live="polite"></span></div>
+      <p class="cs-cap" id="csCap"></p>
+    </div>
     <div class="cs-table" id="csTable" role="group" aria-label="Contact sheet, six frames">
-      <div class="cs-paper" id="csPaper">
+      <div class="cs-sheet" id="csSheet">
         <span class="cs-hand l">roll 07 · X100F · autumn '24</span><span class="cs-hand r">picks ✓</span>
-        <div class="cs-print" id="csPrint"></div>
+        <div id="csPrint"></div>
       </div>
       <div class="cs-loupe" id="csLoupe" aria-hidden="true"><div class="cs-lens" id="csLens" inert></div></div>
     </div>
-    <div class="cs-read"><span id="csSet"></span><span id="csNo" aria-live="polite"></span></div>
-    <p class="cs-cap" id="csCap"></p>
-    <p class="cs-hint" id="csHint">Move the loupe over the frames. Click a frame to mark it, click again to enlarge.</p>
+    <p class="cs-hint" id="csHint">Move the loupe along the strip. Click a frame to mark it.</p>
   </div>
   <div class="cs-ctrl">
     <button type="button" class="btn" id="csBack">← Step back</button>
     <div>
       <button type="button" class="btn" id="csPrev" aria-label="Previous frame">◂</button>
-      <button type="button" class="btn" id="csBig">Enlarge</button>
-      <button type="button" class="btn hot" id="csNext" aria-label="Next frame">▸</button>
+      <button type="button" class="btn hot" id="csNext">Advance ▸</button>
     </div>
-  </div>
-  <div class="cs-enl" id="csEnl" role="dialog" aria-modal="true" aria-label="Enlargement" hidden>
-    <figure><img id="csEnlImg" alt=""><figcaption id="csEnlCap"></figcaption></figure>
-    <button type="button" class="btn" id="csEnlBack">← Back to the sheet</button>
   </div>
 </div>
 
@@ -852,51 +848,75 @@ body[data-mode="computer"] #gl.over { cursor: pointer; }
     { src: "photos/street-4.jpg", alt: "A woman in a yellow coat, hair blowing, among parked bicycles in front of brick canal houses", set: "f/8 · 1/500 · ISO 800", cap: "Bikes and a yellow coat · September 2024" },
     { src: "photos/street-5.jpg", alt: "Someone under a clear dome umbrella at a street corner beside a yellow shopfront", set: "f/8 · 1/640 · ISO 800", cap: "Clear umbrella · September 2024" },
   ];
-  // Two strips of four: fogged leader, the six frames, then the end of the roll. null = a blank frame.
+  // One strip: the leader, the six frames, the end of the roll. null = a blank frame.
   const CELLS = [null, 0, 1, 2, 3, 4, 5, null];
   const $ = (id) => document.getElementById(id);
-  const cs = $("cs"), table = $("csTable"), paper = $("csPaper"), printEl = $("csPrint"), loupe = $("csLoupe"), lens = $("csLens");
-  const set = $("csSet"), no = $("csNo"), cap = $("csCap"), enl = $("csEnl"), enlImg = $("csEnlImg"), enlCap = $("csEnlCap");
+  const cs = $("cs"), table = $("csTable"), sheet = $("csSheet"), printEl = $("csPrint"), loupe = $("csLoupe"), lens = $("csLens");
+  const frameEl = $("csFrame"), img = $("csImg"), set = $("csSet"), no = $("csNo"), cap = $("csCap");
   const reduce = matchMedia("(prefers-reduced-motion: reduce)").matches;
   const pad = (n) => String(n).padStart(2, "0");
   const RING = "M52 4C80 3 97 22 96 49C95 78 75 97 47 96C19 95 3 75 4 47C5 21 25 6 58 7";
 
-  // ---- build the sheet
-  for (let s = 0; s < 2; s++) {
-    const strip = document.createElement("div"); strip.className = "cs-strip";
-    for (let c = 0; c < 4; c++) {
-      const k = s * 4 + c, p = CELLS[k], ph = PHOTOS[p];
-      const cell = document.createElement(ph ? "button" : "div");
-      cell.className = "cs-cell" + (ph ? (ph.tall ? " tall" : "") : " blank" + (k ? " end" : ""));
-      cell.dataset.k = k;
-      cell.innerHTML = `<span class="cs-edge" aria-hidden="true">${k === 0 ? "YN 400   " : ""}▸${k}        ${k}A</span>`;
-      if (ph) {
-        cell.type = "button";
-        cell.setAttribute("aria-label", `Frame ${pad(p + 1)}: ${ph.alt}. ${ph.cap}`);
-        cell.insertAdjacentHTML("beforeend", `<span class="cs-img"><img src="${ph.src}" alt="" draggable="false"></span><svg class="cs-ring" viewBox="0 0 100 100" preserveAspectRatio="none" aria-hidden="true"><path d="${RING}" pathLength="100"/></svg>`);
-      } else cell.setAttribute("aria-hidden", "true");
-      strip.appendChild(cell);
-    }
-    printEl.appendChild(strip);
+  // A coarse blueprint print of a photo: a few dozen pixels across, five tones of blueprint blue.
+  function blueprint(src, tall, done) {
+    const im = new Image();
+    im.onload = () => {
+      const w = tall ? 26 : 39, h = tall ? 39 : 26;
+      const c = document.createElement("canvas"); c.width = w; c.height = h;
+      const g = c.getContext("2d"); g.drawImage(im, 0, 0, w, h);
+      const d = g.getImageData(0, 0, w, h), p = d.data;
+      const lo = [11, 42, 85], hi = [232, 240, 255];
+      for (let i = 0; i < p.length; i += 4) {
+        const l = (0.2126 * p[i] + 0.7152 * p[i + 1] + 0.0722 * p[i + 2]) / 255;
+        const t = Math.round(Math.min(1, l * 1.25) * 4) / 4;
+        for (let k = 0; k < 3; k++) p[i + k] = lo[k] + (hi[k] - lo[k]) * t;
+      }
+      g.putImageData(d, 0, 0);
+      done(c.toDataURL());
+    };
+    im.src = src;
   }
-  const buttons = [...printEl.querySelectorAll("button.cs-cell")];
-  if (matchMedia("(hover: none)").matches) $("csHint").textContent = "Drag the loupe over the frames. Tap a frame to mark it, tap again to enlarge.";
+
+  // ---- build the strip
+  const strip = document.createElement("div"); strip.className = "cs-strip";
+  CELLS.forEach((p, k) => {
+    const ph = PHOTOS[p];
+    const cell = document.createElement(ph ? "button" : "div");
+    cell.className = "cs-cell" + (ph ? (ph.tall ? " tall" : "") : " blank");
+    cell.dataset.k = k;
+    cell.innerHTML = `<span class="cs-edge" aria-hidden="true">${k === 0 ? "YN 400" : ph ? `▸${k}      ${k}A` : "▸7"}</span>`;
+    if (ph) {
+      cell.type = "button";
+      cell.setAttribute("aria-label", `Frame ${pad(p + 1)}: ${ph.cap}`);
+      cell.insertAdjacentHTML("beforeend", `<span class="cs-img"><img alt="" draggable="false" data-full="${ph.src}"></span><svg class="cs-ring" viewBox="0 0 100 100" preserveAspectRatio="none" aria-hidden="true"><path d="${RING}" pathLength="100"/></svg>`);
+      const thumb = cell.querySelector("img");
+      blueprint(ph.src, ph.tall, (url) => { thumb.src = url; });
+    } else cell.setAttribute("aria-hidden", "true");
+    strip.appendChild(cell);
+  });
+  printEl.appendChild(strip);
+  const buttons = [...strip.querySelectorAll("button.cs-cell")];
+  if (matchMedia("(hover: none)").matches) $("csHint").textContent = "Drag the loupe along the strip. Tap a frame to mark it.";
 
   // ---- state
   let sel = 1, under = -1, isOpen = false, viaHash = false, back = null, timer = 0, walled = [];
-  let W = 0, R = 110, M = 3, rects = [];
+  let W = 0, R = 90, M = 2.6, rects = [];
   let x = 0, y = 0, tx = 0, ty = 0, follow = false, raf = 0;
   let drag = null, eatClick = false;
 
-  function readout(k) {
+  // The preview and readout show the frame under the loupe, or the picked frame when the loupe is off the frames.
+  function show(k) {
     const p = CELLS[k];
     if (p == null) {
-      set.textContent = "— · — · —";
+      show(sel);
       no.textContent = k === 0 ? "▸ leader" : "▸ end of roll";
       cap.textContent = k === 0 ? "Leader · fogged loading the roll" : "End of roll · nothing on it";
       return;
     }
     const ph = PHOTOS[p];
+    if (img.getAttribute("src") !== ph.src) { img.src = ph.src; img.alt = ph.alt; }
+    img.style.objectFit = ph.tall ? "contain" : "cover";     // portrait frames sit whole, on black
+    frameEl.style.background = ph.tall ? "#000" : "#222";
     set.textContent = ph.set;
     no.textContent = `▸ ${pad(p + 1)} / ${pad(PHOTOS.length)}`;
     cap.textContent = `Frame ${pad(p + 1)} · ${ph.cap}`;
@@ -905,29 +925,30 @@ body[data-mode="computer"] #gl.over { cursor: pointer; }
   function measure() {
     W = table.clientWidth;
     const tr = table.getBoundingClientRect();
-    rects = [...printEl.children].flatMap((st) => [...st.children]).map((el) => {
+    rects = [...strip.children].map((el) => {
       const r = el.getBoundingClientRect();
       return { k: +el.dataset.k, x: r.left - tr.left, y: r.top - tr.top, w: r.width, h: r.height };
     });
-    const phone = W < 520;
-    M = phone ? 2.6 : 3;
-    R = Math.round(Math.max(50, Math.min(104, W * (phone ? 0.14 : 0.1))));   // smaller than the pick ring, so the ring shows around a parked loupe
+    const cellW = (rects[1] || { w: 100 }).w;
+    M = W < 520 ? 3.2 : 2.6;
+    R = Math.round(Math.max(44, Math.min(96, cellW * 0.62)));   // a little smaller than the pick ring, so the ring shows around a parked loupe
     loupe.style.setProperty("--d", `${R * 2}px`);
-    const copy = paper.cloneNode(true);
+    const copy = sheet.cloneNode(true);
     copy.removeAttribute("id");
     copy.querySelectorAll("[id]").forEach((el) => el.removeAttribute("id"));
     copy.querySelectorAll("button").forEach((b) => b.setAttribute("tabindex", "-1"));
+    copy.querySelectorAll("img[data-full]").forEach((im) => (im.src = im.dataset.full));   // the lens sees the real photo
     lens.style.width = `${W}px`;
     lens.replaceChildren(copy);
     under = -1;
   }
-  const centre = (k) => { const r = rects.find((q) => q.k === k); return r ? [r.x + r.w / 2, r.y + r.h / 2] : [W / 2, 100]; };
-  const cellAt = (px, py) => { const r = rects.find((q) => px >= q.x && px <= q.x + q.w && py >= q.y && py <= q.y + q.h); return r ? r.k : -1; };
+  const centre = (k) => { const r = rects.find((q) => q.k === k); return r ? [r.x + r.w / 2, r.y + r.h / 2] : [W / 2, 60]; };
+  const cellAt = (px, py) => { const r = rects.find((q) => px >= q.x - 2 && px <= q.x + q.w + 2 && py >= q.y && py <= q.y + q.h); return r ? r.k : -1; };
   function place() {
     loupe.style.transform = `translate(${x - R}px, ${y - R}px)`;
     lens.style.transform = `translate(${R - x * M}px, ${R - y * M}px) scale(${M})`;
     const k = cellAt(x, y);
-    if (k !== under) { under = k; readout(k >= 0 ? k : sel); }
+    if (k !== under) { under = k; show(k >= 0 ? k : sel); }
   }
   function step() {
     raf = 0;
@@ -945,28 +966,16 @@ body[data-mode="computer"] #gl.over { cursor: pointer; }
   const park = (snap) => { const [cx, cy] = centre(sel); moveTo(cx, cy, false, snap); };
   function pick(k) {
     sel = k;
-    for (const root of [printEl, lens]) root.querySelectorAll(".cs-cell").forEach((el) => el.classList.toggle("sel", +el.dataset.k === k));
+    for (const root of [strip, lens]) root.querySelectorAll(".cs-cell").forEach((el) => el.classList.toggle("sel", +el.dataset.k === k));
     under = -1;
   }
-  function stepFrame(d) {
+  function advance(d) {
     const p = (CELLS[sel] + d + PHOTOS.length) % PHOTOS.length;
-    pick(CELLS.indexOf(p)); park();
-    buttons[p].focus({ preventScroll: true });
+    pick(CELLS.indexOf(p)); park(); show(sel);
+    if (document.activeElement && document.activeElement.closest(".cs-strip")) buttons[p].focus({ preventScroll: true });
   }
 
-  // ---- enlargement
-  function enlarge() {
-    const ph = PHOTOS[CELLS[sel]];
-    enlImg.src = ph.src; enlImg.alt = ph.alt;
-    enlCap.textContent = `${pad(CELLS[sel] + 1)} · ${ph.cap}`;
-    enl.hidden = false;
-    $("csEnlBack").focus({ preventScroll: true });
-  }
-  function shrink() { enl.hidden = true; buttons[CELLS[sel]].focus({ preventScroll: true }); }
-  $("csEnlBack").addEventListener("click", shrink);
-  enl.addEventListener("click", (e) => { if (e.target === enl || e.target.closest("figure")) shrink(); });
-
-  // ---- pointing: a mouse carries the loupe; a finger drags it by the rim or taps a frame
+  // ---- pointing: a mouse carries the loupe; a finger drags it by the lens or taps a frame
   const local = (e) => { const r = table.getBoundingClientRect(); return [e.clientX - r.left, e.clientY - r.top]; };
   table.addEventListener("pointermove", (e) => {
     const [px, py] = local(e);
@@ -991,7 +1000,7 @@ body[data-mode="computer"] #gl.over { cursor: pointer; }
     if (drag.moved) {
       eatClick = true; setTimeout(() => (eatClick = false), 0);
       const k = cellAt(tx, ty);
-      if (CELLS[k] != null) pick(k);
+      if (CELLS[k] != null) { pick(k); park(); } else park();
     }
     drag = null;
   };
@@ -1000,13 +1009,10 @@ body[data-mode="computer"] #gl.over { cursor: pointer; }
   table.addEventListener("click", (e) => {
     if (eatClick) { eatClick = false; return; }
     const cell = e.target.closest("button.cs-cell");
-    if (!cell) { if (e.pointerType && e.pointerType !== "mouse") { const [px, py] = local(e); moveTo(px, py, false); } return; }
-    const k = +cell.dataset.k;
-    if (k === sel && isOpen) return enlarge();
-    pick(k);
+    if (!cell) return;
+    pick(+cell.dataset.k);
     if (e.pointerType !== "mouse") park();
   });
-  table.addEventListener("dblclick", (e) => { if (e.target.closest("button.cs-cell")) enlarge(); });
   buttons.forEach((b) => b.addEventListener("focus", () => { if (b.matches(":focus-visible")) { pick(+b.dataset.k); park(); } }));
   new ResizeObserver(() => { if (isOpen) { measure(); park(true); } }).observe(table);
 
@@ -1021,9 +1027,9 @@ body[data-mode="computer"] #gl.over { cursor: pointer; }
     isOpen = true; viaHash = !!fromHash;
     clearTimeout(timer);
     back = document.activeElement;
-    cs.hidden = false; enl.hidden = true;
+    cs.hidden = false;
     wall(true);
-    pick(sel); measure(); park(true);
+    pick(sel); measure(); park(true); show(sel);
     requestAnimationFrame(() => requestAnimationFrame(() => cs.classList.add("on")));
     $("csBack").focus({ preventScroll: true });
   }
@@ -1042,17 +1048,15 @@ body[data-mode="computer"] #gl.over { cursor: pointer; }
     if (back && back.focus) back.focus({ preventScroll: true });
   }
   $("csBack").addEventListener("click", () => close());
-  $("csPrev").addEventListener("click", () => stepFrame(-1));
-  $("csNext").addEventListener("click", () => stepFrame(1));
-  $("csBig").addEventListener("click", enlarge);
+  $("csPrev").addEventListener("click", () => advance(-1));
+  $("csNext").addEventListener("click", () => advance(1));
   cs.addEventListener("keydown", (e) => {
-    if (e.key === "Escape") { e.preventDefault(); e.stopPropagation(); enl.hidden ? close() : shrink(); }
-    else if (!enl.hidden) { if (e.key === "Tab") e.preventDefault(); }
-    else if (e.key === "ArrowRight") { e.preventDefault(); e.stopPropagation(); stepFrame(1); }
-    else if (e.key === "ArrowLeft") { e.preventDefault(); e.stopPropagation(); stepFrame(-1); }
+    if (e.key === "Escape") { e.preventDefault(); e.stopPropagation(); close(); }
+    else if (e.key === "ArrowRight") { e.preventDefault(); e.stopPropagation(); advance(1); }
+    else if (e.key === "ArrowLeft") { e.preventDefault(); e.stopPropagation(); advance(-1); }
     else if (e.key === "Tab") {
       // Keep focus inside the dialog.
-      const f = [...cs.querySelectorAll("button")].filter((b) => !b.closest(".cs-loupe, .cs-enl")), first = f[0], last = f[f.length - 1];
+      const f = [...cs.querySelectorAll("button")].filter((b) => !b.closest(".cs-loupe")), first = f[0], last = f[f.length - 1];
       if (e.shiftKey && document.activeElement === first) { e.preventDefault(); last.focus(); }
       else if (!e.shiftKey && document.activeElement === last) { e.preventDefault(); first.focus(); }
     }

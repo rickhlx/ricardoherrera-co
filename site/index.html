@@ -672,15 +672,17 @@ body[data-mode="computer"] #gl.over { cursor: pointer; }
       </div>
       <div class="side">
         <div>
-          <h3>Archive</h3>
-          <p>[The wildcard slot: photographs, side projects, a record collection, or anything else you want stored on tape.]</p>
-        </div>
-        <div>
-          <h3>Notes</h3>
-          <ol>
-            <li>[A collection or series, with a link.]</li>
-            <li>[Another one.]</li>
-          </ol>
+          <h3>Tape contents · things I use</h3>
+          <p>Software I use, gadgets I love, and other things that make me happy.</p>
+          <table class="grid">
+            <tr><th>Track</th><th>Side</th><th>Item</th></tr>
+            <tr><td class="n">A1</td><td>Workstation</td><td><b>13&Prime; MacBook Air, M4, 24 GB (2025)</b><br>Light, portable, extra RAM and the best chip on the market. Who cares if it's not a Pro.</td></tr>
+            <tr><td class="n">A2</td><td>Workstation</td><td><b>Neo80 keyboard</b><br>I use it all day, every day, so it might as well be a nice one. Bronze plate, heavy as a brick: it doubles as a weapon.</td></tr>
+            <tr><td class="n">B1</td><td>Dev tools</td><td><a href="https://neovim.io/" target="_blank" rel="noopener">Neovim</a><br>Since Claude Code became my AI tool of choice, I live in the terminal more than ever.</td></tr>
+            <tr><td class="n">B2</td><td>Dev tools</td><td><a href="https://ghostty.org/" target="_blank" rel="noopener">Ghostty</a><br>Fast, GPU-accelerated and native. Pairs nicely with Neovim and gets out of my way.</td></tr>
+            <tr><td class="n">C1</td><td>Productivity</td><td><a href="https://obsidian.md/" target="_blank" rel="noopener">Obsidian</a><br>Notes that don't care about folders. One day, after enough backlinks, I'll behold my graph view and die in peace.</td></tr>
+            <tr><td class="n">C2</td><td>Productivity</td><td><a href="https://www.anthropic.com/claude-code" target="_blank" rel="noopener">Claude Code</a><br>More and more of my work goes through it, and MCP servers only sped that up. Brave new world.</td></tr>
+          </table>
         </div>
       </div>
     </div>
@@ -1340,6 +1342,7 @@ async function loadPosts() {
   if (rev) rev.textContent = POSTS[0].rev;
 }
 loadPosts();
+const ARCHIVE = [["A1", "macbook-air-m4"], ["A2", "neo80-keyboard"], ["B1", "neovim"], ["B2", "ghostty"], ["C1", "obsidian"], ["C2", "claude-code"]];
 const FILES = ["about.txt", "contact.txt", "do-not-open.txt", "work/", "writing/", "archive/"];
 const CMDS = ["help", "whoami", "ls", "cat", "unlock", "lock", "git log", "git show", "open", "take apart", "put together", "crt", "look", "clear", "exit"];
 
@@ -1488,7 +1491,7 @@ function exec(raw) {
         POSTS.forEach((p, i) => out([`${String(i + 1).padStart(2, "0")}  ${p.date}  `, { run: `cat writing/${i + 1}`, text: p.title }]));
       }
       else if (d === "work") LOG.forEach((c) => out([{ run: `git show ${c.sha}`, text: c.sha }, `  ${c.date}  ${c.msg}`]));
-      else if (d === "archive") out(["[photographs/]   [side-projects/]   [records/]   ", { go: "archive", text: "open archive" }]);
+      else if (d === "archive") { ARCHIVE.forEach(([t, item]) => out(`${t}  ${item}`)); out({ go: "archive", text: "open archive" }); }
       else out({ cls: "err", text: `ls: ${d}: no such directory` });
       break;
     }

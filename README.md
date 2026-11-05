@@ -73,7 +73,6 @@ The homepage and every writing page carry a meta description, canonical URL, Ope
 
 ## Before launch
 
-- Placeholder text still to write: the Archive sheet (05) and its terminal listing (`ls archive`). Plan: a "things I use" list (keyboard, chair and so on) carried over from the old site.
 - The spot interruptions post is live but is still sample text written to show the layout. Rewrite or replace it.
 - Not yet checked on a real device: font loading, motion and the phone feel.
 - Domain cutover: `ricardoherrera.co` still serves the old Next.js site. Point it at Vercel only when Ricardo asks.

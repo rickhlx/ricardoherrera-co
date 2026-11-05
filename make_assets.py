@@ -1,12 +1,16 @@
-"""Builds the social card (og.png) and the favicon set for the YN-1 site."""
+"""Builds the social card (site/og.png) and the favicon set for the YN-1 site.
+
+Run from anywhere: python3 make_assets.py
+Needs Pillow and rsvg-convert. Fonts are in fonts/ (SIL OFL); the drawing comes from site/iso.png.
+"""
 import subprocess
+import tempfile
 from pathlib import Path
 from PIL import Image, ImageDraw, ImageFont
 
-S = Path(__file__).parent
+S = Path(__file__).resolve().parent
 F = S / "fonts"
 OUT = S / "site"
-OUT.mkdir(exist_ok=True)
 
 VOID = (6, 16, 32)
 VOID_MARK = (43, 74, 122)
@@ -19,13 +23,13 @@ RED = (255, 171, 122)
 
 
 def archivo(size, wght, wdth):
-    f = ImageFont.truetype(str(F / "archvar.ttf"), size)
+    f = ImageFont.truetype(str(F / "archivo-variable.ttf"), size)
     f.set_variation_by_axes([wght, wdth])
     return f
 
 
-def mono(size, w=400):
-    return ImageFont.truetype(str(F / f"mono{w}.ttf"), size)
+def mono(size):
+    return ImageFont.truetype(str(F / "martian-mono-400.ttf"), size)
 
 
 def spaced(d, xy, text, font, fill, tracking=0.0, anchor="la"):
@@ -90,7 +94,7 @@ def og():
         x += cw
 
     # drawing on the left
-    iso = Image.open(S / "assets" / "iso.png").convert("RGBA")
+    iso = Image.open(OUT / "iso.png").convert("RGBA")
     iso = iso.crop(iso.getbbox())
     area_w, area_h = 560 * SC, (ty - by0) - 40 * SC
     k = min(area_w / iso.width, area_h / iso.height)
@@ -145,8 +149,10 @@ def favicons():
         subprocess.run(["rsvg-convert", "-w", str(px), "-h", str(px), "-o", str(OUT / name), str(OUT / "favicon.svg")], check=True)
     # Apple draws its own rounded corners; give it a full-bleed square.
     sq = FAVICON_SVG.replace('rx="12" fill="#1b4a88"', 'fill="#1b4a88"')
-    (S / "apple.svg").write_text(sq)
-    subprocess.run(["rsvg-convert", "-w", "180", "-h", "180", "-o", str(OUT / "apple-touch-icon.png"), str(S / "apple.svg")], check=True)
+    with tempfile.TemporaryDirectory() as tmp:
+        apple = Path(tmp) / "apple.svg"
+        apple.write_text(sq)
+        subprocess.run(["rsvg-convert", "-w", "180", "-h", "180", "-o", str(OUT / "apple-touch-icon.png"), str(apple)], check=True)
 
 
 if __name__ == "__main__":

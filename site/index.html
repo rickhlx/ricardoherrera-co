@@ -1044,6 +1044,77 @@ meshes.forEach((o) => {
     o.add(vis, hid); part.lines.push(vis.material); part.hidden.push(hid.material);
   }
 }
+// A sticky note on the floor beside the keyboard, with a random to-do. Peel it back to find a code written on the back.
+const STICKY_CODE = "616182";   // written on the back of the note (not used for anything yet)
+const TODOS = [
+  "renew the TLS cert before it renews me",
+  "rewind the backup tapes",
+  "delete the old staging cluster (for real)",
+  "fix the flaky test, not the retry count",
+  "write the postmortem",
+  "buy more 35mm film",
+  "page myself less",
+  "water the plants. the real ones.",
+  "clean the keyboard",
+  "call mom",
+];
+const sticky = { t: 0, open: false, meshes: [] };
+{
+  const S = 110;                                   // mm, a 4" note
+  const g = new THREE.Group();
+  g.position.set(-440, 0, 290); g.rotation.y = -0.42;
+  scene.add(g);
+  // canvas helper: Caveat once it has loaded, the cursive fallback until then
+  const canvasTex = (w, h, paint) => {
+    const c = document.createElement("canvas"); c.width = w; c.height = h;
+    const tex = new THREE.CanvasTexture(c); tex.colorSpace = THREE.SRGBColorSpace; tex.anisotropy = 8;
+    const draw = () => { const x = c.getContext("2d"); x.setTransform(1, 0, 0, 1, 0, 0); x.clearRect(0, 0, w, h); x.save(); paint(x); x.restore(); tex.needsUpdate = true; };
+    draw(); document.fonts?.load("600 64px Caveat").then(draw, () => {});
+    return tex;
+  };
+  const shadow = new THREE.Mesh(new THREE.PlaneGeometry(S + 10, S + 10), new THREE.MeshBasicMaterial({ color: 0x000000, transparent: true, opacity: 0.35, depthWrite: false }));
+  shadow.rotation.x = -Math.PI / 2; shadow.position.set(3, 0.6, S / 2 + 4);
+  g.add(shadow); sticky.shadow = shadow;
+  // the note itself hinges on its glue strip (the far edge); the free end curls up a little
+  const hinge = new THREE.Group(); hinge.position.y = 1.2; g.add(hinge); sticky.hinge = hinge;
+  const geo = new THREE.PlaneGeometry(S, S, 1, 16); geo.rotateX(-Math.PI / 2); geo.translate(0, 0, S / 2);
+  const p = geo.attributes.position;
+  for (let i = 0; i < p.count; i++) { const z = p.getZ(i), u = Math.max(0, z / S - 0.55); p.setY(i, u * u * 22); }
+  geo.computeVertexNormals();
+  const todo = TODOS[Math.floor(Math.random() * TODOS.length)];
+  const noteTex = canvasTex(512, 512, (x) => {
+    const bg = x.createLinearGradient(0, 0, 0, 512); bg.addColorStop(0, "#e9d05a"); bg.addColorStop(0.16, "#f6e27a"); bg.addColorStop(1, "#fbe98c");
+    x.fillStyle = bg; x.fillRect(0, 0, 512, 512);
+    x.fillStyle = "#1f2c63"; x.strokeStyle = "#1f2c63"; x.lineWidth = 3.5; x.lineCap = "round";
+    x.font = "600 54px Caveat, cursive"; x.fillText("to do:", 40, 112);
+    x.beginPath(); x.moveTo(40, 124); x.lineTo(150, 120); x.stroke();
+    x.font = "600 66px Caveat, cursive";
+    const words = todo.split(" "), lines = [];
+    let line = "";
+    for (const w of words) { const t = line ? `${line} ${w}` : w; if (x.measureText(t).width > 380 && line) { lines.push(line); line = w; } else line = t; }
+    lines.push(line);
+    x.strokeRect(44, 170, 34, 34);
+    lines.slice(0, 4).forEach((l, i) => x.fillText(l, 98, 204 + i * 72));
+  });
+  const front = new THREE.Mesh(geo, new THREE.MeshBasicMaterial({ map: noteTex, side: THREE.FrontSide, fog: true }));
+  // the back of the note, where the code is written; seen from behind and upside down once peeled, so flip it vertically
+  const codeTex = canvasTex(512, 512, (x) => {
+    x.fillStyle = "#f1dc78"; x.fillRect(0, 0, 512, 512);
+    x.fillStyle = "rgba(160,130,40,0.25)"; x.fillRect(0, 0, 512, 70);   // the glue strip
+    x.translate(256, 270); x.rotate(-0.05);
+    x.fillStyle = "#1f2c63"; x.strokeStyle = "#1f2c63"; x.textAlign = "center"; x.textBaseline = "middle";
+    x.font = "700 132px Caveat, cursive"; x.fillText(STICKY_CODE, 0, 0);
+    x.lineWidth = 5; x.lineCap = "round";
+    x.beginPath(); x.moveTo(-170, 66); x.quadraticCurveTo(0, 56, 176, 62); x.moveTo(-150, 84); x.quadraticCurveTo(10, 76, 160, 82); x.stroke();
+  });
+  codeTex.wrapT = THREE.RepeatWrapping; codeTex.repeat.y = -1; codeTex.offset.y = 1;
+  const back = new THREE.Mesh(geo, new THREE.MeshBasicMaterial({ map: codeTex, side: THREE.BackSide, fog: true }));
+  const edge = new THREE.LineSegments(new THREE.EdgesGeometry(geo, 60), new THREE.LineBasicMaterial({ color: 0x9a8530, transparent: true, opacity: 0.6 }));
+  edge.raycast = () => {};
+  for (const m of [front, back]) { m.userData.sticky = true; hinge.add(m); sticky.meshes.push(m); }
+  hinge.add(edge);
+  sticky.todo = todo;
+}
 const CENTER = new THREE.Vector3(0, 170, -40);
 
 // ---------- camera control in computer mode
@@ -1183,10 +1254,11 @@ function hit(e) {
   const r = gl.domElement.getBoundingClientRect();
   ndc.set(((e.clientX - r.left) / r.width) * 2 - 1, -((e.clientY - r.top) / r.height) * 2 + 1);
   ray.setFromCamera(ndc, camera);
-  const targets = Object.values(parts).flatMap((p) => p.meshes).concat(SHEETS.map((k) => sheets[k].ghost));
+  const targets = Object.values(parts).flatMap((p) => p.meshes).concat(SHEETS.map((k) => sheets[k].ghost), sticky.meshes);
   const h = ray.intersectObjects(targets, false)[0];
   if (!h) return null;
   if (h.object.userData.sheet) return { sheet: h.object.userData.sheet };
+  if (h.object.userData.sticky) return { sticky: true };
   return { part: h.object.userData.partKey };
 }
 function hideTip() { tip.style.display = "none"; hovered = null; gl.domElement.classList.remove("over"); }
@@ -1194,9 +1266,9 @@ gl.domElement.addEventListener("pointermove", (e) => {
   if (mode !== "computer" || e.buttons) { if (mode !== "computer") hideTip(); return; }
   const h = hit(e);
   if (!h) return hideTip();
-  hovered = h.part || null;
-  const name = h.part ? PART[h.part].label : `Sheet 0${SHEETS.indexOf(h.sheet) + 1}`;
-  const verb = h.part ? PART[h.part].verb : NAMES[h.sheet];
+  hovered = h.part || (h.sticky ? "sticky" : null);
+  const name = h.sticky ? "Sticky note" : h.part ? PART[h.part].label : `Sheet 0${SHEETS.indexOf(h.sheet) + 1}`;
+  const verb = h.sticky ? (sticky.open ? "Stick it back down" : "Peel it back") : h.part ? PART[h.part].verb : NAMES[h.sheet];
   tipName.textContent = name; tipVerb.innerHTML = `<em>→</em> ${verb}`;
   tip.style.display = "block";
   const x = Math.min(innerWidth - tip.offsetWidth - 8, e.clientX + 16), y = Math.min(innerHeight - tip.offsetHeight - 8, e.clientY + 18);
@@ -1213,6 +1285,7 @@ gl.domElement.addEventListener("pointerup", (e) => {
   const h = hit(e);
   if (!h) return;
   if (h.sheet) return go(h.sheet);
+  if (h.sticky) { sticky.open = !sticky.open; tipVerb.innerHTML = `<em>→</em> ${sticky.open ? "Stick it back down" : "Peel it back"}`; return; }
   picked = h.part;
   const target = PART[h.part].go;
   if (target === "viewfinder") {
@@ -1395,6 +1468,13 @@ function tick(now) {
     const hot = p.key === hovered || p.key === picked;
     for (const m of p.lines) m.color.setHex(hot ? 0xffab7a : 0xeef4ff);
     for (const m of p.hidden) m.color.setHex(hot ? 0xffab7a : 0xeef4ff);
+  }
+  // the sticky note: peeled back on its glue strip, or lifting a touch under the pointer
+  {
+    const want = sticky.open ? 1 : hovered === "sticky" && mode === "computer" ? 0.06 : 0;
+    sticky.t += (want - sticky.t) * (reduce ? 1 : 0.09);
+    sticky.hinge.rotation.x = -sticky.t * 2.0;
+    sticky.shadow.material.opacity = 0.35 * (1 - Math.min(1, sticky.t * 2));
   }
   if (screenTex && now - blinkAt > 530) { blinkAt = now; blink = !blink; screenTex.draw(blink); }
 

@@ -237,7 +237,9 @@ html.anim .sheet.drawn .markup .note { opacity: 1; translate: 0 0; transition: o
 }
 
 /* portrait sheets (phones): drawing on top, notes below, the body scrolls */
-@container (max-width: 899px) {
+/* Stacked layout: narrow sheets, and sheets under 900px that are taller than wide. Short, wide sheets
+   (phones and foldables in landscape) keep the side-by-side layout. */
+@container (max-width: 699px) or ((max-width: 899px) and (orientation: portrait)) {
   .sheet-body, .sheet-body.wide { grid-template-columns: minmax(0, 1fr); grid-template-rows: auto auto; }
   .stamp, .sheet-head .back { display: none; }
   .sheet-head { padding: 10px 14px 8px; }
@@ -258,8 +260,9 @@ html.anim .sheet.drawn .markup .note { opacity: 1; translate: 0 0; transition: o
   .stamp { top: 50px; left: 14px; font-size: 10px; }
   .sheet-head h2 { font-size: 17px; }
 }
+/* keep the top bar on one line: drop "· YN-1 drawing set · Rev B" before the register wraps */
+@media (max-width: 1080px) { .bar .set span { display: none; } }
 @media (max-width: 820px) {
-  .bar .set span { display: none; }
   .ctrl button .long { display: none; }
   .counter { white-space: nowrap; }
   .register { display: none; }
@@ -351,6 +354,12 @@ body[data-mode="computer"] #gl.over { cursor: pointer; }
   .print { width: 116px; }
   .print.wide { width: min(262px, 64cqw); }
   .handnote { font-size: 18px; }
+}
+/* 700-899px wide (e.g. a foldable in landscape): two columns, so the side column is narrow. Keep the name
+   clear of the portrait print and the wide print clear of its caption. */
+@container (min-width: 700px) and (max-width: 899px) and (orientation: landscape) {
+  .name { font-size: clamp(26px, 3.5cqw, 64px); }
+  .print.wide { width: min(262px, 24cqw); }
 }
 
 /* ---------- the viewfinder (item 7) ---------- */

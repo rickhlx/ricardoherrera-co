@@ -8,7 +8,7 @@ Personal site of Ricardo Herrera. The homepage is the **YN-1**, a fictional 1970
 | --- | --- |
 | `site/` | The hand-built YN-1 homepage: `index.html` (three.js 0.160 from jsDelivr), drawings, photos, the blog avatar (`avatar.webp`), the model (`yn1.glb.json`), social card and icons. Astro copies it into the build unchanged. |
 | `src/content/writing/` | Blog posts, one Markdown file each. The file name is the URL: `spot-interruptions.md` → `/writing/spot-interruptions/` |
-| `src/pages/writing/` | The writing index, the post page and the RSS feed (`/writing/feed.xml`) |
+| `src/pages/writing/` | The writing index, the post page, the RSS feed (`/writing/feed.xml`) and `posts.json`, which fills sheet 04's revision log and the terminal's `ls writing` / `cat writing/<n>` on the YN-1 |
 | `src/layouts/`, `src/styles/`, `src/lib/` | Writing layout, styles, Markdown extensions (`markdown.mjs`) and post helpers |
 | `model/` | Blender 5.2 scripts that build the YN-1 and render the drawings |
 | `make_assets.py` | Builds `site/og.png` and the favicon set |
@@ -75,5 +75,4 @@ The homepage and every writing page carry a meta description, canonical URL, Ope
 
 - `site/index.html` still carries the claude.ai artifact page wrapper (its first line). Replace it with a proper `<head>`.
 - The spot interruptions post is live but is still sample text written to show the layout. Rewrite or replace it.
-- Sheet 04 on the YN-1 and the terminal's `ls writing` still list placeholder posts. Generate them from `src/content/writing/` once real posts exist.
 - Content is mostly placeholders: posts, archive, contact links.

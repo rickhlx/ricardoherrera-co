@@ -1,0 +1,196 @@
+---
+import { render } from "astro:content";
+import Writing from "../../layouts/Writing.astro";
+import { getPosts, iso, longDate, url } from "../../lib/posts.mjs";
+
+// Where readers report mistakes in a post.
+const REPO = "https://github.com/rickhlx/ricardoherrera-co";
+
+export async function getStaticPaths() {
+  const posts = await getPosts();
+  return posts.map((post, i) => ({
+    params: { slug: post.id },
+    props: { post, newer: posts[i - 1], older: posts[i + 1], all: posts },
+  }));
+}
+
+const { post, newer, older, all } = Astro.props;
+const { Content, headings } = await render(post);
+const d = post.data;
+const toc = headings.filter((h) => h.depth === 2 && h.slug !== "footnote-label");
+const site = Astro.site ?? new URL("https://ricardoherrera.co");
+const permalink = new URL(`writing/${post.id}/`, site);
+const related = all.filter((p) => p !== post && p.data.tags.some((t) => d.tags.includes(t))).slice(0, 3);
+const series = d.series
+  ? all
+      .filter((p) => p.data.series?.name === d.series.name)
+      .sort((a, b) => a.data.series.part - b.data.series.part)
+  : [];
+const enc = encodeURIComponent;
+const jsonLd = {
+  "@context": "https://schema.org",
+  "@type": "BlogPosting",
+  headline: d.title,
+  description: d.dek,
+  datePublished: d.date.toISOString(),
+  dateModified: (d.updated ?? d.date).toISOString(),
+  author: { "@type": "Person", name: "Ricardo Herrera", url: site.href },
+  mainEntityOfPage: permalink.href,
+  keywords: d.tags.join(", "),
+};
+---
+<Writing
+  title={`${d.title} · Ricardo Herrera`}
+  description={d.dek}
+  canonical={permalink}
+  type="article"
+  noindex={d.draft}
+  published={d.date}
+  modified={d.updated}
+  tags={d.tags}
+  jsonLd={jsonLd}
+>
+  <div class="post wrap">
+    <div class="post-grid">
+      {toc.length >= 3 && (
+        <aside class="rail">
+          <nav class="toc" aria-labelledby="tocH">
+            <h2 id="tocH">Contents</h2>
+            <ol>{toc.map((h) => <li><a href={`#${h.slug}`} data-id={h.slug}>{h.text}</a></li>)}</ol>
+          </nav>
+        </aside>
+      )}
+      <div class="main">
+        <div class="toolbar">
+          <a class="back" href={url("writing/")}>← All writing</a>
+          <div class="tools" role="group" aria-label="Text size">
+            <button type="button" class="btn size-btn" data-size="-" aria-label="Smaller text">A−</button>
+            <button type="button" class="btn size-btn" data-size="+" aria-label="Larger text">A+</button>
+          </div>
+        </div>
+
+        <article>
+          <header class="post-head">
+            <h1>{d.title} {d.draft && <span class="draft-badge">Draft</span>}</h1>
+            <p class="dek">{d.dek}</p>
+            <div class="byline">
+              <span><strong>Ricardo Herrera</strong></span>
+              <span>Published <time datetime={iso(d.date)}>{longDate(d.date)}</time></span>
+              {d.updated && <span>Updated <time datetime={iso(d.updated)}>{longDate(d.updated)}</time></span>}
+              <span>{post.minutes} min read</span>
+              <span class="tags">{d.tags.map((t) => <a href={url(`writing/?tag=${enc(t)}`)}>{t}</a>)}</span>
+            </div>
+            {d.series && (
+              <nav class="series" aria-label="Series">
+                <p>Series · {d.series.name} · part {d.series.part}</p>
+                <ol>
+                  {series.map((p) =>
+                    p === post
+                      ? <li value={p.data.series.part} aria-current="true">{p.data.title}</li>
+                      : <li value={p.data.series.part}><a href={url(`writing/${p.id}/`)}>{p.data.title}</a></li>
+                  )}
+                  {d.series.next && series.at(-1) === post && <li class="soon">{d.series.next} <span class="mono">(next)</span></li>}
+                </ol>
+              </nav>
+            )}
+          </header>
+
+          {toc.length >= 3 && (
+            <details class="toc-mobile">
+              <summary>Contents</summary>
+              <ol>{toc.map((h) => <li><a href={`#${h.slug}`}>{h.text}</a></li>)}</ol>
+            </details>
+          )}
+
+          <div class="prose">
+            <Content />
+          </div>
+
+          {d.revisions.length > 0 && (
+            <section class="revisions" aria-labelledby="revH">
+              <h2 id="revH">Revisions</h2>
+              <table>{d.revisions.map((r) => <tr><td>{iso(r.date)}</td><td>{r.note}</td></tr>)}</table>
+            </section>
+          )}
+        </article>
+
+        <div class="after">
+          <div class="share">
+            <span class="label">Share</span>
+            <button type="button" class="btn" id="copyLink" data-url={permalink.href}>Copy link</button>
+            <a class="btn" target="_blank" rel="noopener" href={`https://news.ycombinator.com/submitlink?u=${enc(permalink.href)}&t=${enc(d.title)}`}>Hacker News ↗</a>
+            <a class="btn" target="_blank" rel="noopener" href={`https://www.linkedin.com/sharing/share-offsite/?url=${enc(permalink.href)}`}>LinkedIn ↗</a>
+            <a class="btn" target="_blank" rel="noopener" href={`https://bsky.app/intent/compose?text=${enc(`${d.title} ${permalink.href}`)}`}>Bluesky ↗</a>
+          </div>
+          <div class="author">
+            <div class="mark" aria-hidden="true">RH</div>
+            <div>
+              <p><strong>Ricardo Herrera</strong> is a senior site reliability engineer. He builds Kubernetes platforms, observability stacks and the automation that keeps them boring.</p>
+              <p>Found a mistake? <a href={`${REPO}/issues/new?title=${enc(`Correction: ${d.title}`)}`} target="_blank" rel="noopener">Open an issue</a> and I'll fix it and note the change above.</p>
+            </div>
+          </div>
+          {(newer || older) && (
+            <nav class="pager" aria-label="More posts">
+              {newer && <a href={url(`writing/${newer.id}/`)}><span>← Newer</span><strong>{newer.data.title}</strong></a>}
+              {older && <a class="next" href={url(`writing/${older.id}/`)}><span>Older →</span><strong>{older.data.title}</strong></a>}
+            </nav>
+          )}
+          {related.length > 0 && (
+            <div class="related">
+              <h2>Related</h2>
+              <ul>{related.map((r) => <li><a href={url(`writing/${r.id}/`)}>{r.data.title}</a><span>{iso(r.data.date)}</span></li>)}</ul>
+            </div>
+          )}
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    import { copyText } from "../../lib/client.js";
+
+    // Text size, remembered per reader.
+    const SIZES = [0.92, 1, 1.08, 1.17];
+    let i = 1;
+    try { const v = Number(localStorage.getItem("reader-size")); if (v >= 0 && v < SIZES.length) i = v; } catch {}
+    const sizeBtns = [...document.querySelectorAll<HTMLButtonElement>("[data-size]")];
+    function applySize() {
+      document.documentElement.style.setProperty("--step", String(SIZES[i]));
+      try { localStorage.setItem("reader-size", String(i)); } catch {}
+      sizeBtns.forEach((b) => (b.disabled = (b.dataset.size === "-" && i === 0) || (b.dataset.size === "+" && i === SIZES.length - 1)));
+    }
+    sizeBtns.forEach((b) => b.addEventListener("click", () => { i = Math.max(0, Math.min(SIZES.length - 1, i + (b.dataset.size === "+" ? 1 : -1))); applySize(); }));
+    applySize();
+
+    // Copy buttons on code blocks.
+    document.querySelectorAll<HTMLElement>(".prose figure.code").forEach((fig) => {
+      const code = fig.querySelector("pre")!;
+      fig.querySelector(".copy")?.addEventListener("click", () => copyText(code.innerText.replace(/\n$/, ""), code, "Code copied"));
+    });
+
+    const link = document.getElementById("copyLink");
+    link?.addEventListener("click", () => copyText(link.dataset.url!, null, "Link copied"));
+
+    // Contents: highlight the section being read.
+    const tocLinks = [...document.querySelectorAll<HTMLAnchorElement>(".toc a")];
+    if (tocLinks.length) {
+      const io = new IntersectionObserver((entries) => {
+        entries.forEach((e) => { if (e.isIntersecting) tocLinks.forEach((a) => a.classList.toggle("on", a.dataset.id === e.target.id)); });
+      }, { rootMargin: "-15% 0px -75% 0px" });
+      tocLinks.forEach((a) => { const h = document.getElementById(a.dataset.id!); if (h) io.observe(h); });
+    }
+    document.querySelectorAll(".toc-mobile a").forEach((a) => a.addEventListener("click", () => a.closest("details")?.removeAttribute("open")));
+
+    // Reading progress along the bottom edge of the header.
+    const bar = document.getElementById("progress")!;
+    const art = document.querySelector("article")!;
+    function onScroll() {
+      const r = art.getBoundingClientRect();
+      const total = r.height - innerHeight * 0.6;
+      bar.style.transform = `scaleX(${Math.max(0, Math.min(1, total > 0 ? -r.top / total : 1))})`;
+    }
+    addEventListener("scroll", onScroll, { passive: true });
+    addEventListener("resize", onScroll);
+    onScroll();
+  </script>
+</Writing>

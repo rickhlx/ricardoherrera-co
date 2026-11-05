@@ -1,0 +1,96 @@
+---
+import Writing from "../../layouts/Writing.astro";
+import { getPosts, iso, url } from "../../lib/posts.mjs";
+
+const posts = await getPosts();
+const tags = [...new Set(posts.flatMap((p) => p.data.tags))].sort();
+const byYear = Map.groupBy(posts, (p) => p.data.date.getUTCFullYear());
+const site = Astro.site ?? new URL("https://ricardoherrera.co");
+const canonical = new URL("writing/", site);
+const feedUrl = new URL("writing/feed.xml", site);
+---
+<Writing
+  title="Writing · Ricardo Herrera"
+  description="Notes on site reliability, Kubernetes platforms, observability and infrastructure, written for other engineers by Ricardo Herrera."
+  canonical={canonical}
+  current="writing"
+>
+  <div class="index">
+    <div class="index-head">
+      <span class="eyebrow">Sheet 04 · Revision log</span>
+      <h1>Writing</h1>
+      <p>Long-form notes on platform engineering, reliability and running infrastructure, plus the occasional detour. Written for other engineers. Every post has a stable link and a change history.</p>
+      <div class="subscribe">
+        <span>Subscribe by feed</span>
+        <code id="feedUrl">{feedUrl.href}</code>
+        <button type="button" class="btn" id="copyFeed" data-url={feedUrl.href}>Copy feed URL</button>
+      </div>
+    </div>
+
+    {posts.length > 1 && (
+      <div class="filters">
+        <div class="search"><label class="sr-only" for="q">Search posts</label><input id="q" type="search" placeholder="Search titles, summaries and topics" autocomplete="off"></div>
+        <div class="chips" role="group" aria-label="Filter by topic">
+          <button type="button" class="chip" data-tag="" aria-pressed="true">All</button>
+          {tags.map((t) => <button type="button" class="chip" data-tag={t} aria-pressed="false">{t}</button>)}
+        </div>
+      </div>
+    )}
+
+    <div id="list">
+      {posts.length === 0 && <p class="empty">No posts yet.</p>}
+      {[...byYear].map(([year, items]) => (
+        <section class="year" aria-label={String(year)}>
+          <h2>{year}</h2>
+          {items.map((p) => (
+            <article class="entry" data-tags={JSON.stringify(p.data.tags)} data-text={`${p.data.title} ${p.data.dek} ${p.data.tags.join(" ")}`.toLowerCase()}>
+              <div class="when"><b title="Revision">{p.rev}</b><time datetime={iso(p.data.date)}>{iso(p.data.date).slice(5)}</time></div>
+              <div class="body">
+                <h3><a href={url(`writing/${p.id}/`)}>{p.data.title}</a> {p.data.draft && <span class="draft-badge">Draft</span>}</h3>
+                <p>{p.data.dek}</p>
+                <div class="meta-line"><span>{p.minutes} min read</span>{p.data.tags.map((t) => <span class="tag">{t}</span>)}</div>
+              </div>
+            </article>
+          ))}
+        </section>
+      ))}
+      <p class="empty" id="noMatch" hidden>No posts match. Try another word or clear the topic filter.</p>
+    </div>
+  </div>
+
+  <script>
+    import { copyText } from "../../lib/client.js";
+    const btn = document.getElementById("copyFeed");
+    btn?.addEventListener("click", () => copyText(btn.dataset.url!, document.getElementById("feedUrl"), "Feed URL copied"));
+
+    const q = document.getElementById("q") as HTMLInputElement | null;
+    const chips = [...document.querySelectorAll<HTMLButtonElement>(".chip")];
+    let tag = new URLSearchParams(location.search).get("tag") || "";
+    function apply() {
+      const text = (q?.value || "").trim().toLowerCase();
+      let shown = 0;
+      document.querySelectorAll<HTMLElement>(".year").forEach((y) => {
+        let inYear = 0;
+        y.querySelectorAll<HTMLElement>(".entry").forEach((e) => {
+          const ok = (!tag || (JSON.parse(e.dataset.tags!) as string[]).includes(tag)) && (!text || e.dataset.text!.includes(text));
+          e.hidden = !ok;
+          if (ok) inYear++;
+        });
+        y.hidden = !inYear;
+        shown += inYear;
+      });
+      chips.forEach((c) => c.setAttribute("aria-pressed", String((c.dataset.tag || "") === tag)));
+      const none = document.getElementById("noMatch");
+      if (none) none.hidden = shown > 0;
+    }
+    q?.addEventListener("input", apply);
+    chips.forEach((c) => c.addEventListener("click", () => {
+      tag = c.dataset.tag || "";
+      const u = new URL(location.href);
+      if (tag) u.searchParams.set("tag", tag); else u.searchParams.delete("tag");
+      history.replaceState(null, "", u);
+      apply();
+    }));
+    if (tag) apply();
+  </script>
+</Writing>

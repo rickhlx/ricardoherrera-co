@@ -9,6 +9,11 @@ apple.svg
 __pycache__/
 .DS_Store
 
+# Astro
+node_modules/
+dist/
+.astro/
+
 # Dank Mono: personal license, no redistribution. Only the vendor web build (site/fonts/dmvendor.css) is committed.
 *.woff2
 *.otf

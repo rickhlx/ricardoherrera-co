@@ -13,7 +13,7 @@ The homepage is a fictional 1970s workstation, the **YN-1**, modeled in Blender.
 - **Look around:** drag to turn the computer and scroll to zoom. Hovering over a part lifts it and turns it orange; there is no label box.
 - **Click a part:** the camera flies to that part's drawing sheet, one of six blueprint sheets hanging in a ring around the computer.
 - **"Take apart":** explodes the model. This uncovers the logic board.
-- **Click the screen:** the camera zooms in and the screen becomes a working terminal. Commands are `help`, `whoami`, `ls`, `cat`, `git log`, `git show`, `open <sheet>`, `take apart`, `crt on|off` and `exit`. Work history is shown as a `git log`, with the current role at `HEAD`. `whoami` prints the yellow-wall portrait redrawn in green phosphor with scanlines, made in the browser from `site/photos/portrait.jpg`.
+- **Click the screen:** the camera zooms in and the screen becomes a working terminal. Commands are `help`, `whoami`, `ls`, `cat`, `unlock`, `lock`, `git log`, `git show`, `open <sheet>`, `take apart`, `crt on|off` and `exit`. Work history is shown as a `git log`, with the current role at `HEAD`. `ls` also lists `do-not-open.txt`, which is locked: `unlock` asks for a password, which is the code written on the back of the sticky note (peel it on the desk). It opens a short operator's log easter egg; `lock` closes it again. `whoami` prints the yellow-wall portrait redrawn in green phosphor with scanlines, made in the browser from `site/photos/portrait.jpg`.
 
 | Part | Opens | Sheet |
 | --- | --- | --- |
@@ -24,7 +24,7 @@ The homepage is a fictional 1970s workstation, the **YN-1**, modeled in Blender.
 | (nav / terminal) | Writing | 04 Display detail + revision log (posts) |
 | Tape drive | Archive | 05 Tape drive detail (wildcard slot) |
 | Keyboard | Contact | 06 Keyboard plan, return key redlined |
-| Contact sheet and loupe | Photographs | — (full-screen contact sheet, not a sheet) |
+| Contact sheet (item 7) | Photographs | — (full-screen viewfinder, not a sheet) |
 
 ## Handwritten annotations
 Hand markup on the sheets makes the drawings feel personal, like an engineer's working set.
@@ -40,7 +40,7 @@ Hand markup on the sheets makes the drawings feel personal, like an engineer's w
 ## Photos
 - **Sheet 01 (Index):** the yellow-wall portrait (`site/photos/portrait.jpg`) is paper-clipped beside the name as a print, captioned *Fig. 0 · Operator*, with a handwritten redline note.
 - **Sheet 02 (About):** the Paris overlook shot (`site/photos/paris.jpg`) is clipped above the General notes as *Fig. 2-C*, with a handwritten "Paris, 2024" on the print. Note 4 points to it.
-- **Contact sheet and loupe (item 7):** replaced the rooftop viewfinder eyepiece. An 8×10 contact sheet lies on the desk to the right of the keyboard, with a loupe standing on it, both built in three.js rather than Blender. Clicking it, the `look` terminal command, or `#photos` opens a full-screen view in two parts. On top is the single-photo preview kept from the old viewfinder: a bright-line frame, a focus patch, and an orange readout with each frame's exposure and caption. Below it is the contact strip, drawn as a blueprint: an outlined film strip with sprocket holes and edge numbers, a hatched leader and end of roll, and the six frames printed small and coarse in five tones of blueprint blue (made in the browser from the photos). The portrait frame lies on its side, as on a real contact sheet. A loupe rides along the strip. Through it you see the real photo in colour, and the preview shows the frame under it. A mouse carries the loupe; on touch you drag it by the lens. Clicking or tapping a frame circles it in redline; Advance ▸, ◂ and the arrow keys step through the frames. The photos are Paris first, then five street photos from the old `rickhlx/personal-site` repo (`site/photos/street-1.jpg` to `street-5.jpg`, Fujifilm X100F, autumn 2024, with each frame's real exposure). The yellow portrait is not on the sheet; it is on sheet 01, the blog avatar and the favicons. The contact sheet is left out of the top-bar register on purpose; visitors find it on the desk or through `look`.
+- **Viewfinder (item 7):** the model shows it as an 8×10 contact sheet lying on the desk to the right of the keyboard, with a loupe standing on it, added in three.js rather than Blender. (It replaced a rangefinder-style eyepiece on top of the enclosure.) Clicking it, the `look` terminal command, or `#viewfinder` opens a full-screen viewfinder with bright-line frame, focus patch and an orange exposure readout. **Advance** winds through the roll: Paris first, then five street photos from the old `rickhlx/personal-site` repo (`site/photos/street-1.jpg` to `street-5.jpg`, Fujifilm X100F, autumn 2024; the readout shows each frame's real exposure). The yellow portrait is not in the roll; it is on sheet 01, the blog avatar and the favicons. The viewfinder is left out of the top-bar register on purpose; visitors find it on the model or through `look`.
 - Mockup canvas: [YN-1 Photo Moments](https://claude.ai/artifact/SK7uFHMXVWnYhwG3bNDbo5).
 
 ## How it's built

@@ -366,88 +366,37 @@ body[data-mode="computer"] #gl.over { cursor: pointer; }
   .print.wide { width: min(262px, 24cqw); }
 }
 
-/* ---------- the contact sheet and loupe (item 7) ---------- */
-.cs {
-  position: fixed; inset: 0; z-index: 30; color: var(--ink);
-  background: radial-gradient(ellipse 80% 70% at 50% 40%, #0c1626, #030508 75%);
-  display: flex; flex-direction: column; align-items: center; gap: 12px; overflow: auto;
+/* ---------- the viewfinder (item 7) ---------- */
+.vf {
+  position: fixed; inset: 0; z-index: 30; background: #030303; color: var(--ink);
+  display: flex; flex-direction: column; align-items: center; gap: 14px; overflow: auto;
   padding: calc(env(safe-area-inset-top, 0px) + 18px) max(16px, env(safe-area-inset-right, 0px)) calc(env(safe-area-inset-bottom, 0px) + 16px) max(16px, env(safe-area-inset-left, 0px));
   opacity: 0; transition: opacity 0.35s ease;
 }
-.cs.on { opacity: 1; }
-.cs-top, .cs-ctrl { width: min(1080px, 100%); display: flex; justify-content: space-between; align-items: center; gap: 12px; }
-.cs-top { font-size: 10.5px; letter-spacing: 0.08em; text-transform: uppercase; color: #6f7a8c; }
-.cs-body { width: min(980px, 100%); display: grid; gap: 14px; justify-items: center; margin: auto 0; }
-/* The preview: one frame at a time, seen as through the old viewfinder. */
-.cs-view { width: min(840px, 100%, calc((100dvh - 380px) * 1.5)); min-width: min(280px, 100%); display: grid; gap: 10px; }
-.cs-frame { position: relative; aspect-ratio: 3 / 2; border-radius: 22px; overflow: hidden; background: #222; }
-.cs-frame img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
-.cs-vig { position: absolute; inset: 0; border-radius: inherit; box-shadow: inset 0 0 140px 50px rgba(0, 0, 0, 0.85); pointer-events: none; }
-.cs-c { position: absolute; width: 5.5%; aspect-ratio: 1; border: 0 solid rgba(255, 248, 220, 0.92); pointer-events: none; }
-.cs-c.tl { left: 8%; top: 10.7%; border-left-width: 2px; border-top-width: 2px; }
-.cs-c.tr { right: 8%; top: 10.7%; border-right-width: 2px; border-top-width: 2px; }
-.cs-c.bl { left: 8%; bottom: 10.7%; border-left-width: 2px; border-bottom-width: 2px; }
-.cs-c.br { right: 8%; bottom: 10.7%; border-right-width: 2px; border-bottom-width: 2px; }
-.cs-patch { position: absolute; left: 50%; top: 50%; width: 13%; aspect-ratio: 110 / 72; transform: translate(-50%, -50%); border: 1px solid rgba(255, 236, 190, 0.7); background: rgba(255, 214, 140, 0.14); pointer-events: none; }
-.cs-read { display: flex; justify-content: space-between; align-items: baseline; gap: 12px; font-size: 13px; letter-spacing: 0.08em; color: var(--redline); text-shadow: 0 0 8px rgba(255, 171, 122, 0.55); }
-.cs-cap { margin: 0; font-size: 12px; letter-spacing: 0.04em; color: var(--ink-dim); }
-.cs-hint { margin: 0; font-size: 11px; letter-spacing: 0.04em; color: #6f7a8c; }
-/* The strip: drawn as a blueprint, frames printed small and coarse in blueprint blue. The loupe shows the real photo. */
-.cs-table { position: relative; width: 100%; touch-action: none; user-select: none; -webkit-user-select: none; }
-.cs-table.mouse { cursor: none; }
-.cs-sheet {
-  position: relative; padding: 30px 14px 14px; border: 1px solid rgba(238, 244, 255, 0.55);
-  background: repeating-linear-gradient(0deg, rgba(238, 244, 255, 0.06) 0 1px, transparent 1px 20px), repeating-linear-gradient(90deg, rgba(238, 244, 255, 0.06) 0 1px, transparent 1px 20px), #123e78;
-}
-.cs-hand { position: absolute; top: 3px; font-family: "Caveat", cursive; font-weight: 600; font-size: 20px; line-height: 1.2; color: rgba(238, 244, 255, 0.85); }
-.cs-hand.l { left: 14px; transform: rotate(-1deg); }
-.cs-hand.r { right: 14px; color: var(--redline); transform: rotate(2deg); }
-.cs-strip {
-  position: relative; display: flex; gap: 5px; padding: 22px 6px 20px; border: 1.5px solid var(--ink);
-  background:
-    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='9'%3E%3Crect x='4.5' y='0.5' width='7' height='8' rx='1.5' fill='none' stroke='%23eef4ff' stroke-opacity='.75'/%3E%3C/svg%3E") left 0 top 9px / 16px 9px repeat-x,
-    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='9'%3E%3Crect x='4.5' y='0.5' width='7' height='8' rx='1.5' fill='none' stroke='%23eef4ff' stroke-opacity='.75'/%3E%3C/svg%3E") left 0 bottom 3px / 16px 9px repeat-x;
-}
-.cs-cell { position: relative; flex: 1; aspect-ratio: 3 / 2; padding: 0; border: 1px solid rgba(238, 244, 255, 0.85); background: #0b2a55; color: inherit; font: inherit; cursor: inherit; }
-.cs-cell.blank { flex: 0.5; aspect-ratio: auto; background: repeating-linear-gradient(45deg, transparent 0 5px, rgba(238, 244, 255, 0.28) 5px 6px); }
-.cs-img { position: absolute; inset: 0; overflow: hidden; }
-.cs-img img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; image-rendering: pixelated; }
-.cs-lens .cs-img img { image-rendering: auto; }
-/* Portrait frames lie on their side in the strip, as they do on a real contact sheet. */
-.cs-cell.tall .cs-img img { left: 50%; top: 50%; width: 66.667%; height: 150%; transform: translate(-50%, -50%) rotate(-90deg); }
-.cs-edge { position: absolute; left: 3px; top: -21px; font-family: "Martian Mono", ui-monospace, monospace; font-size: 7.5px; line-height: 9px; letter-spacing: 0.08em; color: rgba(238, 244, 255, 0.8); white-space: pre; pointer-events: none; }
-/* Redline ring around the picked frame, drawn in when it is picked. */
-.cs-ring { position: absolute; left: -9%; top: -16%; width: 118%; height: 132%; overflow: visible; pointer-events: none; z-index: 1; }
-.cs-ring path { fill: none; stroke: var(--redline); stroke-width: 1.5; stroke-linecap: round; stroke-dasharray: 100 100; stroke-dashoffset: 100; opacity: 0; transition: stroke-dashoffset 0.55s ease, opacity 0.2s; }
-.cs-cell.sel { z-index: 2; }
-.cs-cell.sel .cs-ring path { stroke-dashoffset: 0; opacity: 0.95; }
-.cs-cell:focus-visible { outline: 2px solid var(--redline); outline-offset: 3px; }
-/* The loupe: a magnified copy of the strip, in full colour, seen through a round lens. */
-.cs-loupe {
-  --d: 180px; position: absolute; left: 0; top: 0; z-index: 3; width: var(--d); height: var(--d); border-radius: 50%; overflow: hidden; pointer-events: none;
-  background: #0b2a55;
-  box-shadow: 0 0 0 calc(var(--d) * 0.04) #121417, 0 0 0 calc(var(--d) * 0.04 + 1.5px) rgba(255, 255, 255, 0.25), 0 calc(var(--d) * 0.1) calc(var(--d) * 0.18) rgba(0, 0, 0, 0.6);
-}
-.cs-loupe::after {
-  content: ""; position: absolute; inset: 0; border-radius: 50%;
-  background: radial-gradient(circle at 30% 24%, rgba(255, 255, 255, 0.24), rgba(255, 255, 255, 0) 30%), radial-gradient(circle, transparent 60%, rgba(0, 0, 0, 0.42) 100%);
-  box-shadow: inset 0 0 0 1px rgba(0, 0, 0, 0.7), inset 0 0 18px rgba(0, 0, 0, 0.35);
-}
-.cs-lens { position: absolute; left: 0; top: 0; transform-origin: 0 0; }
-.cs-ctrl > div { display: flex; gap: 8px; }
-.cs button.btn { min-width: 44px; min-height: 44px; padding: 0 16px; background: transparent; border: 1px solid var(--void-mark); color: var(--ink); cursor: pointer; font-size: 10.5px; letter-spacing: 0.06em; text-transform: uppercase; }
-.cs button.btn:hover { border-color: var(--ink-dim); }
-.cs button.btn.hot { border-color: var(--redline); color: var(--redline); }
-@media (max-width: 600px) {
-  .cs-frame { border-radius: 14px; }
-  .cs-read { font-size: 11px; }
-  .cs-top span + span { display: none; }
-  .cs-sheet { padding: 26px 8px 8px; }
-  .cs-hand { font-size: 17px; }
-  .cs-strip { gap: 3px; padding: 13px 3px; background-size: 10px 6px, 10px 6px; background-position: left 0 top 4px, left 0 bottom 3px; }
-  .cs-edge { display: none; }
-}
-@media (prefers-reduced-motion: reduce) { .cs, .cs-ring path { transition: none; } }
+.vf.on { opacity: 1; }
+.vf-top, .vf-ctrl { width: min(1080px, 100%); display: flex; justify-content: space-between; align-items: center; gap: 12px; }
+.vf-top { font-size: 10.5px; letter-spacing: 0.08em; text-transform: uppercase; color: #6f7a8c; }
+.vf-body { width: min(840px, 100%, calc((100dvh - 230px) * 1.5)); display: grid; gap: 12px; }
+.vf-frame { position: relative; aspect-ratio: 3 / 2; border-radius: 22px; overflow: hidden; background: #222; transform: scale(1.06); transition: transform 0.5s ease; }
+.vf.on .vf-frame { transform: none; }
+.vf-frame img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
+.vf-ph { position: absolute; left: 0; right: 0; top: 9%; text-align: center; font-size: 13px; letter-spacing: 0.06em; color: rgba(255, 250, 235, 0.85); }
+.vf-vig { position: absolute; inset: 0; border-radius: inherit; box-shadow: inset 0 0 140px 50px rgba(0, 0, 0, 0.85); pointer-events: none; }
+.vf-c { position: absolute; width: 5.5%; aspect-ratio: 1; border: 0 solid rgba(255, 248, 220, 0.92); pointer-events: none; }
+.vf-c.tl { left: 8%; top: 10.7%; border-left-width: 2px; border-top-width: 2px; }
+.vf-c.tr { right: 8%; top: 10.7%; border-right-width: 2px; border-top-width: 2px; }
+.vf-c.bl { left: 8%; bottom: 10.7%; border-left-width: 2px; border-bottom-width: 2px; }
+.vf-c.br { right: 8%; bottom: 10.7%; border-right-width: 2px; border-bottom-width: 2px; }
+.vf-patch { position: absolute; left: 50%; top: 50%; width: 13%; aspect-ratio: 110 / 72; transform: translate(-50%, -50%); border: 1px solid rgba(255, 236, 190, 0.7); background: rgba(255, 214, 140, 0.14); pointer-events: none; }
+.vf-read { display: flex; justify-content: space-between; align-items: baseline; gap: 12px; font-size: 13px; letter-spacing: 0.08em; color: var(--redline); text-shadow: 0 0 8px rgba(255, 171, 122, 0.55); }
+.vf-cap { margin: 0; font-size: 12px; letter-spacing: 0.04em; color: var(--ink-dim); }
+.vf-ctrl { margin-top: auto; }
+.vf-ctrl > div { display: flex; gap: 8px; }
+.vf button { min-width: 44px; min-height: 44px; padding: 0 16px; background: transparent; border: 1px solid var(--void-mark); color: var(--ink); cursor: pointer; font-size: 10.5px; letter-spacing: 0.06em; text-transform: uppercase; }
+.vf button:hover { border-color: var(--ink-dim); }
+.vf button.hot { border-color: var(--redline); color: var(--redline); }
+@media (max-width: 820px) { .vf-read { font-size: 11px; } .vf-frame { border-radius: 14px; } }
+@media (prefers-reduced-motion: reduce) { .vf, .vf-frame { transition: none; } }
 </style>
 
 <canvas id="gl" aria-hidden="true"></canvas>
@@ -805,221 +754,58 @@ body[data-mode="computer"] #gl.over { cursor: pointer; }
   </form>
 </div>
 
-<div class="cs" id="cs" role="dialog" aria-modal="true" aria-label="Contact sheet and loupe" hidden>
-  <div class="cs-top"><span>YN-1 · Item 7 · Contact sheet</span><span>Roll 07 · Photographs</span></div>
-  <div class="cs-body">
-    <div class="cs-view">
-      <div class="cs-frame" id="csFrame">
-        <img id="csImg" alt="">
-        <i class="cs-vig" aria-hidden="true"></i>
-        <i class="cs-c tl" aria-hidden="true"></i><i class="cs-c tr" aria-hidden="true"></i><i class="cs-c bl" aria-hidden="true"></i><i class="cs-c br" aria-hidden="true"></i>
-        <i class="cs-patch" aria-hidden="true"></i>
-      </div>
-      <div class="cs-read"><span id="csSet"></span><span id="csNo" aria-live="polite"></span></div>
-      <p class="cs-cap" id="csCap"></p>
+<div class="vf" id="vf" role="dialog" aria-modal="true" aria-label="YN-1 viewfinder" hidden>
+  <div class="vf-top"><span>YN-1 · Viewfinder</span><span>Item 7 · Photographs</span></div>
+  <div class="vf-body">
+    <div class="vf-frame">
+      <img id="vfImg" alt="">
+      <span class="vf-ph" id="vfPh"></span>
+      <i class="vf-vig" aria-hidden="true"></i>
+      <i class="vf-c tl" aria-hidden="true"></i><i class="vf-c tr" aria-hidden="true"></i><i class="vf-c bl" aria-hidden="true"></i><i class="vf-c br" aria-hidden="true"></i>
+      <i class="vf-patch" aria-hidden="true"></i>
     </div>
-    <div class="cs-table" id="csTable" role="group" aria-label="Contact sheet, six frames">
-      <div class="cs-sheet" id="csSheet">
-        <span class="cs-hand l">roll 07 · X100F · autumn '24</span><span class="cs-hand r">picks ✓</span>
-        <div id="csPrint"></div>
-      </div>
-      <div class="cs-loupe" id="csLoupe" aria-hidden="true"><div class="cs-lens" id="csLens" inert></div></div>
-    </div>
-    <p class="cs-hint" id="csHint">Move the loupe along the strip. Click a frame to mark it.</p>
+    <div class="vf-read"><span id="vfSet"></span><span id="vfNo" aria-live="polite"></span></div>
+    <p class="vf-cap" id="vfCap"></p>
   </div>
-  <div class="cs-ctrl">
-    <button type="button" class="btn" id="csBack">← Step back</button>
+  <div class="vf-ctrl">
+    <button type="button" id="vfBack">← Step back</button>
     <div>
-      <button type="button" class="btn" id="csPrev" aria-label="Previous frame">◂</button>
-      <button type="button" class="btn hot" id="csNext">Advance ▸</button>
+      <button type="button" id="vfPrev" aria-label="Previous frame">◂</button>
+      <button type="button" id="vfNext" class="hot">Advance ▸</button>
     </div>
   </div>
 </div>
 
 <script>
-// Item 7: a contact sheet and a loupe. A plain script so it also works on the flat (no-WebGL) page.
+// The viewfinder: item 7 on the YN-1. A plain script so it also works on the flat (no-WebGL) page.
 (() => {
-  const PHOTOS = [
+  const FRAMES = [
     { src: "photos/paris.jpg", alt: "Ricardo leaning on a stone balustrade above a misty Paris skyline", set: "f/5.6 · 1/125 · ISO 400", cap: "Ricardo Herrera · Paris, 2024" },
     // Street photos from the old personal-site repo, Fujifilm X100F. Exposure from each file's EXIF (stripped from these copies).
     { src: "photos/street-1.jpg", alt: "Two women laughing on a night street, the shop lights behind them streaking with motion blur", set: "f/4 · 1/8 · ISO 640", cap: "Night out · September 2024" },
     { src: "photos/street-2.jpg", alt: "A woman and a man reflected in a curved mirror on a metro platform", set: "f/4 · 1/30 · ISO 800", cap: "Metro mirror · September 2024" },
-    { src: "photos/street-3.jpg", alt: "A figure walking past the lit-up Eiffel Tower at night", set: "f/2.8 · 1/8 · ISO 400", cap: "Paris · October 2024", tall: true },
+    { src: "photos/street-3.jpg", alt: "A figure walking past the lit-up Eiffel Tower at night", set: "f/2.8 · 1/8 · ISO 400", cap: "Paris · October 2024", fit: "contain", bg: "#000" },
     { src: "photos/street-4.jpg", alt: "A woman in a yellow coat, hair blowing, among parked bicycles in front of brick canal houses", set: "f/8 · 1/500 · ISO 800", cap: "Bikes and a yellow coat · September 2024" },
     { src: "photos/street-5.jpg", alt: "Someone under a clear dome umbrella at a street corner beside a yellow shopfront", set: "f/8 · 1/640 · ISO 800", cap: "Clear umbrella · September 2024" },
   ];
-  // One strip: the leader, the six frames, the end of the roll. null = a blank frame.
-  const CELLS = [null, 0, 1, 2, 3, 4, 5, null];
-  const $ = (id) => document.getElementById(id);
-  const cs = $("cs"), table = $("csTable"), sheet = $("csSheet"), printEl = $("csPrint"), loupe = $("csLoupe"), lens = $("csLens");
-  const frameEl = $("csFrame"), img = $("csImg"), set = $("csSet"), no = $("csNo"), cap = $("csCap");
-  const reduce = matchMedia("(prefers-reduced-motion: reduce)").matches;
+  const vf = document.getElementById("vf"), img = document.getElementById("vfImg"), ph = document.getElementById("vfPh");
+  const frameEl = vf.querySelector(".vf-frame"), set = document.getElementById("vfSet"), no = document.getElementById("vfNo"), cap = document.getElementById("vfCap");
   const pad = (n) => String(n).padStart(2, "0");
-  const RING = "M52 4C80 3 97 22 96 49C95 78 75 97 47 96C19 95 3 75 4 47C5 21 25 6 58 7";
-
-  // A coarse blueprint print of a photo: a few dozen pixels across, five tones of blueprint blue.
-  function blueprint(src, tall, done) {
-    const im = new Image();
-    im.onload = () => {
-      const w = tall ? 26 : 39, h = tall ? 39 : 26;
-      const c = document.createElement("canvas"); c.width = w; c.height = h;
-      const g = c.getContext("2d"); g.drawImage(im, 0, 0, w, h);
-      const d = g.getImageData(0, 0, w, h), p = d.data;
-      const lo = [11, 42, 85], hi = [232, 240, 255];
-      for (let i = 0; i < p.length; i += 4) {
-        const l = (0.2126 * p[i] + 0.7152 * p[i + 1] + 0.0722 * p[i + 2]) / 255;
-        const t = Math.round(Math.min(1, l * 1.25) * 4) / 4;
-        for (let k = 0; k < 3; k++) p[i + k] = lo[k] + (hi[k] - lo[k]) * t;
-      }
-      g.putImageData(d, 0, 0);
-      done(c.toDataURL());
-    };
-    im.src = src;
+  let i = 0, back = null, timer = 0, isOpen = false, viaHash = false, walled = [];
+  function show(n) {
+    i = (n + FRAMES.length) % FRAMES.length;
+    const f = FRAMES[i];
+    img.hidden = !f.src;
+    if (f.src) { img.src = f.src; img.alt = f.alt; img.style.objectFit = f.fit || "cover"; }  // contain: portrait frames
+    ph.textContent = f.label || "";
+    frameEl.style.background = f.bg || "#222";
+    set.textContent = f.set;
+    no.textContent = `▸ ${pad(i + 1)} / ${pad(FRAMES.length)}`;
+    cap.textContent = `Frame ${pad(i + 1)} · ${f.cap}`;
   }
-
-  // ---- build the strip
-  const strip = document.createElement("div"); strip.className = "cs-strip";
-  CELLS.forEach((p, k) => {
-    const ph = PHOTOS[p];
-    const cell = document.createElement(ph ? "button" : "div");
-    cell.className = "cs-cell" + (ph ? (ph.tall ? " tall" : "") : " blank");
-    cell.dataset.k = k;
-    cell.innerHTML = `<span class="cs-edge" aria-hidden="true">${k === 0 ? "YN 400" : ph ? `▸${k}      ${k}A` : "▸7"}</span>`;
-    if (ph) {
-      cell.type = "button";
-      cell.setAttribute("aria-label", `Frame ${pad(p + 1)}: ${ph.cap}`);
-      cell.insertAdjacentHTML("beforeend", `<span class="cs-img"><img alt="" draggable="false" data-full="${ph.src}"></span><svg class="cs-ring" viewBox="0 0 100 100" preserveAspectRatio="none" aria-hidden="true"><path d="${RING}" pathLength="100"/></svg>`);
-      const thumb = cell.querySelector("img");
-      blueprint(ph.src, ph.tall, (url) => { thumb.src = url; });
-    } else cell.setAttribute("aria-hidden", "true");
-    strip.appendChild(cell);
-  });
-  printEl.appendChild(strip);
-  const buttons = [...strip.querySelectorAll("button.cs-cell")];
-  if (matchMedia("(hover: none)").matches) $("csHint").textContent = "Drag the loupe along the strip. Tap a frame to mark it.";
-
-  // ---- state
-  let sel = 1, under = -1, isOpen = false, viaHash = false, back = null, timer = 0, walled = [];
-  let W = 0, R = 90, M = 2.6, rects = [];
-  let x = 0, y = 0, tx = 0, ty = 0, follow = false, raf = 0;
-  let drag = null, eatClick = false;
-
-  // The preview and readout show the frame under the loupe, or the picked frame when the loupe is off the frames.
-  function show(k) {
-    const p = CELLS[k];
-    if (p == null) {
-      show(sel);
-      no.textContent = k === 0 ? "▸ leader" : "▸ end of roll";
-      cap.textContent = k === 0 ? "Leader · fogged loading the roll" : "End of roll · nothing on it";
-      return;
-    }
-    const ph = PHOTOS[p];
-    if (img.getAttribute("src") !== ph.src) { img.src = ph.src; img.alt = ph.alt; }
-    img.style.objectFit = ph.tall ? "contain" : "cover";     // portrait frames sit whole, on black
-    frameEl.style.background = ph.tall ? "#000" : "#222";
-    set.textContent = ph.set;
-    no.textContent = `▸ ${pad(p + 1)} / ${pad(PHOTOS.length)}`;
-    cap.textContent = `Frame ${pad(p + 1)} · ${ph.cap}`;
-  }
-  // Rebuild the magnified copy and the frame positions after any layout change.
-  function measure() {
-    W = table.clientWidth;
-    const tr = table.getBoundingClientRect();
-    rects = [...strip.children].map((el) => {
-      const r = el.getBoundingClientRect();
-      return { k: +el.dataset.k, x: r.left - tr.left, y: r.top - tr.top, w: r.width, h: r.height };
-    });
-    const cellW = (rects[1] || { w: 100 }).w;
-    M = W < 520 ? 3.2 : 2.6;
-    R = Math.round(Math.max(44, Math.min(96, cellW * 0.62)));   // a little smaller than the pick ring, so the ring shows around a parked loupe
-    loupe.style.setProperty("--d", `${R * 2}px`);
-    const copy = sheet.cloneNode(true);
-    copy.removeAttribute("id");
-    copy.querySelectorAll("[id]").forEach((el) => el.removeAttribute("id"));
-    copy.querySelectorAll("button").forEach((b) => b.setAttribute("tabindex", "-1"));
-    copy.querySelectorAll("img[data-full]").forEach((im) => (im.src = im.dataset.full));   // the lens sees the real photo
-    lens.style.width = `${W}px`;
-    lens.replaceChildren(copy);
-    under = -1;
-  }
-  const centre = (k) => { const r = rects.find((q) => q.k === k); return r ? [r.x + r.w / 2, r.y + r.h / 2] : [W / 2, 60]; };
-  const cellAt = (px, py) => { const r = rects.find((q) => px >= q.x - 2 && px <= q.x + q.w + 2 && py >= q.y && py <= q.y + q.h); return r ? r.k : -1; };
-  function place() {
-    loupe.style.transform = `translate(${x - R}px, ${y - R}px)`;
-    lens.style.transform = `translate(${R - x * M}px, ${R - y * M}px) scale(${M})`;
-    const k = cellAt(x, y);
-    if (k !== under) { under = k; show(k >= 0 ? k : sel); }
-  }
-  function step() {
-    raf = 0;
-    const f = reduce ? 1 : follow ? 0.5 : 0.16;
-    x += (tx - x) * f; y += (ty - y) * f;
-    if (Math.abs(tx - x) + Math.abs(ty - y) < 0.4) { x = tx; y = ty; }
-    place();
-    if (x !== tx || y !== ty) raf = requestAnimationFrame(step);
-  }
-  function moveTo(nx, ny, fol, snap) {
-    tx = nx; ty = ny; follow = fol;
-    if (snap) { x = tx; y = ty; place(); return; }
-    if (!raf) raf = requestAnimationFrame(step);
-  }
-  const park = (snap) => { const [cx, cy] = centre(sel); moveTo(cx, cy, false, snap); };
-  function pick(k) {
-    sel = k;
-    for (const root of [strip, lens]) root.querySelectorAll(".cs-cell").forEach((el) => el.classList.toggle("sel", +el.dataset.k === k));
-    under = -1;
-  }
-  function advance(d) {
-    const p = (CELLS[sel] + d + PHOTOS.length) % PHOTOS.length;
-    pick(CELLS.indexOf(p)); park(); show(sel);
-    if (document.activeElement && document.activeElement.closest(".cs-strip")) buttons[p].focus({ preventScroll: true });
-  }
-
-  // ---- pointing: a mouse carries the loupe; a finger drags it by the lens or taps a frame
-  const local = (e) => { const r = table.getBoundingClientRect(); return [e.clientX - r.left, e.clientY - r.top]; };
-  table.addEventListener("pointermove", (e) => {
-    const [px, py] = local(e);
-    if (drag && e.pointerId === drag.id) {
-      if (Math.hypot(e.clientX - drag.sx, e.clientY - drag.sy) > 6) drag.moved = true;
-      moveTo(px + drag.ox, py + drag.oy, true);
-    } else if (e.pointerType === "mouse" && !e.buttons) {
-      table.classList.add("mouse");
-      moveTo(px, py, true);
-    }
-  });
-  table.addEventListener("pointerleave", (e) => { if (e.pointerType === "mouse" && !drag) { table.classList.remove("mouse"); park(); } });
-  table.addEventListener("pointerdown", (e) => {
-    if (e.pointerType === "mouse") return;
-    const [px, py] = local(e);
-    if (Math.hypot(px - x, py - y) > R * 1.15) return;          // not on the loupe: a tap, handled by click
-    drag = { id: e.pointerId, ox: x - px, oy: y - py, sx: e.clientX, sy: e.clientY, moved: false };
-    table.setPointerCapture(e.pointerId);
-  });
-  const endDrag = (e) => {
-    if (!drag || e.pointerId !== drag.id) return;
-    if (drag.moved) {
-      eatClick = true; setTimeout(() => (eatClick = false), 0);
-      const k = cellAt(tx, ty);
-      if (CELLS[k] != null) { pick(k); park(); } else park();
-    }
-    drag = null;
-  };
-  table.addEventListener("pointerup", endDrag);
-  table.addEventListener("pointercancel", endDrag);
-  table.addEventListener("click", (e) => {
-    if (eatClick) { eatClick = false; return; }
-    const cell = e.target.closest("button.cs-cell");
-    if (!cell) return;
-    pick(+cell.dataset.k);
-    if (e.pointerType !== "mouse") park();
-  });
-  buttons.forEach((b) => b.addEventListener("focus", () => { if (b.matches(":focus-visible")) { pick(+b.dataset.k); park(); } }));
-  new ResizeObserver(() => { if (isOpen) { measure(); park(true); } }).observe(table);
-
-  // ---- open and close
   // While open, everything behind the dialog is inert: no focus, no clicks, hidden from screen readers.
   function wall(on) {
-    if (on) { walled = [...document.body.children].filter((el) => el !== cs && el.tagName !== "SCRIPT" && !el.inert); walled.forEach((el) => (el.inert = true)); }
+    if (on) { walled = [...document.body.children].filter((el) => el !== vf && el.tagName !== "SCRIPT" && !el.inert); walled.forEach((el) => (el.inert = true)); }
     else { walled.forEach((el) => (el.inert = false)); walled = []; }
   }
   function open(fromHash) {
@@ -1027,46 +813,46 @@ body[data-mode="computer"] #gl.over { cursor: pointer; }
     isOpen = true; viaHash = !!fromHash;
     clearTimeout(timer);
     back = document.activeElement;
-    cs.hidden = false;
+    show(0);
+    vf.hidden = false;
     wall(true);
-    pick(sel); measure(); park(true); show(sel);
-    requestAnimationFrame(() => requestAnimationFrame(() => cs.classList.add("on")));
-    $("csBack").focus({ preventScroll: true });
+    requestAnimationFrame(() => requestAnimationFrame(() => vf.classList.add("on")));
+    document.getElementById("vfBack").focus({ preventScroll: true });
   }
   // fromHistory: the URL has already moved on (Back button), so leave history alone.
   function close(fromHistory) {
     if (!isOpen) return;
     isOpen = false;
-    cs.classList.remove("on");
+    vf.classList.remove("on");
     wall(false);
-    timer = setTimeout(() => (cs.hidden = true), reduce ? 0 : 350);
-    if (fromHistory !== true && location.hash === "#photos") {
-      // Opened by navigating to #photos: step back to the route it came from (a sheet, the terminal or the computer).
+    timer = setTimeout(() => (vf.hidden = true), matchMedia("(prefers-reduced-motion: reduce)").matches ? 0 : 350);
+    if (fromHistory !== true && location.hash === "#viewfinder") {
+      // Opened by navigating to #viewfinder: step back to the route it came from (a sheet, the terminal or the computer).
       if (viaHash) history.back();
       else history.replaceState(null, "", location.pathname + location.search);
     }
     if (back && back.focus) back.focus({ preventScroll: true });
   }
-  $("csBack").addEventListener("click", () => close());
-  $("csPrev").addEventListener("click", () => advance(-1));
-  $("csNext").addEventListener("click", () => advance(1));
-  cs.addEventListener("keydown", (e) => {
+  document.getElementById("vfBack").addEventListener("click", () => close());
+  document.getElementById("vfPrev").addEventListener("click", () => show(i - 1));
+  document.getElementById("vfNext").addEventListener("click", () => show(i + 1));
+  vf.addEventListener("keydown", (e) => {
     if (e.key === "Escape") { e.preventDefault(); e.stopPropagation(); close(); }
-    else if (e.key === "ArrowRight") { e.preventDefault(); e.stopPropagation(); advance(1); }
-    else if (e.key === "ArrowLeft") { e.preventDefault(); e.stopPropagation(); advance(-1); }
+    else if (e.key === "ArrowRight") { e.stopPropagation(); show(i + 1); }
+    else if (e.key === "ArrowLeft") { e.stopPropagation(); show(i - 1); }
     else if (e.key === "Tab") {
       // Keep focus inside the dialog.
-      const f = [...cs.querySelectorAll("button")].filter((b) => !b.closest(".cs-loupe")), first = f[0], last = f[f.length - 1];
+      const f = [...vf.querySelectorAll("button")], first = f[0], last = f[f.length - 1];
       if (e.shiftKey && document.activeElement === first) { e.preventDefault(); last.focus(); }
       else if (!e.shiftKey && document.activeElement === last) { e.preventDefault(); first.focus(); }
     }
   });
   addEventListener("hashchange", () => {
-    if (location.hash === "#photos") open(true);
+    if (location.hash === "#viewfinder") open(true);
     else close(true);
   });
-  if (location.hash === "#photos") open(false);
-  window.YN1Photos = { open, close };
+  if (location.hash === "#viewfinder") open(false);
+  window.YN1Viewfinder = { open, close };
 })();
 </script>
 
@@ -1097,7 +883,7 @@ const PART = {
   tape:     { label: "Item 5 · Tape drive",  go: "archive",  verb: "Archive" },
   keyboard: { label: "Item 6 · Keyboard",    go: "contact",  verb: "Contact" },
   chassis:  { label: "Item 1 · Chassis",     go: "index",    verb: "Drawing index" },
-  loupe:    { label: "Item 7 · Contact sheet", go: "photos", verb: "Look through the loupe" },
+  viewfinder: { label: "Item 7 · Contact sheet", go: "viewfinder", verb: "Look through" },
 };
 // Sheets hang in a ring around the computer, each facing it (mm = CSS px).
 const RING = { index: -118, about: -168, work: 150, writing: 102, archive: 58, contact: -62 };
@@ -1248,10 +1034,11 @@ meshes.forEach((o) => {
   o.add(vis, hid); part.lines.push(vis.material); part.hidden.push(hid.material);
 });
 // Item 7: a contact sheet on the desk to the right of the keyboard, with a loupe standing on it. Built here rather than in Blender.
+// Clicking it opens the viewfinder.
 {
-  const g = new THREE.Group(); g.name = "part_loupe"; g.position.set(0.56, 0, 0.36); g.rotation.y = 0.22; gltf.scene.add(g);
-  const part = { key: "loupe", root: g, home: g.position.clone(), ex: new THREE.Vector3(0, 0.14, 0), lines: [], hidden: [], meshes: [], t: 0, lift: 0 };
-  parts.loupe = part;
+  const g = new THREE.Group(); g.name = "part_viewfinder"; g.position.set(0.56, 0, 0.36); g.rotation.y = 0.22; gltf.scene.add(g);
+  const part = { key: "viewfinder", root: g, home: g.position.clone(), ex: new THREE.Vector3(0, 0.14, 0), lines: [], hidden: [], meshes: [], t: 0, lift: 0 };
+  parts.viewfinder = part;
   const T = 0.0016;                                       // an 8×10 sheet of photo paper, landscape
   const sheet = new THREE.Mesh(new THREE.BoxGeometry(0.254, T, 0.203)); sheet.position.y = T / 2;
   // the loupe: a clear cone with a lens ring on top, standing on frame 2
@@ -1259,7 +1046,7 @@ meshes.forEach((o) => {
   const cone = new THREE.Mesh(new THREE.CylinderGeometry(0.017, 0.023, LH, 40)); cone.position.set(LX, T + LH / 2, LZ);
   const ring = new THREE.Mesh(new THREE.CylinderGeometry(0.019, 0.019, 0.007, 40)); ring.position.set(LX, T + LH + 0.0035, LZ);
   for (const o of [sheet, cone, ring]) {
-    o.material = fillMat(); o.userData.partKey = "loupe"; g.add(o); part.meshes.push(o);
+    o.material = fillMat(); o.userData.partKey = "viewfinder"; g.add(o); part.meshes.push(o);
     const edges = new THREE.EdgesGeometry(o.geometry, 28);
     const vis = new THREE.LineSegments(edges, lineMat()); vis.raycast = () => {};
     const hid = new THREE.LineSegments(edges, hiddenMat()); hid.computeLineDistances(); hid.renderOrder = 2; hid.raycast = () => {};
@@ -1282,7 +1069,7 @@ meshes.forEach((o) => {
   g.add(vis, hid); part.lines.push(vis.material); part.hidden.push(hid.material);
 }
 // A sticky note on the floor beside the keyboard, with a random to-do. Peel it back to find a code written on the back.
-const STICKY_CODE = "616182";   // written on the back of the note (not used for anything yet)
+const STICKY_CODE = "616182";   // written on the back of the note; the password for do-not-open.txt in the terminal
 const TODOS = [
   "renew the TLS cert before it renews me",
   "rewind the backup tapes",
@@ -1524,8 +1311,8 @@ gl.domElement.addEventListener("pointerup", (e) => {
   if (h.sticky) { sticky.open = !sticky.open; return; }
   picked = h.part;
   const target = PART[h.part].go;
-  if (target === "photos") {
-    setTimeout(() => { window.YN1Photos.open(); picked = null; }, reduce ? 0 : 280);
+  if (target === "viewfinder") {
+    setTimeout(() => { window.YN1Viewfinder.open(); picked = null; }, reduce ? 0 : 280);
     return;
   }
   setTimeout(() => go(target), reduce ? 0 : 280);  // let the part lift first
@@ -1564,8 +1351,45 @@ async function loadPosts() {
   if (rev) rev.textContent = POSTS[0].rev;
 }
 loadPosts();
-const FILES = ["about.txt", "contact.txt", "work/", "writing/", "archive/"];
-const CMDS = ["help", "whoami", "ls", "cat", "git log", "git show", "open", "take apart", "put together", "crt", "look", "clear", "exit"];
+const FILES = ["about.txt", "contact.txt", "do-not-open.txt", "work/", "writing/", "archive/"];
+const CMDS = ["help", "whoami", "ls", "cat", "unlock", "lock", "git log", "git show", "open", "take apart", "put together", "crt", "look", "clear", "exit"];
+
+// A locked file. The password is the code on the back of the sticky note on the desk (peel it back).
+const LOCKED = { "do-not-open.txt": { code: STICKY_CODE, open: false } };
+function printLog() {
+  out({ cls: "head", text: "OPERATOR'S LOG · YN-1 · DO NOT OPEN" });
+  out({ cls: "dim", text: "You found the password on a sticky note. So did the auditors." });
+  out("");
+  out("02:14  pager went off. it was the pager test.");
+  out("02:15  the pager test passed. went back to sleep.");
+  out("day 412 without an incident. also, the incident counter was down.");
+  out("change freeze starts friday. so do the changes.");
+  out("rotated the password. wrote the new one on the same sticky note.");
+  out("");
+  out(["Thanks for snooping. People who read the logs are my kind of people. ", { href: "mailto:ricardo@ricardoherrera.co", text: "say hi" }, "."]);
+}
+let prompt = null;   // { file, tries } while unlock is asking for a password
+const termLabel = document.querySelector('label[for="termIn"]');
+function askPassword(file) {
+  prompt = { file, tries: 0 };
+  termLabel.textContent = "Password:"; termIn.type = "password"; termIn.setAttribute("aria-label", "Password");
+}
+function endPrompt() {
+  prompt = null;
+  termLabel.textContent = "yn1:~$"; termIn.type = "text"; termIn.setAttribute("aria-label", "Command");
+}
+function tryPassword(value) {
+  out([{ cls: "dim", text: "Password: " }]);
+  if (value.trim() === LOCKED[prompt.file].code) {
+    LOCKED[prompt.file].open = true; endPrompt();
+    out({ cls: "dim", text: "unlocked." }); out(""); printLog();
+    return;
+  }
+  prompt.tries++;
+  if (prompt.tries >= 3) { endPrompt(); out({ cls: "err", text: "unlock: 3 incorrect password attempts" }); return; }
+  out({ cls: "err", text: "Sorry, try again." });
+  if (prompt.tries === 2) out({ cls: "dim", text: "hint: the operator never could remember it. check the desk." });
+}
 let booted = false, hist = [], hi = 0;
 
 function out(parts, cls) {
@@ -1640,6 +1464,7 @@ function bootTerm() {
   out("");
 }
 function exec(raw) {
+  if (prompt) endPrompt();   // a clicked command link abandons an open password prompt
   const line = raw.trim();
   out([{ cls: "dim", text: "yn1:~$ " }, { cls: "cmd", text: line }]);
   if (!line) return;
@@ -1651,12 +1476,13 @@ function exec(raw) {
       out([{ run: "whoami", text: "whoami" }, "           who built this machine"]);
       out([{ run: "ls", text: "ls" }, " [dir]          list files: work, writing, archive"]);
       out([{ run: "cat about.txt", text: "cat" }, " <file>        read a file"]);
+      out([{ run: "unlock do-not-open.txt", text: "unlock" }, " <file>      open a locked file (", { run: "lock do-not-open.txt", text: "lock" }, " to close it again)"]);
       out([{ run: "git log", text: "git log" }, "            work history, newest first"]);
       out(["git show <sha>     one role in detail"]);
       out([{ run: "open about", text: "open" }, " <sheet>      fly to a drawing: index about work writing archive contact"]);
       out([{ run: "take apart", text: "take apart" }, "         disassemble the YN-1 (", { run: "put together", text: "put together" }, " to undo)"]);
       out([{ run: "crt off", text: "crt" }, " on|off         screen glow"]);
-      out([{ run: "look", text: "look" }, "               look at the contact sheet through the loupe"]);
+      out([{ run: "look", text: "look" }, "               look through the viewfinder"]);
       out(["clear · ", { run: "exit", text: "exit" }]);
       break;
     case "whoami":
@@ -1681,9 +1507,20 @@ function exec(raw) {
       const f = arg.replace(/^\.\//, "");
       const m = f.match(/^writing\/(\d+)$/);
       if (f === "about.txt") { out("Site reliability engineer, 10+ years in infrastructure."); out("Now: senior SRE at Radar (since January 2026) and co-founder of Glamer."); out("Go, Terraform, FluxCD. Self-service over tickets."); }
+      else if (LOCKED[f] && !LOCKED[f].open) { out({ cls: "err", text: `cat: ${f}: permission denied (locked)` }); out(["try ", { run: `unlock ${f}`, text: `unlock ${f}` }]); }
+      else if (f === "do-not-open.txt") printLog();
       else if (f === "contact.txt") { out(["email     ", { href: "mailto:ricardo@ricardoherrera.co", text: "ricardo@ricardoherrera.co" }]); out(["linkedin  ", { href: "https://www.linkedin.com/in/ricardohe/", text: "linkedin.com/in/ricardohe" }]); out(["x         ", { href: "https://x.com/rickhlx", text: "x.com/rickhlx" }]); out(["github    ", { href: "https://github.com/rickhlx", text: "github.com/rickhlx" }]); }
       else if (m && POSTS[m[1] - 1]) { const p = POSTS[m[1] - 1]; out({ cls: "head", text: p.title }); out({ cls: "dim", text: `rev ${p.rev} · ${p.date}` }); out(p.dek); out([{ href: p.url, text: "read the post →" }, "   ", { go: "writing", text: "all posts → sheet 04" }]); }
       else out({ cls: "err", text: `cat: ${f || "?"}: no such file. Try ls.` });
+      break;
+    }
+    case "unlock": case "lock": {
+      const f = (arg || "do-not-open.txt").replace(/^\.\//, "");
+      const L = LOCKED[f];
+      if (!L) out({ cls: "err", text: `${cmd.toLowerCase()}: ${f}: ${FILES.includes(f) ? "not a locked file" : "no such file"}` });
+      else if (cmd.toLowerCase() === "lock") { L.open = false; out({ cls: "dim", text: `${f} locked.` }); }
+      else if (L.open) out([{ cls: "dim", text: `${f} is already unlocked: ` }, { run: `cat ${f}`, text: `cat ${f}` }]);
+      else askPassword(f);
       break;
     }
     case "git":
@@ -1711,19 +1548,23 @@ function exec(raw) {
     case "crt": termEl.classList.toggle("flat", args[0] === "off"); out({ cls: "dim", text: `crt ${args[0] === "off" ? "off" : "on"}` }); break;
     case "clear": termOut.textContent = ""; break;
     case "exit": case "logout": go("yn1"); break;
-    case "look": out({ cls: "dim", text: "pulling the contact sheet…" }); setTimeout(() => window.YN1Photos.open(), reduce ? 0 : 250); break;
+    case "look": out({ cls: "dim", text: "winding on…" }); setTimeout(() => window.YN1Viewfinder.open(), reduce ? 0 : 250); break;
     case "sudo": out({ cls: "err", text: "nice try." }); break;
     default: out({ cls: "err", text: `${cmd}: command not found. Try help.` });
   }
 }
-$("termForm").addEventListener("submit", (e) => { e.preventDefault(); exec(termIn.value); termIn.value = ""; });
+$("termForm").addEventListener("submit", (e) => { e.preventDefault(); if (prompt) tryPassword(termIn.value); else exec(termIn.value); termIn.value = ""; });
 termIn.addEventListener("keydown", (e) => {
+  if (prompt) {   // password entry: no history or completion; Esc cancels instead of leaving the terminal
+    if (e.key === "Escape") { e.preventDefault(); e.stopPropagation(); termIn.value = ""; endPrompt(); out({ cls: "dim", text: "unlock: cancelled" }); }
+    return;
+  }
   if (e.key === "ArrowUp") { e.preventDefault(); hi = Math.max(0, hi - 1); termIn.value = hist[hi] || ""; }
   else if (e.key === "ArrowDown") { e.preventDefault(); hi = Math.min(hist.length, hi + 1); termIn.value = hist[hi] || ""; }
   else if (e.key === "Tab") {
     e.preventDefault();
     const v = termIn.value;
-    const pool = v.startsWith("cat ") ? FILES.map((f) => `cat ${f}`) : v.startsWith("open ") ? SHEETS.map((s) => `open ${s}`) : CMDS;
+    const pool = v.startsWith("cat ") ? FILES.map((f) => `cat ${f}`) : /^(un)?lock /.test(v) ? Object.keys(LOCKED).map((f) => `${v.split(" ")[0]} ${f}`) : v.startsWith("open ") ? SHEETS.map((s) => `open ${s}`) : CMDS;
     const m = pool.filter((c) => c.startsWith(v));
     if (m.length === 1) termIn.value = m[0] + (m[0].endsWith("/") ? "" : " ");
     else if (m.length > 1) out({ cls: "dim", text: m.join("   ") });

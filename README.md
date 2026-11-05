@@ -76,4 +76,3 @@ The homepage and every writing page carry a meta description, canonical URL, Ope
 - `site/index.html` still carries the claude.ai artifact page wrapper (its first line). Replace it with a proper `<head>`.
 - The spot interruptions post is live but is still sample text written to show the layout. Rewrite or replace it.
 - Content is still partly placeholder: the archive sheet and the sample post.
-- The Contact sheet (J5) and `cat contact.txt` link to `resume.pdf`. Drop the PDF in `site/resume.pdf`, or those links 404.

@@ -728,6 +728,7 @@ body[data-mode="computer"] #gl.over { cursor: pointer; }
             <tr><td class="n">J2</td><td><a href="https://www.linkedin.com/in/ricardohe/" target="_blank" rel="noopener me">LinkedIn</a></td></tr>
             <tr><td class="n">J3</td><td><a href="https://x.com/rickhlx" target="_blank" rel="noopener me">X</a></td></tr>
             <tr><td class="n">J4</td><td><a href="https://github.com/rickhlx" target="_blank" rel="noopener me">GitHub</a></td></tr>
+            <tr><td class="n">J5</td><td><a href="resume.pdf" download="Ricardo-Herrera-Resume.pdf">Resume (PDF)</a></td></tr>
           </table>
         </div>
         <p>Write about platform and reliability work, infrastructure for early-stage teams, or a good postmortem story.</p>
@@ -1380,7 +1381,7 @@ function out(parts, cls) {
     if (typeof p === "string") line.append(p);
     else if (p.go) { const a = document.createElement("a"); a.href = `#${p.go}`; a.textContent = p.text; line.append(a); }
     else if (p.node) line.append(p.node);
-    else if (p.href) { const a = document.createElement("a"); a.href = p.href; a.textContent = p.text; if (/^https?:/.test(p.href)) { a.target = "_blank"; a.rel = "noopener"; } line.append(a); }
+    else if (p.href) { const a = document.createElement("a"); a.href = p.href; a.textContent = p.text; if (/^https?:|\.pdf$/.test(p.href)) { a.target = "_blank"; a.rel = "noopener"; } line.append(a); }
     else if (p.run) { const a = document.createElement("a"); a.href = "#terminal"; a.textContent = p.text; a.addEventListener("click", (e) => { e.preventDefault(); e.stopPropagation(); exec(p.run); }); line.append(a); }
     else { const s = document.createElement("span"); s.className = p.cls; s.textContent = p.text; line.append(s); }
   }
@@ -1490,7 +1491,7 @@ function exec(raw) {
       if (f === "about.txt") { out("Site reliability engineer, 10+ years in infrastructure."); out("Now: senior SRE at Radar (since January 2026) and co-founder of Glamer."); out("Go, Terraform, FluxCD. Self-service over tickets."); }
       else if (LOCKED[f] && !LOCKED[f].open) { out({ cls: "err", text: `cat: ${f}: permission denied (locked)` }); out(["try ", { run: `unlock ${f}`, text: `unlock ${f}` }]); }
       else if (f === "do-not-open.txt") printLog();
-      else if (f === "contact.txt") { out(["email     ", { href: "mailto:ricardo@ricardoherrera.co", text: "ricardo@ricardoherrera.co" }]); out(["linkedin  ", { href: "https://www.linkedin.com/in/ricardohe/", text: "linkedin.com/in/ricardohe" }]); out(["x         ", { href: "https://x.com/rickhlx", text: "x.com/rickhlx" }]); out(["github    ", { href: "https://github.com/rickhlx", text: "github.com/rickhlx" }]); }
+      else if (f === "contact.txt") { out(["email     ", { href: "mailto:ricardo@ricardoherrera.co", text: "ricardo@ricardoherrera.co" }]); out(["linkedin  ", { href: "https://www.linkedin.com/in/ricardohe/", text: "linkedin.com/in/ricardohe" }]); out(["x         ", { href: "https://x.com/rickhlx", text: "x.com/rickhlx" }]); out(["github    ", { href: "https://github.com/rickhlx", text: "github.com/rickhlx" }]); out(["resume    ", { href: "resume.pdf", text: "resume.pdf" }]); }
       else if (m && POSTS[m[1] - 1]) { const p = POSTS[m[1] - 1]; out({ cls: "head", text: p.title }); out({ cls: "dim", text: `rev ${p.rev} · ${p.date}` }); out(p.dek); out([{ href: p.url, text: "read the post →" }, "   ", { go: "writing", text: "all posts → sheet 04" }]); }
       else out({ cls: "err", text: `cat: ${f || "?"}: no such file. Try ls.` });
       break;

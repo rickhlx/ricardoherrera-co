@@ -277,13 +277,6 @@ html.anim .sheet.drawn .markup .note { opacity: 1; translate: 0 0; transition: o
 .hint { color: var(--ink-dim); }
 .hint b { color: var(--ink); font-weight: 400; }
 @media (max-width: 820px) { .hint .long { display: none; } }
-#tip {
-  position: fixed; left: 0; top: 0; z-index: 20; pointer-events: none; display: none;
-  background: var(--sheet); border: 1px solid var(--ink); padding: 6px 10px 7px; white-space: nowrap;
-  font-size: 10px; letter-spacing: 0.06em; text-transform: uppercase; color: var(--ink-dim);
-}
-#tip strong { display: block; font-family: var(--font-letter); font-variation-settings: "wdth" 85; font-weight: 600; font-size: 13px; color: var(--ink); letter-spacing: 0.05em; }
-#tip em { font-style: normal; color: var(--redline); }
 .ctrl .mode-sheet, .ctrl .mode-term { display: none; }
 body[data-mode="sheet"] .ctrl .mode-computer, body[data-mode="term"] .ctrl .mode-computer { display: none; }
 body[data-mode="sheet"] .ctrl .mode-sheet { display: inline-flex; }
@@ -395,7 +388,6 @@ body[data-mode="computer"] #gl.over { cursor: pointer; }
 
 <canvas id="gl" aria-hidden="true"></canvas>
 <div id="css3d"></div>
-<div id="tip" role="presentation"><strong></strong><span></span></div>
 
 <header class="bar top">
   <div class="set">Ricardo Herrera <span>· YN-1 drawing set · Rev B</span></div>
@@ -1194,7 +1186,7 @@ function go(key) {
     p0: from.pos, p1: from.pos.clone().addScaledVector(from.back, lift), p2: to.pos.clone().addScaledVector(to.back, lift), p3: to.pos, q0: from.quat, q1: to.quat };
   current = key;
   mode = "flying";
-  hideTip();
+  clearHover();
   document.body.dataset.mode = key === "yn1" ? "computer" : key === "terminal" ? "term" : "sheet";
   if (key !== "yn1") picked = PARTKEY_FOR[key] || null; else picked = null;
   updateChrome();
@@ -1245,7 +1237,6 @@ addEventListener("keydown", (e) => {
 
 // ---------- pointing at the computer
 const ray = new THREE.Raycaster(), ndc = new THREE.Vector2();
-const tip = $("tip"), tipName = tip.querySelector("strong"), tipVerb = tip.querySelector("span");
 let hovered = null, downAt = null;
 function hit(e) {
   const r = gl.domElement.getBoundingClientRect();
@@ -1258,21 +1249,16 @@ function hit(e) {
   if (h.object.userData.sticky) return { sticky: true };
   return { part: h.object.userData.partKey };
 }
-function hideTip() { tip.style.display = "none"; hovered = null; gl.domElement.classList.remove("over"); }
+// Hovering lifts the part and turns it orange (see the render loop); there is no label box.
+function clearHover() { hovered = null; gl.domElement.classList.remove("over"); }
 gl.domElement.addEventListener("pointermove", (e) => {
-  if (mode !== "computer" || e.buttons) { if (mode !== "computer") hideTip(); return; }
+  if (mode !== "computer" || e.buttons) { if (mode !== "computer") clearHover(); return; }
   const h = hit(e);
-  if (!h) return hideTip();
+  if (!h) return clearHover();
   hovered = h.part || (h.sticky ? "sticky" : null);
-  const name = h.sticky ? "Sticky note" : h.part ? PART[h.part].label : `Sheet 0${SHEETS.indexOf(h.sheet) + 1}`;
-  const verb = h.sticky ? (sticky.open ? "Stick it back down" : "Peel it back") : h.part ? PART[h.part].verb : NAMES[h.sheet];
-  tipName.textContent = name; tipVerb.innerHTML = `<em>→</em> ${verb}`;
-  tip.style.display = "block";
-  const x = Math.min(innerWidth - tip.offsetWidth - 8, e.clientX + 16), y = Math.min(innerHeight - tip.offsetHeight - 8, e.clientY + 18);
-  tip.style.transform = `translate(${x}px, ${y}px)`;
   gl.domElement.classList.add("over");
 });
-gl.domElement.addEventListener("pointerleave", hideTip);
+gl.domElement.addEventListener("pointerleave", clearHover);
 gl.domElement.addEventListener("pointerdown", (e) => (downAt = { x: e.clientX, y: e.clientY, t: performance.now() }));
 gl.domElement.addEventListener("pointerup", (e) => {
   if (mode !== "computer" || !downAt) return;
@@ -1282,7 +1268,7 @@ gl.domElement.addEventListener("pointerup", (e) => {
   const h = hit(e);
   if (!h) return;
   if (h.sheet) return go(h.sheet);
-  if (h.sticky) { sticky.open = !sticky.open; tipVerb.innerHTML = `<em>→</em> ${sticky.open ? "Stick it back down" : "Peel it back"}`; return; }
+  if (h.sticky) { sticky.open = !sticky.open; return; }
   picked = h.part;
   const target = PART[h.part].go;
   if (target === "viewfinder") {

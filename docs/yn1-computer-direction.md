@@ -10,7 +10,7 @@ Updated 2026-11-05. This is the homepage direction being built now. It grew out 
 ## What it is
 The homepage is a fictional 1970s workstation, the **YN-1**, modeled in Blender. The browser draws it live in blueprint linework, with hidden edges dashed, floating in a dark drafting void.
 
-- **Look around:** drag to turn the computer and scroll to zoom. Hovering over a part lifts it, turns it orange, and shows a label.
+- **Look around:** drag to turn the computer and scroll to zoom. Hovering over a part lifts it and turns it orange; there is no label box.
 - **Click a part:** the camera flies to that part's drawing sheet, one of six blueprint sheets hanging in a ring around the computer.
 - **"Take apart":** explodes the model. This uncovers the logic board.
 - **Click the screen:** the camera zooms in and the screen becomes a working terminal. Commands are `help`, `whoami`, `ls`, `cat`, `git log`, `git show`, `open <sheet>`, `take apart`, `crt on|off` and `exit`. Work history is shown as a `git log`, with the current role at `HEAD`.

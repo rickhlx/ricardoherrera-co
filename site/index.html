@@ -66,6 +66,8 @@ html .drawing { height: 420px; }
 </script>
 <meta name="claude:viewport-fit-sides" content="cover">
 <link rel="preconnect" href="https://fonts.googleapis.com">
+<!-- Dank Mono for the terminal: the vendor web build (licensed, obfuscated), loaded without blocking render -->
+<link rel="stylesheet" href="fonts/dmvendor.css" media="print" onload="this.media='all'">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@62..125,400..800&family=Martian+Mono:wdth,wght@75..100,300..500&family=Caveat:wght@500..700&display=swap">
 <style>
 
@@ -83,6 +85,7 @@ html .drawing { height: 420px; }
   --redline: #ffab7a;
   --font-letter: "Archivo", "Arial Narrow", Arial, sans-serif;
   --font-mono: "Martian Mono", ui-monospace, Menlo, monospace;
+  --font-term: "dm", ui-monospace, "SF Mono", Menlo, monospace; /* Dank Mono, see fonts/dmvendor.css */
   color-scheme: dark;
 }
 * { box-sizing: border-box; }
@@ -305,7 +308,7 @@ body[data-mode="computer"] #gl.over { cursor: pointer; }
   --tw: 600px; --th: 414px;
   width: var(--tw); height: var(--th); display: grid; grid-template-rows: minmax(0, 1fr) auto;
   background: radial-gradient(120% 100% at 50% 40%, #0c1d15 0%, var(--crt) 70%, #030806 100%);
-  color: var(--phosphor); font-family: var(--font-mono); font-size: clamp(10px, calc(var(--tw) / 52), 14px); line-height: 1.5;
+  color: var(--phosphor); font-family: var(--font-term); font-size: clamp(11px, calc(var(--tw) / 48), 15px); line-height: 1.5;
   padding: 3.2% 4% 3%; border-radius: 3% / 4.5%; overflow: hidden; position: relative;
   text-shadow: 0 0 6px rgba(143, 240, 184, 0.45);
   transition: opacity 0.35s ease;
@@ -320,7 +323,7 @@ body[data-mode="computer"] #gl.over { cursor: pointer; }
 .term-out { overflow-y: auto; overscroll-behavior: contain; white-space: pre-wrap; word-break: break-word; scrollbar-width: none; }
 .term-out::-webkit-scrollbar { display: none; }
 .term-out .cmd { color: #d7ffe8; }
-.term-out .dim { color: var(--phosphor-dim); }
+.term-out .dim { color: var(--phosphor-dim); font-style: italic; }
 .term-out .err { color: #ffb38a; text-shadow: 0 0 6px rgba(255, 179, 138, 0.4); }
 .term-out a { color: #d7ffe8; text-decoration: underline; text-underline-offset: 3px; cursor: pointer; }
 .term-out a:hover { color: #fff; }
@@ -977,9 +980,9 @@ function screenTexture() {
     grd.addColorStop(0, "#0d2018"); grd.addColorStop(1, "#030806");
     g.fillStyle = grd; g.fillRect(0, 0, 512, 352);
     g.fillStyle = "#8ff0b8"; g.shadowColor = "rgba(143,240,184,0.7)"; g.shadowBlur = 10;
-    g.font = "500 26px Martian Mono, ui-monospace, monospace";
+    g.font = "bold 28px dm, ui-monospace, monospace";
     g.fillText("YN-1 READY", 36, 74);
-    g.font = "400 19px Martian Mono, ui-monospace, monospace";
+    g.font = "21px dm, ui-monospace, monospace";
     g.fillStyle = "#4f9e76"; g.fillText("64K OK  ·  TAPE OK", 36, 112);
     g.fillStyle = "#8ff0b8"; g.fillText("> CLICK THE SCREEN TO USE", 36, 270);
     if (blink) g.fillRect(36, 290, 14, 22);
@@ -988,6 +991,8 @@ function screenTexture() {
     tex.needsUpdate = true;
   };
   tex.draw(true);
+  // The canvas doesn't pull in webfonts by itself; fetch Dank Mono so the next blink redraw uses it.
+  document.fonts?.load("21px dm"); document.fonts?.load("bold 28px dm");
   return tex;
 }
 

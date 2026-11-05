@@ -782,7 +782,7 @@ body[data-mode="computer"] #gl.over { cursor: pointer; }
   const vf = document.getElementById("vf"), img = document.getElementById("vfImg"), ph = document.getElementById("vfPh");
   const frameEl = vf.querySelector(".vf-frame"), set = document.getElementById("vfSet"), no = document.getElementById("vfNo"), cap = document.getElementById("vfCap");
   const pad = (n) => String(n).padStart(2, "0");
-  let i = 0, back = null, timer = 0;
+  let i = 0, back = null, timer = 0, isOpen = false, viaHash = false, walled = [];
   function show(n) {
     i = (n + FRAMES.length) % FRAMES.length;
     const f = FRAMES[i];
@@ -794,32 +794,55 @@ body[data-mode="computer"] #gl.over { cursor: pointer; }
     no.textContent = `▸ ${pad(i + 1)} / ${pad(FRAMES.length)}`;
     cap.textContent = `Frame ${pad(i + 1)} · ${f.cap}`;
   }
-  function open() {
-    if (!vf.hidden) return;
+  // While open, everything behind the dialog is inert: no focus, no clicks, hidden from screen readers.
+  function wall(on) {
+    if (on) { walled = [...document.body.children].filter((el) => el !== vf && el.tagName !== "SCRIPT" && !el.inert); walled.forEach((el) => (el.inert = true)); }
+    else { walled.forEach((el) => (el.inert = false)); walled = []; }
+  }
+  function open(fromHash) {
+    if (isOpen) return;
+    isOpen = true; viaHash = !!fromHash;
     clearTimeout(timer);
     back = document.activeElement;
     show(0);
     vf.hidden = false;
+    wall(true);
     requestAnimationFrame(() => requestAnimationFrame(() => vf.classList.add("on")));
-    document.getElementById("vfNext").focus({ preventScroll: true });
+    document.getElementById("vfBack").focus({ preventScroll: true });
   }
-  function close() {
-    if (vf.hidden) return;
+  // fromHistory: the URL has already moved on (Back button), so leave history alone.
+  function close(fromHistory) {
+    if (!isOpen) return;
+    isOpen = false;
     vf.classList.remove("on");
+    wall(false);
     timer = setTimeout(() => (vf.hidden = true), matchMedia("(prefers-reduced-motion: reduce)").matches ? 0 : 350);
-    if (location.hash === "#viewfinder") history.replaceState(null, "", location.pathname + location.search);
+    if (fromHistory !== true && location.hash === "#viewfinder") {
+      // Opened by navigating to #viewfinder: step back to the route it came from (a sheet, the terminal or the computer).
+      if (viaHash) history.back();
+      else history.replaceState(null, "", location.pathname + location.search);
+    }
     if (back && back.focus) back.focus({ preventScroll: true });
   }
-  document.getElementById("vfBack").addEventListener("click", close);
+  document.getElementById("vfBack").addEventListener("click", () => close());
   document.getElementById("vfPrev").addEventListener("click", () => show(i - 1));
   document.getElementById("vfNext").addEventListener("click", () => show(i + 1));
   vf.addEventListener("keydown", (e) => {
     if (e.key === "Escape") { e.preventDefault(); e.stopPropagation(); close(); }
     else if (e.key === "ArrowRight") { e.stopPropagation(); show(i + 1); }
     else if (e.key === "ArrowLeft") { e.stopPropagation(); show(i - 1); }
+    else if (e.key === "Tab") {
+      // Keep focus inside the dialog.
+      const f = [...vf.querySelectorAll("button")], first = f[0], last = f[f.length - 1];
+      if (e.shiftKey && document.activeElement === first) { e.preventDefault(); last.focus(); }
+      else if (!e.shiftKey && document.activeElement === last) { e.preventDefault(); first.focus(); }
+    }
   });
-  addEventListener("hashchange", () => { if (location.hash === "#viewfinder") open(); });
-  if (location.hash === "#viewfinder") open();
+  addEventListener("hashchange", () => {
+    if (location.hash === "#viewfinder") open(true);
+    else close(true);
+  });
+  if (location.hash === "#viewfinder") open(false);
   window.YN1Viewfinder = { open, close };
 })();
 </script>

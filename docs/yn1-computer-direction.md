@@ -24,7 +24,7 @@ The homepage is a fictional 1970s workstation, the **YN-1**, modeled in Blender.
 | (nav / terminal) | Writing | 04 Display detail + revision log (posts) |
 | Tape drive | Archive | 05 Tape drive detail (wildcard slot) |
 | Keyboard | Contact | 06 Keyboard plan, return key redlined |
-| Viewfinder | Photographs | — (full-screen viewfinder, not a sheet) |
+| Contact sheet and loupe | Photographs | — (full-screen contact sheet, not a sheet) |
 
 ## Handwritten annotations
 Hand markup on the sheets makes the drawings feel personal, like an engineer's working set.
@@ -40,7 +40,7 @@ Hand markup on the sheets makes the drawings feel personal, like an engineer's w
 ## Photos
 - **Sheet 01 (Index):** the yellow-wall portrait (`site/photos/portrait.jpg`) is paper-clipped beside the name as a print, captioned *Fig. 0 · Operator*, with a handwritten redline note.
 - **Sheet 02 (About):** the Paris overlook shot (`site/photos/paris.jpg`) is clipped above the General notes as *Fig. 2-C*, with a handwritten "Paris, 2024" on the print. Note 4 points to it.
-- **Viewfinder (item 7):** a rangefinder-style eyepiece on top of the enclosure, added in three.js rather than Blender. Clicking it, the `look` terminal command, or `#viewfinder` opens a full-screen viewfinder with bright-line frame, focus patch and an orange exposure readout. **Advance** winds through the roll: Paris first, then five street photos from the old `rickhlx/personal-site` repo (`site/photos/street-1.jpg` to `street-5.jpg`, Fujifilm X100F, autumn 2024; the readout shows each frame's real exposure). The yellow portrait is not in the roll; it is on sheet 01, the blog avatar and the favicons. The viewfinder is left out of the top-bar register on purpose; visitors find it on the model or through `look`.
+- **Contact sheet and loupe (item 7):** replaced the rooftop viewfinder eyepiece. An 8×10 contact sheet lies on the desk to the right of the keyboard, with a loupe standing on it, both built in three.js rather than Blender. Clicking it, the `look` terminal command, or `#photos` opens a full-screen light table: the sheet carries two strips of four frames (a fogged leader, the six photos, the end of the roll) with sprocket holes and edge numbers, and the portrait frame lies on its side as on a real sheet. The loupe magnifies the sheet 3× (2.6× on phones). A mouse carries it; on touch you drag it by the lens. The readout under the sheet shows the exposure and caption of the frame under the loupe. Clicking or tapping a frame marks it with a red china-marker ring; clicking it again enlarges it as a work print. Arrow keys and ◂ ▸ step through the frames. The photos are Paris first, then five street photos from the old `rickhlx/personal-site` repo (`site/photos/street-1.jpg` to `street-5.jpg`, Fujifilm X100F, autumn 2024, with each frame's real exposure). The yellow portrait is not on the sheet; it is on sheet 01, the blog avatar and the favicons. The contact sheet is left out of the top-bar register on purpose; visitors find it on the desk or through `look`.
 - Mockup canvas: [YN-1 Photo Moments](https://claude.ai/artifact/SK7uFHMXVWnYhwG3bNDbo5).
 
 ## How it's built

@@ -1439,9 +1439,17 @@ termEl.addEventListener("click", (e) => { if (!e.target.closest("a") && !getSele
 // ---------- touch scrolling on sheets and the terminal
 // Phones won't reliably scroll an overflow box inside a CSS 3D transform, so drags scroll it by hand.
 let drag = null, coast = 0;
+// The box to scroll: the nearest one under the pointer that overflows. In the side-by-side layout that is
+// the notes column (.side); stacked, it is the whole .sheet-body.
+function scroller(target) {
+  for (let el = target.closest(".side, .sheet-body, .term-out"); el; el = el.parentElement?.closest(".side, .sheet-body, .term-out")) {
+    if (el.scrollHeight > el.clientHeight + 1) return el;
+  }
+  return null;
+}
 document.addEventListener("touchstart", (e) => {
   cancelAnimationFrame(coast);
-  const el = e.target.closest(".sheet-body, .term-out");
+  const el = scroller(e.target);
   drag = el && e.touches.length === 1 ? { el, y: e.touches[0].clientY, t: performance.now(), v: 0, moved: false } : null;
 }, { passive: true });
 document.addEventListener("touchmove", (e) => {
@@ -1461,7 +1469,7 @@ document.addEventListener("touchend", () => {
   coast = requestAnimationFrame(step);
 });
 document.addEventListener("wheel", (e) => {
-  const el = e.target.closest(".sheet-body, .term-out");
+  const el = scroller(e.target);
   if (!el) return;
   e.preventDefault(); el.scrollTop += e.deltaY;
 }, { passive: false });

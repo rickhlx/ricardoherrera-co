@@ -34,7 +34,9 @@
   "url": "https://ricardoherrera.co/",
   "image": "https://ricardoherrera.co/og.png",
   "jobTitle": "Senior Site Reliability Engineer",
-  "worksFor": [{ "@type": "Organization", "name": "Watchtower" }, { "@type": "Organization", "name": "Glamer" }],
+  "email": "mailto:ricardo@ricardoherrera.co",
+  "worksFor": [{ "@type": "Organization", "name": "Radar", "url": "https://radar.com/" }, { "@type": "Organization", "name": "Glamer" }],
+  "sameAs": ["https://www.linkedin.com/in/ricardohe/", "https://x.com/rickhlx", "https://github.com/rickhlx"],
   "alumniOf": { "@type": "CollegeOrUniversity", "name": "UCI, Mexico City" },
   "knowsAbout": ["Site reliability engineering", "Kubernetes", "Observability", "Terraform", "Go", "AWS"]
 }
@@ -542,7 +544,7 @@ body[data-mode="computer"] #gl.over { cursor: pointer; }
           <h3>General notes</h3>
           <ol>
             <li>Site reliability engineer with 10+ years in infrastructure, from a colo rack of ESXi hosts to multi-cluster Kubernetes on AWS.</li>
-            <li>Now: senior SRE at Watchtower, contract SRE for G&amp;G Outfitters, and co-founder of Glamer. Happiest building self-service platforms and making on-call quiet.</li>
+            <li>Now: senior SRE at Radar since January 2026, and co-founder of Glamer. Happiest building self-service platforms and making on-call quiet.</li>
             <li>Everything in Git. Self-service over tickets, SLOs over gut feel, runbooks that run themselves. Mostly Go, Terraform and FluxCD.</li>
             <li>[Something outside work: photography, records, old machines.] See fig. 2-C.</li>
             <li>All dimensions in millimetres. Do not scale from drawing.</li>
@@ -703,7 +705,7 @@ body[data-mode="computer"] #gl.over { cursor: pointer; }
               <path class="ink redpen" style="--d: 1.1s" pathLength="1" d="M1322 84 C1350 150 1338 250 1282 312"/>
               <text class="hand note" style="--d: 1.5s" x="122" y="74" transform="rotate(-3 122 74)">ojo: muy justo aquí</text>
               <path class="ink pencil" style="--d: 1.7s" pathLength="1" d="M196 86 Q168 140 232 182 M220 184 l12 -2 l-5 -11"/>
-              <a href="mailto:ricardohe@outlook.com" class="hand-link">
+              <a href="mailto:ricardo@ricardoherrera.co" class="hand-link">
                 <text class="hand note big" style="--d: 2.1s" x="1110" y="590" text-anchor="end" transform="rotate(-2 1110 590)">press return to say hello</text>
               </a>
               <path class="ink pencil" style="--d: 2.4s" pathLength="1" d="M1122 578 C1186 568 1214 486 1206 398 M1197 410 l9 -12 l8 13"/>
@@ -720,9 +722,10 @@ body[data-mode="computer"] #gl.over { cursor: pointer; }
           <h3>Input connections</h3>
           <table class="grid">
             <tr><th>Port</th><th>Connect</th></tr>
-            <tr><td class="n">J1</td><td><a href="mailto:ricardohe@outlook.com">ricardohe@outlook.com</a></td></tr>
-            <tr><td class="n">J2</td><td><a href="#">GitHub</a></td></tr>
-            <tr><td class="n">J3</td><td><a href="#">LinkedIn</a></td></tr>
+            <tr><td class="n">J1</td><td><a href="mailto:ricardo@ricardoherrera.co">ricardo@ricardoherrera.co</a></td></tr>
+            <tr><td class="n">J2</td><td><a href="https://www.linkedin.com/in/ricardohe/" target="_blank" rel="noopener me">LinkedIn</a></td></tr>
+            <tr><td class="n">J3</td><td><a href="https://x.com/rickhlx" target="_blank" rel="noopener me">X</a></td></tr>
+            <tr><td class="n">J4</td><td><a href="https://github.com/rickhlx" target="_blank" rel="noopener me">GitHub</a></td></tr>
           </table>
         </div>
         <p>Write about platform and reliability work, infrastructure for early-stage teams, or a good postmortem story.</p>
@@ -1290,12 +1293,13 @@ gl.domElement.addEventListener("pointerup", (e) => {
 // ---------- the terminal
 const termOut = $("termOut"), termIn = $("termIn");
 const LOG = [
+  { sha: "c4e1b7a", date: "2026.01", end: "now", ref: "HEAD -> main", msg: "senior SRE @ Radar", body: "Site reliability for Radar, the location platform.\nJoined January 2026." },
   { sha: "f2c71a0", date: "2024", end: "now", ref: "glamer", msg: "co-founder, infra lead @ Glamer", body: "Peer-to-peer marketplace, built from zero to launch.\nNext.js and a Go REST API on PostgreSQL and Redis.\nShips on Railway through GitHub Actions." },
-  { sha: "9e4b1d7", date: "2022.04", end: "now", ref: "contract", msg: "senior SRE (contract) @ G&G Outfitters", body: "Moved production from Expedient to AWS EKS; infra cost down 60%+.\nKarpenter on spot, FluxCD GitOps, 99.99% uptime through 5x traffic.\nMongoDB to Atlas with a zero-downtime cutover." },
-  { sha: "a3f9c21", date: "2018.09", end: "now", ref: "HEAD -> main", msg: "senior SRE @ Watchtower", body: "Multi-tenant Kubernetes: 10 clusters, 140 nodes, Cluster API, 99.99%.\nPrometheus, Grafana, Loki and Thanos with 5-year retention.\nTerraform + Ansible took VM provisioning from weeks to under an hour.\nTech lead for infra modernization since 2020; MTTR down 30%." },
+  { sha: "9e4b1d7", date: "2022.04", end: "2025.12", msg: "senior SRE (contract) @ G&G Outfitters", body: "Moved production from Expedient to AWS EKS; infra cost down 60%+.\nKarpenter on spot, FluxCD GitOps, 99.99% uptime through 5x traffic.\nMongoDB to Atlas with a zero-downtime cutover." },
+  { sha: "a3f9c21", date: "2018.09", end: "2025.12", msg: "senior SRE @ Watchtower", body: "Multi-tenant Kubernetes: 10 clusters, 140 nodes, Cluster API, 99.99%.\nPrometheus, Grafana, Loki and Thanos with 5-year retention.\nTerraform + Ansible took VM provisioning from weeks to under an hour.\nTech lead for infra modernization since 2020; MTTR down 30%." },
   { sha: "7d02e8b", date: "2017.04", end: "2018.08", msg: "infrastructure engineer @ Olo", body: "On-demand production-replica environments: 2-3 days down to 15 minutes.\nTerraform modules for dev, QA and prod on AWS; 50+ daily builds on TeamCity." },
   { sha: "1c88f40", date: "2013.10", end: "2017.04", msg: "sysadmin @ WSOL", body: "ESXi hosts and a Compellent SAN in a colo, 200+ VMs for CMS clients.\nLed the move to AWS with Terraform, Packer and Chef." },
-  { sha: "52be913", date: "[YYYY]", msg: "first commit: B.S. computer science, UCI Mexico City", body: "Where it started." },
+  { sha: "52be913", date: "2012", msg: "first commit: B.S. computer science, UCI Mexico City", body: "Where it started." },
 ];
 // Filled from writing/posts.json, newest first: { rev, title, date, dek, url }.
 let POSTS = [];
@@ -1329,7 +1333,7 @@ function out(parts, cls) {
   for (const p of [].concat(parts)) {
     if (typeof p === "string") line.append(p);
     else if (p.go) { const a = document.createElement("a"); a.href = `#${p.go}`; a.textContent = p.text; line.append(a); }
-    else if (p.href) { const a = document.createElement("a"); a.href = p.href; a.textContent = p.text; line.append(a); }
+    else if (p.href) { const a = document.createElement("a"); a.href = p.href; a.textContent = p.text; if (/^https?:/.test(p.href)) { a.target = "_blank"; a.rel = "noopener"; } line.append(a); }
     else if (p.run) { const a = document.createElement("a"); a.href = "#terminal"; a.textContent = p.text; a.addEventListener("click", (e) => { e.preventDefault(); e.stopPropagation(); exec(p.run); }); line.append(a); }
     else { const s = document.createElement("span"); s.className = p.cls; s.textContent = p.text; line.append(s); }
   }
@@ -1385,8 +1389,8 @@ function exec(raw) {
     case "cat": {
       const f = arg.replace(/^\.\//, "");
       const m = f.match(/^writing\/(\d+)$/);
-      if (f === "about.txt") { out("Site reliability engineer, 10+ years in infrastructure."); out("Now: Watchtower, G&G Outfitters (contract) and Glamer (co-founder)."); out("Go, Terraform, FluxCD. Self-service over tickets."); }
-      else if (f === "contact.txt") { out(["email     ", { go: "contact", text: "ricardohe@outlook.com" }]); out(["github    ", { go: "contact", text: "GitHub" }]); out(["linkedin  ", { go: "contact", text: "LinkedIn" }]); }
+      if (f === "about.txt") { out("Site reliability engineer, 10+ years in infrastructure."); out("Now: senior SRE at Radar (since January 2026) and co-founder of Glamer."); out("Go, Terraform, FluxCD. Self-service over tickets."); }
+      else if (f === "contact.txt") { out(["email     ", { href: "mailto:ricardo@ricardoherrera.co", text: "ricardo@ricardoherrera.co" }]); out(["linkedin  ", { href: "https://www.linkedin.com/in/ricardohe/", text: "linkedin.com/in/ricardohe" }]); out(["x         ", { href: "https://x.com/rickhlx", text: "x.com/rickhlx" }]); out(["github    ", { href: "https://github.com/rickhlx", text: "github.com/rickhlx" }]); }
       else if (m && POSTS[m[1] - 1]) { const p = POSTS[m[1] - 1]; out({ cls: "head", text: p.title }); out({ cls: "dim", text: `rev ${p.rev} · ${p.date}` }); out(p.dek); out([{ href: p.url, text: "read the post →" }, "   ", { go: "writing", text: "all posts → sheet 04" }]); }
       else out({ cls: "err", text: `cat: ${f || "?"}: no such file. Try ls.` });
       break;

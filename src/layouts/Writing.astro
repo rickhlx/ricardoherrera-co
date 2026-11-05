@@ -81,21 +81,10 @@ const feed = url("writing/feed.xml");
   <footer class="foot">
     <div class="wrap gutter">
       <span>© {new Date().getFullYear()} Ricardo Herrera · Text CC BY 4.0 · Code samples MIT</span>
-      <span><a href={url("writing/")}>All writing</a> · <a href={feed}>RSS</a> · <a href={url()}>Back to the YN-1</a></span>
+      <span><a href={url("writing/")}>All writing</a> · <a href={url()}>Back to the YN-1</a></span>
     </div>
   </footer>
   <div class="toast" id="toast" role="status" hidden></div>
 
-  <script>
-    import { copyText } from "../lib/client.js";
-    // Feed links: copying the URL is more useful than opening raw XML in most browsers.
-    document.querySelectorAll<HTMLAnchorElement>('a[href$="feed.xml"]').forEach((a) =>
-      a.addEventListener("click", (e) => {
-        if (e.metaKey || e.ctrlKey || e.shiftKey) return;
-        e.preventDefault();
-        copyText(a.href, null, "Feed URL copied. Paste it into your reader.");
-      }),
-    );
-  </script>
 </body>
 </html>

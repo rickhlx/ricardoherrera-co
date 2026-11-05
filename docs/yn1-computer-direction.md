@@ -24,6 +24,7 @@ The homepage is a fictional 1970s workstation, the **YN-1**, modeled in Blender.
 | (nav / terminal) | Writing | 04 Display detail + revision log (posts) |
 | Tape drive | Archive | 05 Tape drive detail (wildcard slot) |
 | Keyboard | Contact | 06 Keyboard plan, return key redlined |
+| Viewfinder | Photographs | — (full-screen viewfinder, not a sheet) |
 
 ## Handwritten annotations
 Hand markup on the sheets makes the drawings feel personal, like an engineer's working set.
@@ -35,6 +36,12 @@ Hand markup on the sheets makes the drawings feel personal, like an engineer's w
 - **Production:** use real scanned handwriting vectorized to SVG (not a font), so notes can draw themselves with a stroke animation. Notes that carry meaning or links stay as HTML/SVG overlays (crisp, clickable, accessible); texture-only marks can be baked into renders as decals.
 
 **Built so far — Sheet 06 (Contact):** a `.markup` group in the sheet's SVG holds a red revision cloud around the return key, a rev B triangle, and four notes: "rev B — return moved 4 mm in. kept catching the rail.", "ojo: muy justo aquí", "press return to say hello" (mailto link) and "→ sheet 04 for the writing" (flies to Writing). The title block rev is B. Lines draw in with `stroke-dashoffset` and notes fade in, staggered by a `--d` delay, when the camera arrives (the sheet gets a `drawn` class). Reduced motion shows them at once; the no-WebGL flat fallback shows them static. Text uses Caveat as a stand-in until Ricardo's scanned handwriting replaces it.
+
+## Photos
+- **Sheet 01 (Index):** the yellow-wall portrait (`site/photos/portrait.jpg`) is paper-clipped beside the name as a print, captioned *Fig. 0 · Operator*, with a handwritten redline note.
+- **Sheet 02 (About):** the Paris overlook shot (`site/photos/paris.jpg`) is clipped above the General notes as *Fig. 2-C*, with a handwritten "Paris, [year]" on the print. Note 4 points to it.
+- **Viewfinder (item 7):** a rangefinder-style eyepiece on top of the enclosure, added in three.js rather than Blender. Clicking it, the `look` terminal command, `#viewfinder` or the register link opens a full-screen viewfinder with bright-line frame, focus patch and an orange exposure readout. **Advance** winds through the roll: Paris first, then four street-photo placeholders. The yellow portrait stays on sheet 01 only.
+- Mockup canvas: [YN-1 Photo Moments](https://claude.ai/artifact/SK7uFHMXVWnYhwG3bNDbo5).
 
 ## How it's built
 Paths are in the repo.

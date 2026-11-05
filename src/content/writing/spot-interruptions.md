@@ -4,8 +4,7 @@ dek: Two minutes is enough to move a pod if the cluster was built expecting to. 
 date: 2026-10-28
 updated: 2026-10-30
 tags: [kubernetes, aws, reliability]
-# Sample text written to show every feature of the post layout. Rewrite it in your own words or replace it, then remove draft.
-draft: true
+# Sample text written to show every feature of the post layout. Rewrite it in your own words or replace it.
 series:
   name: Running on spot
   part: 1

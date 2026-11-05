@@ -38,14 +38,19 @@ npm run preview    # serve dist/
    - Code blocks with highlighting, a caption from `title="file.yaml"` (or the language) and a copy button.
    - Tables that scroll sideways on phones.
    - Raw HTML for anything else, such as a `<figure class="fig">` with an SVG diagram (see the spot post).
-4. Keep `draft: true` while writing. Drafts show in `npm run dev` and on the preview build, with a Draft badge and `noindex`; they never go in the feed. Remove the line to publish.
+4. Keep `draft: true` while writing. Drafts show in `npm run dev`, and in a build only when `INCLUDE_DRAFTS=true`, with a Draft badge and `noindex`; they never go in the feed. Remove the line to publish.
 5. When you change a published post, set `updated` and add a line to `revisions`. Both show at the end of the post.
 
 Reading time, the revision letter in the index (A for the oldest post), newer/older links, related posts (shared tags), share tags, JSON-LD and the feed are generated.
 
 ## Deploy
 
-Every push to `main` that touches the site builds it with Astro and publishes `dist/` to GitHub Pages (`.github/workflows/pages.yml`), at https://rickhlx.github.io/ricardoherrera-co/ until a custom domain is set. The workflow sets `BASE_PATH=/ricardoherrera-co` for that preview path and `INCLUDE_DRAFTS=true`.
+The site runs on **Vercel**, which builds it from the repo with `npm run build` and serves `dist/` from `/`. Vercel needs no extra settings:
+
+- Leave `BASE_PATH` unset; Vercel serves from the root.
+- Drafts are left out unless `INCLUDE_DRAFTS=true` is set in Vercel's environment variables. To see drafts on preview deployments, set it for **Preview** only, never for Production.
+
+The GitHub Pages workflow (`.github/workflows/pages.yml`) still builds a second copy at https://rickhlx.github.io/ricardoherrera-co/ on every push to `main` that touches the site, with `BASE_PATH=/ricardoherrera-co` and `INCLUDE_DRAFTS=true`. Delete the workflow if that copy is no longer needed.
 
 ## Rebuilding the model and drawings
 
@@ -71,7 +76,7 @@ The homepage and every writing page carry a meta description, canonical URL, Ope
 ## Before launch
 
 - `site/index.html` still carries the claude.ai artifact page wrapper (its first line). Replace it with a proper `<head>`.
-- In `.github/workflows/pages.yml`, remove `BASE_PATH` and set `INCLUDE_DRAFTS` to `"false"` when ricardoherrera.co points at Pages.
-- The spot interruptions post is sample text written to show the layout. Rewrite or replace it before taking it out of draft.
+- Decide whether to keep the GitHub Pages copy (`.github/workflows/pages.yml`). It publishes drafts, so delete it or set `INCLUDE_DRAFTS` to `"false"` once Vercel serves ricardoherrera.co.
+- The spot interruptions post is live but is still sample text written to show the layout. Rewrite or replace it.
 - Sheet 04 on the YN-1 and the terminal's `ls writing` still list placeholder posts. Generate them from `src/content/writing/` once real posts exist.
 - Content is mostly placeholders: posts, archive, contact links.

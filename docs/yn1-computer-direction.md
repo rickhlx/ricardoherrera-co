@@ -1,9 +1,10 @@
 # YN-1 interactive computer — current direction
 
-Updated 2026-11-04. This is the homepage direction being built now. It grew out of the "exploded manual" idea from round 1.
+Updated 2026-11-05. This is the homepage direction being built now. It grew out of the "exploded manual" idea from round 1.
 
 **Live prototype:** [YN-1 Drawing Set](https://claude.ai/artifact/1nfNLuhanvDoHRJFYF16i1). Private until shared from the page's Share menu.
 **Plan doc:** [Exploded Manual × Blender — Site Plan](https://claude.ai/artifact/TQj3GzLGf6zvbYAUEakxjh). It holds the earlier directions A to G.
+**Annotation mockup:** [Annotated Blueprint Sheet](https://claude.ai/artifact/PZh9Urmp8hADv5qfuEzDCd). Sheet 06 with handwritten markup; Ricardo liked it.
 
 ## What it is
 The homepage is a fictional 1970s workstation, the **YN-1**, modeled in Blender. The browser draws it live in blueprint linework, with hidden edges dashed, floating in a dark drafting void.
@@ -23,18 +24,29 @@ The homepage is a fictional 1970s workstation, the **YN-1**, modeled in Blender.
 | Tape drive | Archive | 05 Tape drive detail (wildcard slot) |
 | Keyboard | Contact | 06 Keyboard plan, return key redlined |
 
+## Handwritten annotations
+Hand markup on the sheets makes the drawings feel personal, like an engineer's working set.
+
+- **Two inks:** red pencil for redlines (revision clouds, struck dimensions, "rev C" notes) and white graphite for notes.
+- **Kinds of note:** redlines that tell the part's history; navigation disguised as notes ("press return to say hello", "→ sheet 04"); personal margin notes, some in Spanish; initials and dates in the title block's CHK box.
+- **Texture:** tape and a faint coffee ring, kept subtle.
+- **Restraint:** three to five notes per sheet. The writing section stays clean, with at most a signature or date stamp.
+- **Production:** use real scanned handwriting vectorized to SVG (not a font), so notes can draw themselves with a stroke animation. Notes that carry meaning or links stay as HTML/SVG overlays (crisp, clickable, accessible); texture-only marks can be baked into renders as decals.
+
 ## How it's built
-1. `build_yn1.py` builds the YN-1 by script in Blender 5.2 (bpy), then saves `yn1.blend` and exports a GLB. Each part is an Empty that carries its section, label and explode vector as glTF extras.
-2. `draw_sheets.py` renders the blueprint drawings with Freestyle: white lines on transparency, with hidden lines dashed.
-3. `export_sharp.py` exports a bevel-free GLB for the live view, so its edge lines stay clean.
-4. `index.html` is the page, built with three.js 0.160. WebGL draws the model and the void. CSS3D places the real HTML sheets and the terminal in 3D, and stops the camera where one CSS pixel equals one screen pixel, so text stays crisp.
+1. `model/build_yn1.py` builds the YN-1 by script in Blender 5.2 (bpy), then saves `yn1.blend` and exports a GLB. Each part is an Empty that carries its section, label and explode vector as glTF extras.
+2. `model/draw_sheets.py` renders the blueprint drawings with Freestyle: white lines on transparency, with hidden lines dashed.
+3. `model/export_sharp.py` exports a bevel-free GLB for the live view, so its edge lines stay clean.
+4. `site/index.html` is the page, built with three.js 0.160. WebGL draws the model and the void. CSS3D places the real HTML sheets and the terminal in 3D, and stops the camera where one CSS pixel equals one screen pixel, so text stays crisp.
 
 Gotchas found so far:
 - Start Blender from `read_factory_settings()`, not `use_empty=True`. Freestyle draws nothing from an empty factory scene.
 - Read a camera's direction from `rotation_euler.to_matrix()` after changing its rotation. `matrix_world` is stale until the next update.
-- Artifacts don't serve `.glb` files, so the model ships base64-encoded inside `yn1.glb.json`.
+- Artifacts don't serve `.glb` files, so the model ships base64-encoded inside `yn1.glb.json`. (GitHub Pages can serve `.glb` directly, so this can be simplified later.)
 
 ## Open items
 - All content is still placeholders (name, projects, posts, roles in `git log`).
 - Ideas not built yet: clicking keyboard keys types into the terminal, and real work history in `git log`.
+- Annotations: write and scan the real notes, then add them to the live sheets.
 - Not yet reviewed on a real device: font loading, motion smoothness and the phone feel.
+- Deploy: the GitHub Pages workflow is in the repo; Pages settings need Source = GitHub Actions and no custom domain until cutover.

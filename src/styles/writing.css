@@ -13,6 +13,7 @@
   --font-read: "Literata", Georgia, "Times New Roman", serif;
   --font-display: "Archivo", "Arial Narrow", Arial, sans-serif;
   --font-mono: "Martian Mono", ui-monospace, Menlo, Consolas, monospace;
+  --font-code: "dm", ui-monospace, "SF Mono", Menlo, Consolas, monospace; /* Dank Mono, as on the YN-1 terminal */
   --step: 1;
   color-scheme: light;
 }
@@ -87,7 +88,7 @@ button { font: inherit; color: inherit; }
 .index-head h1 { margin: 0; font-family: var(--font-display); font-variation-settings: "wdth" 112; font-weight: 800; text-transform: uppercase; font-size: clamp(2.6rem, 8vw, 4.4rem); line-height: 0.9; letter-spacing: 0.005em; }
 .index-head p { margin: 0; max-width: 34em; font-size: 1.125rem; line-height: 1.6; color: var(--muted); }
 .subscribe { display: flex; flex-wrap: wrap; align-items: center; gap: 10px 16px; font-family: var(--font-mono); font-variation-settings: "wdth" 85; font-size: 11.5px; }
-.subscribe code { background: var(--code-bg); padding: 6px 9px; border-radius: 3px; color: var(--ink); overflow-wrap: anywhere; }
+.subscribe code { font-family: var(--font-code); background: var(--code-bg); padding: 6px 9px; border-radius: 3px; color: var(--ink); overflow-wrap: anywhere; }
 .filters { display: grid; gap: 14px; }
 .search input { width: 100%; min-height: 44px; padding: 0 14px; border: 1px solid var(--rule); border-radius: 4px; background: var(--surface); color: var(--ink); font-family: var(--font-read); font-size: 1rem; }
 .search input:focus { outline: 2px solid var(--accent); outline-offset: 0; border-color: transparent; }
@@ -163,7 +164,7 @@ button { font: inherit; color: inherit; }
 @media (max-width: 860px) { .prose .anchor { position: static; opacity: 0.5; margin-right: 0.35em; } }
 .prose ul, .prose ol { padding-left: 1.3em; }
 .prose li + li { margin-top: 0.4em; }
-.prose :not(pre) > code { font-family: var(--font-mono); font-variation-settings: "wdth" 80; font-size: 0.78em; background: var(--code-bg); padding: 0.12em 0.36em; border-radius: 3px; overflow-wrap: anywhere; }
+.prose :not(pre) > code { font-family: var(--font-code); font-size: 0.88em; background: var(--code-bg); padding: 0.12em 0.36em; border-radius: 3px; overflow-wrap: anywhere; }
 .prose strong { font-weight: 650; }
 .prose sup { line-height: 0; }
 .prose sup a { font-family: var(--font-mono); font-size: 0.68em; text-decoration: none; padding: 0 0.15em; }
@@ -174,7 +175,7 @@ button { font: inherit; color: inherit; }
 .code { margin-inline: 0; border: 1px solid var(--rule); border-radius: 5px; background: var(--code-bg); overflow: hidden; }
 .code header { display: flex; align-items: center; justify-content: space-between; gap: 10px; padding: 4px 6px 4px 14px; border-bottom: 1px solid var(--rule); font-family: var(--font-mono); font-variation-settings: "wdth" 85; font-size: 11px; color: var(--muted); }
 .code header .copy { min-height: 30px; border: 0; background: transparent; }
-.code pre { margin: 0; padding: 14px 16px 16px; overflow-x: auto; background: transparent !important; font-family: var(--font-mono); font-variation-settings: "wdth" 78; font-size: 0.74em; line-height: 1.65; tab-size: 2; }
+.code pre { margin: 0; padding: 14px 16px 16px; overflow-x: auto; background: transparent !important; font-family: var(--font-code); font-size: 0.84em; line-height: 1.65; tab-size: 2; }
 .astro-code, .astro-code span { color: var(--shiki-light); }
 .code code { font-family: inherit; }
 

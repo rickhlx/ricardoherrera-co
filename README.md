@@ -13,7 +13,7 @@ Personal site of Ricardo Herrera. The homepage is the **YN-1**, a fictional 1970
 | `model/` | Blender 5.2 scripts that build the YN-1 and render the drawings |
 | `make_assets.py` | Builds `site/og.png` and the favicon set |
 | `fonts/` | Fonts for `make_assets.py` (OFL) |
-| `site/fonts/dmvendor.css` | Dank Mono for the terminal, the vendor's obfuscated web build (Ricardo's personal license). Don't commit the raw `.woff2`/`.otf` files; the EULA forbids redistribution, and `.gitignore` blocks them |
+| `site/fonts/dmvendor.css` | Dank Mono for the terminal and for code in blog posts, the vendor's obfuscated web build (Ricardo's personal license). Don't commit the raw `.woff2`/`.otf` files; the EULA forbids redistribution, and `.gitignore` blocks them |
 | `docs/` | Design direction and research notes |
 
 The site is built with [Astro](https://astro.build) 7 (Node 22.23 or later).

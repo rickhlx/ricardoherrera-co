@@ -1,0 +1,100 @@
+---
+import "../styles/writing.css";
+import { url } from "../lib/posts.mjs";
+
+interface Props {
+  title: string;
+  description: string;
+  canonical: URL;
+  type?: "website" | "article";
+  noindex?: boolean;
+  published?: Date;
+  modified?: Date;
+  tags?: string[];
+  jsonLd?: object;
+  current?: "writing";
+}
+const { title, description, canonical, type = "website", noindex = false, published, modified, tags = [], jsonLd, current } = Astro.props;
+const site = Astro.site ?? new URL("https://ricardoherrera.co");
+const ogImage = new URL("og.png", site);
+const feed = url("writing/feed.xml");
+---
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+  <title>{title}</title>
+  <meta name="description" content={description}>
+  <meta name="author" content="Ricardo Herrera">
+  <link rel="canonical" href={canonical}>
+  {noindex && <meta name="robots" content="noindex">}
+  <meta name="theme-color" content="#f6f8fb" media="(prefers-color-scheme: light)">
+  <meta name="theme-color" content="#0c1421" media="(prefers-color-scheme: dark)">
+  <link rel="icon" href={url("favicon.svg")} type="image/svg+xml">
+  <link rel="icon" href={url("favicon-32.png")} type="image/png" sizes="32x32">
+  <link rel="apple-touch-icon" href={url("apple-touch-icon.png")}>
+  <link rel="alternate" type="application/rss+xml" title="Ricardo Herrera · Writing" href={feed}>
+
+  <meta property="og:type" content={type}>
+  <meta property="og:site_name" content="Ricardo Herrera">
+  <meta property="og:url" content={canonical}>
+  <meta property="og:title" content={title}>
+  <meta property="og:description" content={description}>
+  <meta property="og:image" content={ogImage}>
+  <meta property="og:image:width" content="1200">
+  <meta property="og:image:height" content="630">
+  <meta property="og:image:alt" content="Blueprint drawing of the YN-1 workstation beside the name Ricardo Herrera, senior site reliability engineer">
+  <meta property="og:locale" content="en_US">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content={title}>
+  <meta name="twitter:description" content={description}>
+  <meta name="twitter:image" content={ogImage}>
+  {published && <meta property="article:published_time" content={published.toISOString()}>}
+  {modified && <meta property="article:modified_time" content={modified.toISOString()}>}
+  {tags.map((t) => <meta property="article:tag" content={t}>)}
+  {jsonLd && <script type="application/ld+json" set:html={JSON.stringify(jsonLd)} />}
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@62..125,400..800&family=Literata:ital,opsz,wght@0,7..72,400..700;1,7..72,400..700&family=Martian+Mono:wdth,wght@75..100,300..500&display=swap">
+</head>
+<body>
+  <a class="skip" href="#content">Skip to content</a>
+  <header class="site">
+    <div class="wrap gutter">
+      <a class="brand" href={url("writing/")}><strong>Ricardo Herrera</strong><span>Writing · Sheet 04</span></a>
+      <nav aria-label="Site">
+        <a href={url("writing/")} aria-current={current === "writing" ? "page" : undefined}>Writing</a>
+        <a href={url()}>YN-1</a>
+        <a href={feed}>RSS</a>
+      </nav>
+    </div>
+    <div class="progress" id="progress" aria-hidden="true"></div>
+  </header>
+
+  <main id="content" class="gutter">
+    <slot />
+  </main>
+
+  <footer class="foot">
+    <div class="wrap gutter">
+      <span>© {new Date().getFullYear()} Ricardo Herrera · Text CC BY 4.0 · Code samples MIT</span>
+      <span><a href={url("writing/")}>All writing</a> · <a href={feed}>RSS</a> · <a href={url()}>Back to the YN-1</a></span>
+    </div>
+  </footer>
+  <div class="toast" id="toast" role="status" hidden></div>
+
+  <script>
+    import { copyText } from "../lib/client.js";
+    // Feed links: copying the URL is more useful than opening raw XML in most browsers.
+    document.querySelectorAll<HTMLAnchorElement>('a[href$="feed.xml"]').forEach((a) =>
+      a.addEventListener("click", (e) => {
+        if (e.metaKey || e.ctrlKey || e.shiftKey) return;
+        e.preventDefault();
+        copyText(a.href, null, "Feed URL copied. Paste it into your reader.");
+      }),
+    );
+  </script>
+</body>
+</html>

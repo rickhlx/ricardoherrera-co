@@ -1,11 +1,17 @@
-# Publishes site/ to GitHub Pages on every push to main.
+# Builds the site with Astro and publishes dist/ to GitHub Pages on every push to main.
 # One-time setup: Settings → Pages → Build and deployment → Source: "GitHub Actions".
 name: Deploy site
 
 on:
   push:
     branches: [main]
-    paths: ["site/**", ".github/workflows/pages.yml"]
+    paths:
+      - "site/**"
+      - "src/**"
+      - "astro.config.mjs"
+      - "package.json"
+      - "package-lock.json"
+      - ".github/workflows/pages.yml"
   workflow_dispatch:
 
 permissions:
@@ -18,16 +24,33 @@ concurrency:
   cancel-in-progress: false
 
 jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      - run: npm run build
+        env:
+          # The preview is served from /ricardoherrera-co/. Remove at the domain cutover.
+          BASE_PATH: /ricardoherrera-co
+          # Show draft posts (marked "Draft", noindex, left out of the feed) on the preview.
+          # Set to "false" or remove before ricardoherrera.co points here.
+          INCLUDE_DRAFTS: "true"
+      - uses: actions/configure-pages@v5
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: dist
+
   deploy:
+    needs: build
     runs-on: ubuntu-latest
     environment:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/configure-pages@v5
-      - uses: actions/upload-pages-artifact@v3
-        with:
-          path: site
       - id: deployment
         uses: actions/deploy-pages@v4

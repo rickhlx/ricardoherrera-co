@@ -535,7 +535,7 @@ body[data-mode="computer"] #gl.over { cursor: pointer; }
       <div class="side">
         <div class="fig-row">
           <figure class="print wide">
-            <div class="paper"><img src="photos/paris.jpg" width="1080" height="720" alt="Ricardo leaning on a stone balustrade above a misty Paris skyline"><p class="handnote">Paris, [year]</p></div>
+            <div class="paper"><img src="photos/paris.jpg" width="1080" height="720" alt="Ricardo leaning on a stone balustrade above a misty Paris skyline"><p class="handnote">Paris, 2024</p></div>
             <svg class="clip" viewBox="0 0 30 86" aria-hidden="true"><path d="M9 26 V11 a6 6 0 0 1 12 0 V68 a10 10 0 0 1 -20 0 V16" fill="none" stroke="rgba(0,0,0,0.35)" stroke-width="2.6" stroke-linecap="round" transform="translate(2 3)"/><path d="M9 26 V11 a6 6 0 0 1 12 0 V68 a10 10 0 0 1 -20 0 V16" fill="none" stroke="#dfe5ee" stroke-width="2.6" stroke-linecap="round"/><path d="M10 24 V12" fill="none" stroke="#fff" stroke-width="1" stroke-linecap="round" opacity="0.8"/></svg>
           </figure>
           <p class="fig-no">Fig. 2-C<br>Operator,<br>off duty</p>
@@ -778,11 +778,13 @@ body[data-mode="computer"] #gl.over { cursor: pointer; }
 // The viewfinder: item 7 on the YN-1. A plain script so it also works on the flat (no-WebGL) page.
 (() => {
   const FRAMES = [
-    { src: "photos/paris.jpg", alt: "Ricardo leaning on a stone balustrade above a misty Paris skyline", set: "f/5.6 · 1/125 · ISO 400", cap: "Ricardo Herrera · Paris, [year]" },
-    { label: "[Street photo]", bg: "linear-gradient(120deg, #2a2826 0%, #8d8578 48%, #d9d2c4 100%)", set: "f/8 · 1/500 · ISO 400", cap: "[Street, city, year]" },
-    { label: "[Street photo]", bg: "linear-gradient(200deg, #3b3834 0%, #6e685f 40%, #a79f92 100%)", set: "f/4 · 1/125 · ISO 400", cap: "[Street, city, year]" },
-    { label: "[Street photo]", bg: "linear-gradient(160deg, #dcd5c8 0%, #9e968a 30%, #26241f 100%)", set: "f/11 · 1/500 · ISO 400", cap: "[Street, city, year]" },
-    { label: "[Street photo]", bg: "linear-gradient(90deg, #1c1a18 0%, #57524b 50%, #1c1a18 100%)", set: "f/2.8 · 1/60 · ISO 1600", cap: "[Street, city, year, at night]" },
+    { src: "photos/paris.jpg", alt: "Ricardo leaning on a stone balustrade above a misty Paris skyline", set: "f/5.6 · 1/125 · ISO 400", cap: "Ricardo Herrera · Paris, 2024" },
+    // Street photos from the old personal-site repo, Fujifilm X100F. Exposure from each file's EXIF (stripped from these copies).
+    { src: "photos/street-1.jpg", alt: "Two women laughing on a night street, the shop lights behind them streaking with motion blur", set: "f/4 · 1/8 · ISO 640", cap: "Night out · September 2024" },
+    { src: "photos/street-2.jpg", alt: "A woman and a man reflected in a curved mirror on a metro platform", set: "f/4 · 1/30 · ISO 800", cap: "Metro mirror · September 2024" },
+    { src: "photos/street-3.jpg", alt: "A figure walking past the lit-up Eiffel Tower at night", set: "f/2.8 · 1/8 · ISO 400", cap: "Paris · October 2024", fit: "contain", bg: "#000" },
+    { src: "photos/street-4.jpg", alt: "A woman in a yellow coat, hair blowing, among parked bicycles in front of brick canal houses", set: "f/8 · 1/500 · ISO 800", cap: "Bikes and a yellow coat · September 2024" },
+    { src: "photos/street-5.jpg", alt: "Someone under a clear dome umbrella at a street corner beside a yellow shopfront", set: "f/8 · 1/640 · ISO 800", cap: "Clear umbrella · September 2024" },
   ];
   const vf = document.getElementById("vf"), img = document.getElementById("vfImg"), ph = document.getElementById("vfPh");
   const frameEl = vf.querySelector(".vf-frame"), set = document.getElementById("vfSet"), no = document.getElementById("vfNo"), cap = document.getElementById("vfCap");
@@ -792,7 +794,7 @@ body[data-mode="computer"] #gl.over { cursor: pointer; }
     i = (n + FRAMES.length) % FRAMES.length;
     const f = FRAMES[i];
     img.hidden = !f.src;
-    if (f.src) { img.src = f.src; img.alt = f.alt; }
+    if (f.src) { img.src = f.src; img.alt = f.alt; img.style.objectFit = f.fit || "cover"; }  // contain: portrait frames
     ph.textContent = f.label || "";
     frameEl.style.background = f.bg || "#222";
     set.textContent = f.set;

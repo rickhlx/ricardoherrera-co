@@ -75,4 +75,4 @@ The homepage and every writing page carry a meta description, canonical URL, Ope
 
 - `site/index.html` still carries the claude.ai artifact page wrapper (its first line). Replace it with a proper `<head>`.
 - The spot interruptions post is live but is still sample text written to show the layout. Rewrite or replace it.
-- Content is mostly placeholders: posts, archive, contact links.
+- Content is still partly placeholder: the archive sheet and the sample post.

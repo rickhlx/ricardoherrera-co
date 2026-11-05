@@ -8,3 +8,8 @@ apple.svg
 
 __pycache__/
 .DS_Store
+
+# Dank Mono: personal license, no redistribution. Only the vendor web build (site/fonts/dmvendor.css) is committed.
+*.woff2
+*.otf
+DankMono*

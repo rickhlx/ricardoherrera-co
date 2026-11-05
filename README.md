@@ -19,6 +19,10 @@ cd site && python3 -m http.server 8000
 
 The page fetches `yn1.glb.json`, so it needs to be served over HTTP, not opened as a file.
 
+## Deploy
+
+Every push to `main` that touches `site/` publishes it to GitHub Pages (`.github/workflows/pages.yml`), at https://rickhlx.github.io/ricardoherrera-co/ until a custom domain is set.
+
 ## Rebuilding the model and drawings
 
 ```sh

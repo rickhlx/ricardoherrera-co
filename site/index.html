@@ -377,17 +377,14 @@ body[data-mode="computer"] #gl.over { cursor: pointer; }
 .vf-top, .vf-ctrl { width: min(1080px, 100%); display: flex; justify-content: space-between; align-items: center; gap: 12px; }
 .vf-top { font-size: 10.5px; letter-spacing: 0.08em; text-transform: uppercase; color: #6f7a8c; }
 .vf-body { width: min(840px, 100%, calc((100dvh - 230px) * 1.5)); display: grid; gap: 12px; }
-.vf-frame { position: relative; aspect-ratio: 3 / 2; border-radius: 22px; overflow: hidden; background: #222; transform: scale(1.06); transition: transform 0.5s ease; }
+/* Looking through the loupe: the photo fades out at the edge of a round lens, with a faint rim. */
+.vf-frame { position: relative; aspect-ratio: 3 / 2; overflow: hidden; transform: scale(1.06); transition: transform 0.5s ease;
+  -webkit-mask-image: linear-gradient(transparent, #000 9%, #000 91%, transparent); mask-image: linear-gradient(transparent, #000 9%, #000 91%, transparent); }
 .vf.on .vf-frame { transform: none; }
+.vf-lens { position: absolute; inset: 0; -webkit-mask-image: radial-gradient(ellipse 49% 73.5% at 50% 50%, #000 74%, transparent 100%); mask-image: radial-gradient(ellipse 49% 73.5% at 50% 50%, #000 74%, transparent 100%); }
 .vf-frame img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
 .vf-ph { position: absolute; left: 0; right: 0; top: 9%; text-align: center; font-size: 13px; letter-spacing: 0.06em; color: rgba(255, 250, 235, 0.85); }
-.vf-vig { position: absolute; inset: 0; border-radius: inherit; box-shadow: inset 0 0 140px 50px rgba(0, 0, 0, 0.85); pointer-events: none; }
-.vf-c { position: absolute; width: 5.5%; aspect-ratio: 1; border: 0 solid rgba(255, 248, 220, 0.92); pointer-events: none; }
-.vf-c.tl { left: 8%; top: 10.7%; border-left-width: 2px; border-top-width: 2px; }
-.vf-c.tr { right: 8%; top: 10.7%; border-right-width: 2px; border-top-width: 2px; }
-.vf-c.bl { left: 8%; bottom: 10.7%; border-left-width: 2px; border-bottom-width: 2px; }
-.vf-c.br { right: 8%; bottom: 10.7%; border-right-width: 2px; border-bottom-width: 2px; }
-.vf-patch { position: absolute; left: 50%; top: 50%; width: 13%; aspect-ratio: 110 / 72; transform: translate(-50%, -50%); border: 1px solid rgba(255, 236, 190, 0.7); background: rgba(255, 214, 140, 0.14); pointer-events: none; }
+.vf-rim { position: absolute; left: 1%; top: 50%; width: 98%; aspect-ratio: 1; transform: translateY(-50%); border-radius: 50%; box-shadow: 0 0 0 1px rgba(255, 248, 220, 0.09), inset 0 0 40px rgba(255, 248, 220, 0.03); pointer-events: none; }
 .vf-read { display: flex; justify-content: space-between; align-items: baseline; gap: 12px; font-size: 13px; letter-spacing: 0.08em; color: var(--redline); text-shadow: 0 0 8px rgba(255, 171, 122, 0.55); }
 .vf-cap { margin: 0; font-size: 12px; letter-spacing: 0.04em; color: var(--ink-dim); }
 .vf-ctrl { margin-top: auto; }
@@ -395,7 +392,7 @@ body[data-mode="computer"] #gl.over { cursor: pointer; }
 .vf button { min-width: 44px; min-height: 44px; padding: 0 16px; background: transparent; border: 1px solid var(--void-mark); color: var(--ink); cursor: pointer; font-size: 10.5px; letter-spacing: 0.06em; text-transform: uppercase; }
 .vf button:hover { border-color: var(--ink-dim); }
 .vf button.hot { border-color: var(--redline); color: var(--redline); }
-@media (max-width: 820px) { .vf-read { font-size: 11px; } .vf-frame { border-radius: 14px; } }
+@media (max-width: 820px) { .vf-read { font-size: 11px; } }
 @media (prefers-reduced-motion: reduce) { .vf, .vf-frame { transition: none; } }
 </style>
 
@@ -758,11 +755,9 @@ body[data-mode="computer"] #gl.over { cursor: pointer; }
   <div class="vf-top"><span>YN-1 · Viewfinder</span><span>Item 7 · Photographs</span></div>
   <div class="vf-body">
     <div class="vf-frame">
-      <img id="vfImg" alt="">
+      <div class="vf-lens" id="vfLens"><img id="vfImg" alt=""></div>
       <span class="vf-ph" id="vfPh"></span>
-      <i class="vf-vig" aria-hidden="true"></i>
-      <i class="vf-c tl" aria-hidden="true"></i><i class="vf-c tr" aria-hidden="true"></i><i class="vf-c bl" aria-hidden="true"></i><i class="vf-c br" aria-hidden="true"></i>
-      <i class="vf-patch" aria-hidden="true"></i>
+      <i class="vf-rim" aria-hidden="true"></i>
     </div>
     <div class="vf-read"><span id="vfSet"></span><span id="vfNo" aria-live="polite"></span></div>
     <p class="vf-cap" id="vfCap"></p>
@@ -789,7 +784,7 @@ body[data-mode="computer"] #gl.over { cursor: pointer; }
     { src: "photos/street-5.jpg", alt: "Someone under a clear dome umbrella at a street corner beside a yellow shopfront", set: "f/8 · 1/640 · ISO 800", cap: "Clear umbrella · September 2024" },
   ];
   const vf = document.getElementById("vf"), img = document.getElementById("vfImg"), ph = document.getElementById("vfPh");
-  const frameEl = vf.querySelector(".vf-frame"), set = document.getElementById("vfSet"), no = document.getElementById("vfNo"), cap = document.getElementById("vfCap");
+  const lensEl = document.getElementById("vfLens"), set = document.getElementById("vfSet"), no = document.getElementById("vfNo"), cap = document.getElementById("vfCap");
   const pad = (n) => String(n).padStart(2, "0");
   let i = 0, back = null, timer = 0, isOpen = false, viaHash = false, walled = [];
   function show(n) {
@@ -798,7 +793,7 @@ body[data-mode="computer"] #gl.over { cursor: pointer; }
     img.hidden = !f.src;
     if (f.src) { img.src = f.src; img.alt = f.alt; img.style.objectFit = f.fit || "cover"; }  // contain: portrait frames
     ph.textContent = f.label || "";
-    frameEl.style.background = f.bg || "#222";
+    lensEl.style.background = f.bg || "#222";   // inside the lens, so it fades with the photo
     set.textContent = f.set;
     no.textContent = `▸ ${pad(i + 1)} / ${pad(FRAMES.length)}`;
     cap.textContent = `Frame ${pad(i + 1)} · ${f.cap}`;

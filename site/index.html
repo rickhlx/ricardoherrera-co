@@ -66,7 +66,7 @@ html .drawing { height: 420px; }
 </script>
 <meta name="claude:viewport-fit-sides" content="cover">
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@62..125,400..800&family=Martian+Mono:wdth,wght@75..100,300..500&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@62..125,400..800&family=Martian+Mono:wdth,wght@75..100,300..500&family=Caveat:wght@500&display=swap">
 <style>
 
 /* Layout: six A-ratio blueprint sheets hang in a dark drafting void; the camera flies a dashed route
@@ -315,6 +315,61 @@ body[data-mode="computer"] #gl.over { cursor: pointer; }
   color: #d7ffe8; font: inherit; text-shadow: inherit; caret-color: var(--phosphor);
 }
 .term input:focus-visible { outline: 0; }
+
+/* ---------- photo prints clipped to the sheets ---------- */
+.ident { display: flex; align-items: flex-start; justify-content: space-between; gap: 16px; }
+.ident > div { min-width: 0; display: grid; gap: 10px; align-content: start; padding-top: 4px; }
+.hand { font-family: "Caveat", cursive; font-weight: 500; font-size: 21px; line-height: 1; color: var(--redline); margin: 4px 0 0; transform: rotate(-2deg); transform-origin: 0 50%; }
+.print { --tilt: 3deg; margin: 12px 4px 0 0; position: relative; flex: 0 0 auto; width: 156px; transform: rotate(var(--tilt)); transform-origin: 50% 0; }
+.print .paper { position: relative; background: #f3f0e8; padding: 8px; box-shadow: 0 14px 28px rgba(0, 0, 0, 0.42), 0 2px 4px rgba(0, 0, 0, 0.3); }
+.print img { display: block; width: 100%; aspect-ratio: 140 / 184; height: auto; object-fit: cover; object-position: 52% 30%; }
+.print .clip { position: absolute; top: -30px; left: 24px; width: 30px; height: 86px; overflow: visible; pointer-events: none; }
+.print figcaption, .fig-row .fig-no { font-size: 9px; line-height: 1.6; letter-spacing: 0.1em; text-transform: uppercase; color: var(--ink-dim); }
+.print figcaption { margin-top: 8px; text-align: center; }
+.print.wide { --tilt: -2.5deg; width: 262px; transform-origin: 70% 0; margin: 0; }
+.print.wide .paper { padding: 9px 9px 34px; }
+.print.wide img { aspect-ratio: 3 / 2; object-position: 50% 50%; }
+.print.wide .clip { left: auto; right: 30px; top: -32px; transform: rotate(7deg); }
+.print .paper .hand { position: absolute; left: 14px; right: 14px; bottom: 6px; margin: 0; font-size: 20px; color: #3a3a46; transform: none; }
+.fig-row { display: flex; align-items: flex-end; gap: 14px; margin-top: 14px; }
+.fig-row .fig-no { margin: 0 0 6px; }
+@container (max-width: 899px) {
+  .print { width: 116px; }
+  .print.wide { width: min(262px, 64cqw); }
+  .hand { font-size: 18px; }
+}
+
+/* ---------- the viewfinder (item 7) ---------- */
+.vf {
+  position: fixed; inset: 0; z-index: 30; background: #030303; color: var(--ink);
+  display: flex; flex-direction: column; align-items: center; gap: 14px; overflow: auto;
+  padding: calc(env(safe-area-inset-top, 0px) + 18px) max(16px, env(safe-area-inset-right, 0px)) calc(env(safe-area-inset-bottom, 0px) + 16px) max(16px, env(safe-area-inset-left, 0px));
+  opacity: 0; transition: opacity 0.35s ease;
+}
+.vf.on { opacity: 1; }
+.vf-top, .vf-ctrl { width: min(1080px, 100%); display: flex; justify-content: space-between; align-items: center; gap: 12px; }
+.vf-top { font-size: 10.5px; letter-spacing: 0.08em; text-transform: uppercase; color: #6f7a8c; }
+.vf-body { width: min(840px, 100%, calc((100dvh - 230px) * 1.5)); display: grid; gap: 12px; }
+.vf-frame { position: relative; aspect-ratio: 3 / 2; border-radius: 22px; overflow: hidden; background: #222; transform: scale(1.06); transition: transform 0.5s ease; }
+.vf.on .vf-frame { transform: none; }
+.vf-frame img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
+.vf-ph { position: absolute; left: 0; right: 0; top: 9%; text-align: center; font-size: 13px; letter-spacing: 0.06em; color: rgba(255, 250, 235, 0.85); }
+.vf-vig { position: absolute; inset: 0; border-radius: inherit; box-shadow: inset 0 0 140px 50px rgba(0, 0, 0, 0.85); pointer-events: none; }
+.vf-c { position: absolute; width: 5.5%; aspect-ratio: 1; border: 0 solid rgba(255, 248, 220, 0.92); pointer-events: none; }
+.vf-c.tl { left: 8%; top: 10.7%; border-left-width: 2px; border-top-width: 2px; }
+.vf-c.tr { right: 8%; top: 10.7%; border-right-width: 2px; border-top-width: 2px; }
+.vf-c.bl { left: 8%; bottom: 10.7%; border-left-width: 2px; border-bottom-width: 2px; }
+.vf-c.br { right: 8%; bottom: 10.7%; border-right-width: 2px; border-bottom-width: 2px; }
+.vf-patch { position: absolute; left: 50%; top: 50%; width: 13%; aspect-ratio: 110 / 72; transform: translate(-50%, -50%); border: 1px solid rgba(255, 236, 190, 0.7); background: rgba(255, 214, 140, 0.14); pointer-events: none; }
+.vf-read { display: flex; justify-content: space-between; align-items: baseline; gap: 12px; font-size: 13px; letter-spacing: 0.08em; color: var(--redline); text-shadow: 0 0 8px rgba(255, 171, 122, 0.55); }
+.vf-cap { margin: 0; font-size: 12px; letter-spacing: 0.04em; color: var(--ink-dim); }
+.vf-ctrl { margin-top: auto; }
+.vf-ctrl > div { display: flex; gap: 8px; }
+.vf button { min-width: 44px; min-height: 44px; padding: 0 16px; background: transparent; border: 1px solid var(--void-mark); color: var(--ink); cursor: pointer; font-size: 10.5px; letter-spacing: 0.06em; text-transform: uppercase; }
+.vf button:hover { border-color: var(--ink-dim); }
+.vf button.hot { border-color: var(--redline); color: var(--redline); }
+@media (max-width: 820px) { .vf-read { font-size: 11px; } .vf-frame { border-radius: 14px; } }
+@media (prefers-reduced-motion: reduce) { .vf, .vf-frame { transition: none; } }
 </style>
 
 <canvas id="gl" aria-hidden="true"></canvas>
@@ -331,6 +386,7 @@ body[data-mode="computer"] #gl.over { cursor: pointer; }
     <a href="#writing"><b>04</b>Writing</a>
     <a href="#archive"><b>05</b>Archive</a>
     <a href="#contact"><b>06</b>Contact</a>
+    <a href="#viewfinder"><b>07</b>Viewfinder</a>
     <a href="#terminal"><b>&gt;_</b>Terminal</a>
   </nav>
 </header>
@@ -378,9 +434,17 @@ body[data-mode="computer"] #gl.over { cursor: pointer; }
         </figure>
       </div>
       <div class="side">
-        <div>
-          <p class="role">Senior site reliability engineer</p>
-          <h1 class="name">Ricardo Herrera</h1>
+        <div class="ident">
+          <div>
+            <p class="role">Senior site reliability engineer</p>
+            <h1 class="name">Ricardo Herrera</h1>
+            <p class="hand" aria-hidden="true">↗ that's me, the one who drew this</p>
+          </div>
+          <figure class="print">
+            <div class="paper"><img src="photos/portrait.jpg" width="640" height="640" alt="Ricardo Herrera in a denim jacket against a yellow wall"></div>
+            <svg class="clip" viewBox="0 0 30 86" aria-hidden="true"><path d="M9 26 V11 a6 6 0 0 1 12 0 V68 a10 10 0 0 1 -20 0 V16" fill="none" stroke="rgba(0,0,0,0.35)" stroke-width="2.6" stroke-linecap="round" transform="translate(2 3)"/><path d="M9 26 V11 a6 6 0 0 1 12 0 V68 a10 10 0 0 1 -20 0 V16" fill="none" stroke="#dfe5ee" stroke-width="2.6" stroke-linecap="round"/><path d="M10 24 V12" fill="none" stroke="#fff" stroke-width="1" stroke-linecap="round" opacity="0.8"/></svg>
+            <figcaption>Fig. 0 · Operator</figcaption>
+          </figure>
         </div>
         <p>I build infrastructure that stays up and stays boring: Kubernetes platforms, observability, and the automation that lets other engineers ship on their own. This drawing set takes the whole operation apart, one sheet at a time.</p>
         <div>
@@ -446,13 +510,20 @@ body[data-mode="computer"] #gl.over { cursor: pointer; }
         </figure>
       </div>
       <div class="side">
+        <div class="fig-row">
+          <figure class="print wide">
+            <div class="paper"><img src="photos/paris.jpg" width="1080" height="720" alt="Ricardo leaning on a stone balustrade above a misty Paris skyline"><p class="hand">Paris, [year]</p></div>
+            <svg class="clip" viewBox="0 0 30 86" aria-hidden="true"><path d="M9 26 V11 a6 6 0 0 1 12 0 V68 a10 10 0 0 1 -20 0 V16" fill="none" stroke="rgba(0,0,0,0.35)" stroke-width="2.6" stroke-linecap="round" transform="translate(2 3)"/><path d="M9 26 V11 a6 6 0 0 1 12 0 V68 a10 10 0 0 1 -20 0 V16" fill="none" stroke="#dfe5ee" stroke-width="2.6" stroke-linecap="round"/><path d="M10 24 V12" fill="none" stroke="#fff" stroke-width="1" stroke-linecap="round" opacity="0.8"/></svg>
+          </figure>
+          <p class="fig-no">Fig. 2-C<br>Operator,<br>off duty</p>
+        </div>
         <div>
           <h3>General notes</h3>
           <ol>
             <li>Site reliability engineer with 10+ years in infrastructure, from a colo rack of ESXi hosts to multi-cluster Kubernetes on AWS.</li>
             <li>Now: senior SRE at Watchtower, contract SRE for G&amp;G Outfitters, and co-founder of Glamer. Happiest building self-service platforms and making on-call quiet.</li>
             <li>Everything in Git. Self-service over tickets, SLOs over gut feel, runbooks that run themselves. Mostly Go, Terraform and FluxCD.</li>
-            <li>[Something outside work: photography, records, old machines.]</li>
+            <li>[Something outside work: photography, records, old machines.] See fig. 2-C.</li>
             <li>All dimensions in millimetres. Do not scale from drawing.</li>
           </ol>
         </div>
@@ -647,6 +718,83 @@ body[data-mode="computer"] #gl.over { cursor: pointer; }
   </form>
 </div>
 
+<div class="vf" id="vf" role="dialog" aria-modal="true" aria-label="YN-1 viewfinder" hidden>
+  <div class="vf-top"><span>YN-1 · Viewfinder</span><span>Item 7 · Photographs</span></div>
+  <div class="vf-body">
+    <div class="vf-frame">
+      <img id="vfImg" alt="">
+      <span class="vf-ph" id="vfPh"></span>
+      <i class="vf-vig" aria-hidden="true"></i>
+      <i class="vf-c tl" aria-hidden="true"></i><i class="vf-c tr" aria-hidden="true"></i><i class="vf-c bl" aria-hidden="true"></i><i class="vf-c br" aria-hidden="true"></i>
+      <i class="vf-patch" aria-hidden="true"></i>
+    </div>
+    <div class="vf-read"><span id="vfSet"></span><span id="vfNo" aria-live="polite"></span></div>
+    <p class="vf-cap" id="vfCap"></p>
+  </div>
+  <div class="vf-ctrl">
+    <button type="button" id="vfBack">← Step back</button>
+    <div>
+      <button type="button" id="vfPrev" aria-label="Previous frame">◂</button>
+      <button type="button" id="vfNext" class="hot">Advance ▸</button>
+    </div>
+  </div>
+</div>
+
+<script>
+// The viewfinder: item 7 on the YN-1. A plain script so it also works on the flat (no-WebGL) page.
+(() => {
+  const FRAMES = [
+    { src: "photos/paris.jpg", alt: "Ricardo leaning on a stone balustrade above a misty Paris skyline", set: "f/5.6 · 1/125 · ISO 400", cap: "Ricardo Herrera · Paris, [year]" },
+    { label: "[Street photo]", bg: "linear-gradient(120deg, #2a2826 0%, #8d8578 48%, #d9d2c4 100%)", set: "f/8 · 1/500 · ISO 400", cap: "[Street, city, year]" },
+    { label: "[Street photo]", bg: "linear-gradient(200deg, #3b3834 0%, #6e685f 40%, #a79f92 100%)", set: "f/4 · 1/125 · ISO 400", cap: "[Street, city, year]" },
+    { label: "[Street photo]", bg: "linear-gradient(160deg, #dcd5c8 0%, #9e968a 30%, #26241f 100%)", set: "f/11 · 1/500 · ISO 400", cap: "[Street, city, year]" },
+    { label: "[Street photo]", bg: "linear-gradient(90deg, #1c1a18 0%, #57524b 50%, #1c1a18 100%)", set: "f/2.8 · 1/60 · ISO 1600", cap: "[Street, city, year, at night]" },
+  ];
+  const vf = document.getElementById("vf"), img = document.getElementById("vfImg"), ph = document.getElementById("vfPh");
+  const frameEl = vf.querySelector(".vf-frame"), set = document.getElementById("vfSet"), no = document.getElementById("vfNo"), cap = document.getElementById("vfCap");
+  const pad = (n) => String(n).padStart(2, "0");
+  let i = 0, back = null, timer = 0;
+  function show(n) {
+    i = (n + FRAMES.length) % FRAMES.length;
+    const f = FRAMES[i];
+    img.hidden = !f.src;
+    if (f.src) { img.src = f.src; img.alt = f.alt; }
+    ph.textContent = f.label || "";
+    frameEl.style.background = f.bg || "#222";
+    set.textContent = f.set;
+    no.textContent = `▸ ${pad(i + 1)} / ${pad(FRAMES.length)}`;
+    cap.textContent = `Frame ${pad(i + 1)} · ${f.cap}`;
+  }
+  function open() {
+    if (!vf.hidden) return;
+    clearTimeout(timer);
+    back = document.activeElement;
+    show(0);
+    vf.hidden = false;
+    requestAnimationFrame(() => requestAnimationFrame(() => vf.classList.add("on")));
+    document.getElementById("vfNext").focus({ preventScroll: true });
+  }
+  function close() {
+    if (vf.hidden) return;
+    vf.classList.remove("on");
+    timer = setTimeout(() => (vf.hidden = true), matchMedia("(prefers-reduced-motion: reduce)").matches ? 0 : 350);
+    if (location.hash === "#viewfinder") history.replaceState(null, "", location.pathname + location.search);
+    if (back && back.focus) back.focus({ preventScroll: true });
+  }
+  document.getElementById("vfBack").addEventListener("click", close);
+  document.getElementById("vfPrev").addEventListener("click", () => show(i - 1));
+  document.getElementById("vfNext").addEventListener("click", () => show(i + 1));
+  vf.addEventListener("keydown", (e) => {
+    if (e.key === "Escape") { e.preventDefault(); e.stopPropagation(); close(); }
+    else if (e.key === "ArrowRight") { e.stopPropagation(); show(i + 1); }
+    else if (e.key === "ArrowLeft") { e.stopPropagation(); show(i - 1); }
+  });
+  addEventListener("hashchange", () => { if (location.hash === "#viewfinder") open(); });
+  if (location.hash === "#viewfinder") open();
+  window.YN1Viewfinder = { open, close };
+})();
+</script>
+
 <script type="importmap">
 { "imports": {
   "three": "https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js",
@@ -673,6 +821,7 @@ const PART = {
   tape:     { label: "Item 5 · Tape drive",  go: "archive",  verb: "Archive" },
   keyboard: { label: "Item 6 · Keyboard",    go: "contact",  verb: "Contact" },
   chassis:  { label: "Item 1 · Chassis",     go: "index",    verb: "Drawing index" },
+  viewfinder: { label: "Item 7 · Viewfinder", go: "viewfinder", verb: "Look through" },
 };
 // Sheets hang in a ring around the computer, each facing it (mm = CSS px).
 const RING = { index: -118, about: -168, work: 150, writing: 102, archive: 58, contact: -62 };
@@ -820,6 +969,22 @@ meshes.forEach((o) => {
   const hid = new THREE.LineSegments(edges, hiddenMat()); hid.computeLineDistances(); hid.renderOrder = 2; hid.raycast = () => {};
   o.add(vis, hid); part.lines.push(vis.material); part.hidden.push(hid.material);
 });
+// Item 7, the viewfinder: a rangefinder-style eyepiece on top of the enclosure, built here rather than in Blender.
+{
+  const g = new THREE.Group(); g.name = "part_viewfinder"; gltf.scene.add(g);
+  const part = { key: "viewfinder", root: g, home: g.position.clone(), ex: new THREE.Vector3(0, 0.62, 0.04), lines: [], hidden: [], meshes: [], t: 0, lift: 0 };
+  parts.viewfinder = part;
+  const body = new THREE.Mesh(new THREE.BoxGeometry(0.09, 0.036, 0.07)); body.position.set(-0.19, 0.368, 0.025);
+  const lens = new THREE.Mesh(new THREE.CylinderGeometry(0.013, 0.013, 0.018, 24)); lens.rotation.x = Math.PI / 2; lens.position.set(-0.19, 0.368, 0.069);
+  const win = new THREE.Mesh(new THREE.BoxGeometry(0.03, 0.016, 0.004)); win.position.set(-0.215, 0.368, -0.0115);
+  for (const o of [body, lens, win]) {
+    o.material = fillMat(); o.userData.partKey = "viewfinder"; g.add(o); part.meshes.push(o);
+    const edges = new THREE.EdgesGeometry(o.geometry, 28);
+    const vis = new THREE.LineSegments(edges, lineMat()); vis.raycast = () => {};
+    const hid = new THREE.LineSegments(edges, hiddenMat()); hid.computeLineDistances(); hid.renderOrder = 2; hid.raycast = () => {};
+    o.add(vis, hid); part.lines.push(vis.material); part.hidden.push(hid.material);
+  }
+}
 const CENTER = new THREE.Vector3(0, 170, -40);
 
 // ---------- camera control in computer mode
@@ -990,6 +1155,10 @@ gl.domElement.addEventListener("pointerup", (e) => {
   if (h.sheet) return go(h.sheet);
   picked = h.part;
   const target = PART[h.part].go;
+  if (target === "viewfinder") {
+    setTimeout(() => { window.YN1Viewfinder.open(); picked = null; }, reduce ? 0 : 280);
+    return;
+  }
   setTimeout(() => go(target), reduce ? 0 : 280);  // let the part lift first
 });
 
@@ -1005,7 +1174,7 @@ const LOG = [
 ];
 const POSTS = [["[Latest post title]", "[Date]"], ["[Post title]", "[Date]"], ["[Post title]", "[Date]"], ["[Post title]", "[Date]"]];
 const FILES = ["about.txt", "contact.txt", "work/", "writing/", "archive/"];
-const CMDS = ["help", "whoami", "ls", "cat", "git log", "git show", "open", "take apart", "put together", "crt", "clear", "exit"];
+const CMDS = ["help", "whoami", "ls", "cat", "git log", "git show", "open", "take apart", "put together", "crt", "look", "clear", "exit"];
 let booted = false, hist = [], hi = 0;
 
 function out(parts, cls) {
@@ -1046,6 +1215,7 @@ function exec(raw) {
       out([{ run: "open about", text: "open" }, " <sheet>      fly to a drawing: index about work writing archive contact"]);
       out([{ run: "take apart", text: "take apart" }, "         disassemble the YN-1 (", { run: "put together", text: "put together" }, " to undo)"]);
       out([{ run: "crt off", text: "crt" }, " on|off         screen glow"]);
+      out([{ run: "look", text: "look" }, "               look through the viewfinder"]);
       out(["clear · ", { run: "exit", text: "exit" }]);
       break;
     case "whoami":
@@ -1096,6 +1266,7 @@ function exec(raw) {
     case "crt": termEl.classList.toggle("flat", args[0] === "off"); out({ cls: "dim", text: `crt ${args[0] === "off" ? "off" : "on"}` }); break;
     case "clear": termOut.textContent = ""; break;
     case "exit": case "logout": go("yn1"); break;
+    case "look": out({ cls: "dim", text: "winding on…" }); setTimeout(() => window.YN1Viewfinder.open(), reduce ? 0 : 250); break;
     case "sudo": out({ cls: "err", text: "nice try." }); break;
     default: out({ cls: "err", text: `${cmd}: command not found. Try help.` });
   }

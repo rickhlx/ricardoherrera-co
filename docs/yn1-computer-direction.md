@@ -23,6 +23,7 @@ The homepage is a fictional 1970s workstation, the **YN-1**, modeled in Blender.
 | (nav / terminal) | Writing | 04 Display detail + revision log (posts) |
 | Tape drive | Archive | 05 Tape drive detail (wildcard slot) |
 | Keyboard | Contact | 06 Keyboard plan, return key redlined |
+| Viewfinder | Photographs | — (full-screen viewfinder, not a sheet) |
 
 ## Handwritten annotations
 Hand markup on the sheets makes the drawings feel personal, like an engineer's working set.
@@ -32,6 +33,12 @@ Hand markup on the sheets makes the drawings feel personal, like an engineer's w
 - **Texture:** tape and a faint coffee ring, kept subtle.
 - **Restraint:** three to five notes per sheet. The writing section stays clean, with at most a signature or date stamp.
 - **Production:** use real scanned handwriting vectorized to SVG (not a font), so notes can draw themselves with a stroke animation. Notes that carry meaning or links stay as HTML/SVG overlays (crisp, clickable, accessible); texture-only marks can be baked into renders as decals.
+
+## Photos
+- **Sheet 01 (Index):** the yellow-wall portrait (`site/photos/portrait.jpg`) is paper-clipped beside the name as a print, captioned *Fig. 0 · Operator*, with a handwritten redline note.
+- **Sheet 02 (About):** the Paris overlook shot (`site/photos/paris.jpg`) is clipped above the General notes as *Fig. 2-C*, with a handwritten "Paris, [year]" on the print. Note 4 points to it.
+- **Viewfinder (item 7):** a rangefinder-style eyepiece on top of the enclosure, added in three.js rather than Blender. Clicking it, the `look` terminal command, `#viewfinder` or the register link opens a full-screen viewfinder with bright-line frame, focus patch and an orange exposure readout. **Advance** winds through the roll: Paris first, then four street-photo placeholders. The yellow portrait stays on sheet 01 only.
+- Mockup canvas: [YN-1 Photo Moments](https://claude.ai/artifact/SK7uFHMXVWnYhwG3bNDbo5).
 
 ## How it's built
 1. `model/build_yn1.py` builds the YN-1 by script in Blender 5.2 (bpy), then saves `yn1.blend` and exports a GLB. Each part is an Empty that carries its section, label and explode vector as glTF extras.

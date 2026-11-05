@@ -50,8 +50,6 @@ The site runs on **Vercel**, which builds it from the repo with `npm run build` 
 - Leave `BASE_PATH` unset; Vercel serves from the root.
 - Drafts are left out unless `INCLUDE_DRAFTS=true` is set in Vercel's environment variables. To see drafts on preview deployments, set it for **Preview** only, never for Production.
 
-The GitHub Pages workflow (`.github/workflows/pages.yml`) still builds a second copy at https://rickhlx.github.io/ricardoherrera-co/ on every push to `main` that touches the site, with `BASE_PATH=/ricardoherrera-co` and `INCLUDE_DRAFTS=true`. Delete the workflow if that copy is no longer needed.
-
 ## Rebuilding the model and drawings
 
 ```sh
@@ -76,7 +74,6 @@ The homepage and every writing page carry a meta description, canonical URL, Ope
 ## Before launch
 
 - `site/index.html` still carries the claude.ai artifact page wrapper (its first line). Replace it with a proper `<head>`.
-- Decide whether to keep the GitHub Pages copy (`.github/workflows/pages.yml`). It publishes drafts, so delete it or set `INCLUDE_DRAFTS` to `"false"` once Vercel serves ricardoherrera.co.
 - The spot interruptions post is live but is still sample text written to show the layout. Rewrite or replace it.
 - Sheet 04 on the YN-1 and the terminal's `ls writing` still list placeholder posts. Generate them from `src/content/writing/` once real posts exist.
 - Content is mostly placeholders: posts, archive, contact links.

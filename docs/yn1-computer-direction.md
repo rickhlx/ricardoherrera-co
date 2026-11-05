@@ -53,11 +53,11 @@ Paths are in the repo.
 Gotchas found so far:
 - Start Blender from `read_factory_settings()`, not `use_empty=True`. Freestyle draws nothing from an empty factory scene.
 - Read a camera's direction from `rotation_euler.to_matrix()` after changing its rotation. `matrix_world` is stale until the next update.
-- Artifacts don't serve `.glb` files, so the model ships base64-encoded inside `yn1.glb.json`. (GitHub Pages can serve `.glb` directly, so this can be simplified later.)
+- Artifacts don't serve `.glb` files, so the model ships base64-encoded inside `yn1.glb.json`. (Vercel can serve `.glb` directly, so this can be simplified later.)
 
 ## Open items
 - All content is still placeholders (name, projects, posts, roles in `git log`).
 - Ideas not built yet: clicking keyboard keys types into the terminal, and real work history in `git log`.
 - Annotations: Ricardo hand-writes the Sheet 06 notes (the four notes, "B", a revision cloud, a triangle and two arrows); trace the scans to SVG and swap them in for the Caveat text. Then markup for the other sheets.
 - Not yet reviewed on a real device: font loading, motion smoothness and the phone feel.
-- Deploy: the GitHub Pages workflow is in the repo; Pages settings need Source = GitHub Actions and no custom domain until cutover.
+- Deploy: Vercel builds the site from the repo; see the README.

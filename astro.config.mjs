@@ -3,8 +3,7 @@ import { defineConfig } from "astro/config";
 import { unified, rehypeHeadingIds } from "@astrojs/markdown-remark";
 import { remarkCallouts, rehypePostBody, shikiCodeFrame } from "./src/lib/markdown.mjs";
 
-// The GitHub Pages preview lives under /ricardoherrera-co/; the workflow sets BASE_PATH for it.
-// On ricardoherrera.co (after the cutover) leave BASE_PATH unset so the site builds at /.
+// Set BASE_PATH only to serve the site from a subpath. Vercel serves from /, so leave it unset there.
 const base = process.env.BASE_PATH || "/";
 
 export default defineConfig({

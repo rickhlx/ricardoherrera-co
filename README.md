@@ -73,6 +73,7 @@ The homepage and every writing page carry a meta description, canonical URL, Ope
 
 ## Before launch
 
-- `site/index.html` still carries the claude.ai artifact page wrapper (its first line). Replace it with a proper `<head>`.
+- Placeholder text still to write: the Archive sheet (05) and its terminal listing (`ls archive`), and the "outside work" line in the About sheet's notes.
 - The spot interruptions post is live but is still sample text written to show the layout. Rewrite or replace it.
-- Content is still partly placeholder: the archive sheet and the sample post.
+- Not yet checked on a real device: font loading, motion and the phone feel.
+- Domain cutover: `ricardoherrera.co` still serves the old Next.js site. Point it at Vercel only when Ricardo asks.

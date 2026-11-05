@@ -56,8 +56,8 @@ Gotchas found so far:
 - Artifacts don't serve `.glb` files, so the model ships base64-encoded inside `yn1.glb.json`. (Vercel can serve `.glb` directly, so this can be simplified later.)
 
 ## Open items
-- All content is still placeholders (name, projects, posts, roles in `git log`).
-- Ideas not built yet: clicking keyboard keys types into the terminal, and real work history in `git log`.
+- Placeholder content left: the Archive sheet (05) and `ls archive`, the "outside work" line in About, and the sample spot post. Name, projects, contact and the `git log` work history are real.
+- Idea not built yet: clicking keyboard keys types into the terminal.
 - Annotations: Ricardo hand-writes the Sheet 06 notes (the four notes, "B", a revision cloud, a triangle and two arrows); trace the scans to SVG and swap them in for the Caveat text. Then markup for the other sheets.
 - Not yet reviewed on a real device: font loading, motion smoothness and the phone feel.
 - Deploy: Vercel builds the site from the repo; see the README.

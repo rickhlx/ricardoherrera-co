@@ -7,7 +7,6 @@ const tags = [...new Set(posts.flatMap((p) => p.data.tags))].sort();
 const byYear = Map.groupBy(posts, (p) => p.data.date.getUTCFullYear());
 const site = Astro.site ?? new URL("https://ricardoherrera.co");
 const canonical = new URL("writing/", site);
-const feedUrl = new URL("writing/feed.xml", site);
 ---
 <Writing
   title="Writing · Ricardo Herrera"
@@ -20,11 +19,6 @@ const feedUrl = new URL("writing/feed.xml", site);
       <span class="eyebrow">Sheet 04 · Revision log</span>
       <h1>Writing</h1>
       <p>Long-form notes on platform engineering, reliability and running infrastructure, plus the occasional detour. Written for other engineers. Every post has a stable link and a change history.</p>
-      <div class="subscribe">
-        <span>Subscribe by feed</span>
-        <code id="feedUrl">{feedUrl.href}</code>
-        <button type="button" class="btn" id="copyFeed" data-url={feedUrl.href}>Copy feed URL</button>
-      </div>
     </div>
 
     {posts.length > 1 && (
@@ -59,10 +53,6 @@ const feedUrl = new URL("writing/feed.xml", site);
   </div>
 
   <script>
-    import { copyText } from "../../lib/client.js";
-    const btn = document.getElementById("copyFeed");
-    btn?.addEventListener("click", () => copyText(btn.dataset.url!, document.getElementById("feedUrl"), "Feed URL copied"));
-
     const q = document.getElementById("q") as HTMLInputElement | null;
     const chips = [...document.querySelectorAll<HTMLButtonElement>(".chip")];
     let tag = new URLSearchParams(location.search).get("tag") || "";

@@ -125,9 +125,51 @@ The ALB matches on host, path, headers, query strings and source IP, and it can 
 
 <!-- TODO: check current ALB rewrite/transform support before publishing; AWS keeps adding to it -->
 
-### You can't see per-route latency
+### You can't measure SLOs per request
 
-The ALB reports metrics to CloudWatch per load balancer and target group, and writes access logs to S3. If you want p99 latency per route in the same Prometheus as everything else, or traces that begin at the edge, a proxy you run gives you that for free. With the ALB, you're joining log files.
+A good availability SLO is measured where the user meets the system: of the requests that reached us, how many succeeded fast enough? The load balancer is the right place to count. It sees every request, including the ones your pods never saw. The ALB counts them, but it makes the numbers hard to get at.
+
+**The metrics stop at the target group.** CloudWatch gives you `TargetResponseTime` and the `HTTPCode_*` counts per load balancer, per target group and per zone, at one-minute resolution. A target group is a Service port, not a route. If `/checkout` and `/search` go to the same Service, they're one line on the graph. The checkout SLO you care about is mixed with search traffic you don't.
+
+**Percentiles don't add up.** CloudWatch can give you p99 per target group, but you can't combine the p99s of three target groups, or of two ALBs, into a p99 for the service. That needs the underlying distribution, and CloudWatch doesn't give you one you can merge with your other metrics. With ingress groups and several ALBs, "p99 latency for the API" can't be answered from CloudWatch.
+
+**The access logs have the detail, but late.** Every request is in the access logs, with its path, status codes from both the ALB and the target, and timings for each stage. But the logs land in S3 in batches every five minutes. To get an SLO out of them you have to:
+
+1. Query them with Athena, or ship them into your log pipeline.
+2. Normalize paths yourself, so `/orders/8123` and `/orders/8124` count as one route.
+3. Join that to whatever defines your SLOs.
+
+That works for a weekly report. It doesn't work for alerting.
+
+**Burn-rate alerts need fast windows.** The usual SLO alerts page when the error budget burns quickly, over windows as short as five minutes. If your data arrives in five-minute batches and takes another minute or two to query, the short window is always behind. You end up alerting on the CloudWatch metrics (fast but coarse) and reporting the SLO from the logs (precise but slow), and the two never quite agree.
+
+**Errors the ALB creates are easy to miss.** A 502 when a pod resets the connection, a 503 when a target group has no healthy targets, a 504 when the target is too slow: these come from the ALB, and your app never sees them. App metrics say 100% success while users get errors. They show up as `HTTPCode_ELB_5XX_Count`, but not per route, and in the logs only after the delay. If your SLO is built from app metrics, it's measuring the wrong thing.
+
+**Traces start one hop late.** The ALB adds an `X-Amzn-Trace-Id` header, but it doesn't emit a span. The time spent at the ALB, waiting for a connection to a target, and the ALB's own errors never appear in your traces. A trace starts at the pod, so the slowest part of a bad request can be invisible.
+
+<!-- TODO: an example of an SLO dashboard that said green while ELB 5xx were up -->
+
+A proxy you run fixes most of this, because per-request data is what it's built to produce:
+
+- Latency **histograms** per route, in Prometheus, that you can add up across pods, zones and clusters and get a correct p99.
+- Labels for the route and backend, taken from the `HTTPRoute`, so the SLO maps to something a team owns.
+- Access logs streamed to your log pipeline within seconds, not dropped into S3 every five minutes.
+- A span at the edge, so a trace begins where the request entered the cluster.
+- The proxy's own errors (no healthy upstream, upstream reset, timeout) counted in the same metrics as everything else.
+
+With that, a per-route availability SLI is one query:
+
+```promql title="checkout-availability.promql"
+# Share of checkout requests in the last 5 minutes that didn't return 5xx.
+# Metric and label names vary by proxy; this is the shape, not a copy-paste.
+sum(rate(gateway_requests_total{route="checkout/checkout", code!~"5.."}[5m]))
+/
+sum(rate(gateway_requests_total{route="checkout/checkout"}[5m]))
+```
+
+<!-- TODO: swap in the real metric names from the proxy we run (Envoy Gateway: envoy_cluster_upstream_rq_*, with the route in the cluster name) -->
+
+The proxy can't see what happens before it. Connections the NLB drops, or that never reach the cluster, still need the NLB's CloudWatch metrics and synthetic checks from outside. But at L4 there's much less that can go wrong there, and every HTTP response your users get is counted in one place.
 
 ### Changes are slow
 
@@ -201,7 +243,7 @@ Move routing into the cluster if two or more of these are true:
 - [ ] Traffic arrives in sudden spikes and you've seen ELB 5xx errors during them.
 - [ ] You can't explain the LCU line on the bill.
 - [ ] Teams need retries, rate limits, mirroring or progressive canaries.
-- [ ] You want per-route metrics and traces in the stack you already have.
+- [ ] You need SLOs per route, with burn-rate alerts, and the ALB's metrics and logs can't give you that.
 - [ ] Ingress changes are slow enough that people complain about deploys.
 - [ ] You have a platform team that can own a tier-0 component.
 

@@ -32,8 +32,10 @@ triage-alert/
 │   ├── signals.py           # error rate, latency, saturation for a service
 │   ├── similar_incidents.py # search past incidents by symptom
 │   └── verify_claims.py     # checks the summary's claims against the data
-└── evals/
-    └── incidents/           # past incidents to replay against the skill
+├── evals/
+│   └── incidents/           # past incidents to replay against the skill
+└── learn/
+    └── LEARN.md             # after the incident: what to change in this skill
 ```
 
 ## Step 1: Threat model it before you write a prompt
@@ -199,7 +201,42 @@ expected:
 
 <!-- TODO: results from a replay run, even a rough one -->
 
-## Step 9: Ship it like a product
+## Step 9: Make every run improve the skill
+
+This is the practice people call **compound engineering**: every piece of work should leave the system a little better at the next one. Most agent setups don't. The agent triages an incident, the incident is fixed, the postmortem gets written, and the skill is exactly as good tomorrow as it was yesterday. Everything the team learned stays in a doc the skill never reads.
+
+So close the loop. When an incident is resolved, a second step, `learn/LEARN.md`, compares what the skill said at the start with what turned out to be true, and proposes changes to the skill itself:
+
+```markdown title="skills/triage-alert/learn/LEARN.md"
+# Learn from a resolved incident
+
+Run when an incident closes. Inputs: the triage summary you posted, the incident
+timeline, and the postmortem if there is one.
+
+1. Compare: was the service right? The scope? Was the real cause in your top three?
+2. For each miss, find the reason:
+   - a signal you didn't check → add it to references/services/<service>.md
+   - a cause you'd never seen → add it under "Common causes" for that service
+   - a script that returned the wrong thing → open an issue for the script
+   - a step that sent you the wrong way → propose an edit to SKILL.md
+3. Add this incident to evals/incidents/, with the real cause as the expected answer.
+4. Open one pull request with all of it. Explain each change in a sentence.
+
+Never edit the skill directly. Every change goes through review.
+```
+
+What makes this work, and keeps it safe:
+
+- **It proposes, people approve.** The skill never rewrites itself in place. Every lesson is a pull request, reviewed like any other change. A skill that edits its own instructions from what it read in logs is one prompt injection away from learning the wrong lesson, permanently.
+- **Lessons go where they'll be used.** A new cause goes in the service's reference file, so it's only loaded for that service. That keeps `SKILL.md` short as the knowledge grows.
+- **Every incident becomes a test.** The eval set from step 8 grows on its own, and the next change to the skill has to pass the incident it just learned from.
+- **Wins count too.** When the skill got it right quickly, record which signal or past incident gave it away, so that path is easier to find next time.
+
+After a few months, the per-service files read like a summary of every incident that service has had, and the eval set covers most of the ways it breaks. That's the compound part: the hundredth incident is triaged by a skill that learned from the first ninety-nine.
+
+<!-- TODO: an example lesson PR from a real incident -->
+
+## Step 10: Ship it like a product
 
 This is where treating the harness as a product becomes concrete. Once it works for one team, the same skills, scripts and evals can be shared across teams.
 
@@ -209,7 +246,7 @@ This is where treating the harness as a product becomes concrete. Once it works 
 - **Run it alongside people first.** For a month, it posts next to the on-call engineer's own triage. Compare, then decide.
 - **Track how often people disagree with it.** If nobody ever does, either it's perfect or nobody's reading. Assume the second.
 
-## Step 10: Keep your people sharp
+## Step 11: Keep your people sharp
 
 The quiet risk is **cognitive debt**: when AI does the work, people stop understanding the systems they're responsible for. Triage is where that hurts most, because the incident the skill can't handle is the one where you need someone who can.
 
@@ -227,6 +264,7 @@ The quiet risk is **cognitive debt**: when AI does the work, people stop underst
 - [ ] Output format that ends in a decision
 - [ ] `verify_claims` running before every post
 - [ ] Replay set from past incidents, run on every change
+- [ ] A learn step that turns every resolved incident into a reviewed pull request
 - [ ] Owner, repo, version and budget
 - [ ] A month running next to people before anyone relies on it
 

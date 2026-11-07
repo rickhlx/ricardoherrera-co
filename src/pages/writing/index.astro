@@ -62,12 +62,17 @@ const canonical = new URL("writing/", site);
     const q = document.getElementById("q") as HTMLInputElement | null;
     const chips = [...document.querySelectorAll<HTMLButtonElement>(".chip[data-tag]")];
     const more = document.getElementById("moreTags") as HTMLButtonElement | null;
-    function showAllTags(open: boolean) {
+    // Collapsed, the extra topics stay hidden, except the selected one.
+    function syncExtraChips() {
+      const open = more?.getAttribute("aria-expanded") === "true";
       document.querySelectorAll<HTMLElement>(".chip[data-more]").forEach((c) => (c.hidden = !open && c.dataset.tag !== tag));
+    }
+    function showAllTags(open: boolean) {
       if (more) {
         more.setAttribute("aria-expanded", String(open));
         more.textContent = open ? "Fewer" : more.dataset.label!;
       }
+      syncExtraChips();
     }
     more?.addEventListener("click", () => showAllTags(more.getAttribute("aria-expanded") !== "true"));
     let tag = new URLSearchParams(location.search).get("tag") || "";
@@ -85,6 +90,7 @@ const canonical = new URL("writing/", site);
         shown += inYear;
       });
       chips.forEach((c) => c.setAttribute("aria-pressed", String((c.dataset.tag || "") === tag)));
+      syncExtraChips();
       const none = document.getElementById("noMatch");
       if (none) none.hidden = shown > 0;
     }

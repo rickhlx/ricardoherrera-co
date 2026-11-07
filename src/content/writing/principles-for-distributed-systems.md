@@ -44,14 +44,26 @@ Retries turn a short blip into a recovered request. They also turn a struggling 
 - Retry at one layer only. Three layers each retrying three times is 27 requests for one click.
 
 ```go title="retry.go"
-// Full jitter: sleep a random time between 0 and the exponential cap.
+// Full jitter: wait a random time between 0 and the exponential cap.
+// The wait gives up as soon as the caller's deadline passes.
+var err error
 for attempt := 0; attempt < maxAttempts; attempt++ {
-    if err := call(ctx); err == nil || !retryable(err) || !budget.Allow() {
+    if err = call(ctx); err == nil || !retryable(err) {
         return err
     }
-    backoff := min(maxBackoff, base*time.Duration(1<<attempt))
-    time.Sleep(time.Duration(rand.Int63n(int64(backoff))))
+    if attempt == maxAttempts-1 || !budget.Allow() {
+        break // no more attempts, or no budget: return the last error
+    }
+    backoff := min(maxBackoff, base<<attempt)
+    t := time.NewTimer(time.Duration(rand.Int63n(int64(backoff))))
+    select {
+    case <-ctx.Done():
+        t.Stop()
+        return ctx.Err()
+    case <-t.C:
+    }
 }
+return err
 ```
 
 *What it costs:* some requests fail that a more aggressive client would have got through. The service stays up for everyone else.

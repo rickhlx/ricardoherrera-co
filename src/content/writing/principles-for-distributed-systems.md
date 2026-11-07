@@ -140,7 +140,7 @@ In a single program, a stack trace tells you what happened. In a distributed sys
 
 ## Using these
 
-Ten principles is already more than a team will remember, so don't hand out the list. Pick the three your last few incidents would have prevented, and put those in your design review template:
+Ten principles is already more than a team will remember, so don't hand out the list. Turn them into questions, keep the ones your last few incidents would have caught, and put those in your design review template:
 
 - [ ] What happens when each dependency is slow, not just down?
 - [ ] What's safe to retry, and who does the retrying?
@@ -150,4 +150,4 @@ Ten principles is already more than a team will remember, so don't hand out the 
 
 When an outage comes along that none of them would have caught, that's your next principle.
 
-<!-- TODO: closing line, and which three you'd pick for your own team -->
+<!-- TODO: closing line, and which questions you'd keep for your own team -->

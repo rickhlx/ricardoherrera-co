@@ -251,7 +251,7 @@ a.balloon:hover text { fill: var(--redline); }
   .sheet-head h2 { font-size: 17px; }
 }
 /* keep the top bar on one line: drop "· YN-1 drawing set · Rev B" before the register wraps */
-@media (max-width: 1080px) { .bar .set span { display: none; } }
+@media (max-width: 1180px) { .bar .set span { display: none; } }
 @media (max-width: 820px) {
   .ctrl button .long { display: none; }
   .counter { white-space: nowrap; }
@@ -379,6 +379,45 @@ body[data-mode="computer"] #gl.over { cursor: pointer; }
 .vf button.hot { border-color: var(--redline); color: var(--redline); }
 @media (max-width: 820px) { .vf-read { font-size: 11px; } }
 @media (prefers-reduced-motion: reduce) { .vf, .vf-frame { transition: none; } }
+
+/* ---------- sound switch (top bar) ---------- */
+.snd {
+  margin-left: auto; min-height: 30px; padding: 0 10px; background: transparent; border: 1px solid var(--void-mark); cursor: pointer;
+  font-size: 10px; letter-spacing: 0.08em; text-transform: uppercase; color: var(--ink-dim); display: inline-flex; align-items: center; gap: 7px;
+}
+.snd:hover { border-color: var(--ink-dim); color: var(--ink); }
+.snd i { width: 6px; height: 6px; border-radius: 50%; background: var(--void-mark); }
+.snd[aria-pressed="true"] i { background: var(--redline); box-shadow: 0 0 6px rgba(255, 171, 122, 0.8); }
+.bar.top { justify-content: flex-start; }
+.bar.top .register { margin-left: auto; }
+.bar.top .snd { margin-left: 8px; }
+/* between phone and wide desktop the register needs the room: the switch shrinks to its lamp */
+@media (min-width: 821px) and (max-width: 1180px) { .snd .lbl { display: none; } .snd { padding: 0 9px; } .register { column-gap: 10px; } }
+@media (max-width: 820px) { .bar.top .snd { margin-left: auto; } }
+
+/* ---------- cold boot: the POST readout in the bottom bar ---------- */
+.post { display: none; color: var(--ink-dim); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.post b { color: var(--redline); font-weight: 400; }
+body[data-boot] .post { display: inline; }
+body[data-boot] .ctrl .hint { display: none; }
+
+/* ---------- drafting cursor: a drafting machine's two arms across the sheet, with a coordinate readout ---------- */
+.xhair { position: absolute; inset: 0; pointer-events: none; overflow: hidden; z-index: 3; opacity: 0; transition: opacity 0.15s ease; }
+.xhair.on { opacity: 1; }
+.xhair .h, .xhair .v { position: absolute; background: rgba(238, 244, 255, 0.28); }
+.xhair .h { left: 0; right: 0; top: var(--y); height: 1px; }
+.xhair .v { top: 0; bottom: 0; left: var(--x); width: 1px; }
+.xhair .xy {
+  position: absolute; left: var(--x); top: var(--y); transform: translate(10px, 8px); white-space: nowrap;
+  font-size: 9px; letter-spacing: 0.08em; color: var(--redline); background: rgba(22, 61, 113, 0.85); padding: 2px 5px;
+}
+.xhair.flip-x .xy { transform: translate(calc(-100% - 10px), 8px); }
+.xhair.flip-y .xy { transform: translate(10px, calc(-100% - 8px)); }
+.xhair.flip-x.flip-y .xy { transform: translate(calc(-100% - 10px), calc(-100% - 8px)); }
+.zones-x span, .zones-y span { transition: color 0.12s ease; }
+.zones-x span.on, .zones-y span.on { color: var(--redline); }
+@media (hover: hover) and (pointer: fine) { .drawing { cursor: crosshair; } .drawing a { cursor: pointer; } }
+@media (prefers-reduced-motion: reduce) { .xhair { transition: none; } }
 </style>
 </head>
 <body>
@@ -398,10 +437,12 @@ body[data-mode="computer"] #gl.over { cursor: pointer; }
     <a href="#contact"><b>06</b>Contact</a>
     <a href="#terminal"><b>&gt;_</b>Terminal</a>
   </nav>
+  <button type="button" class="snd" id="soundBtn" aria-pressed="true" title="Sound effects"><span class="lbl">Sound</span><i aria-hidden="true"></i></button>
 </header>
 
 <footer class="bar bottom">
   <div class="ctrl">
+    <span class="post" id="post" aria-hidden="true"></span>
     <span class="mode-computer hint" id="hint"><b>Drag</b> to turn · <b>click</b> a part<span class="long"> to open it · <b>click the screen</b> to use it</span></span>
     <span class="mode-sheet">
       <button type="button" id="backBtn">← <span class="long">Back to the </span>YN-1</button>
@@ -744,6 +785,128 @@ body[data-mode="computer"] #gl.over { cursor: pointer; }
 </div>
 
 <script>
+// Sound: every effect is synthesized with Web Audio, so nothing is downloaded. On by default; the switch in the
+// top bar (or `sound off` in the terminal) turns it off, remembered per browser. Browsers keep audio silent
+// until the visitor's first click or key, so the first sound is whatever that first action makes.
+(() => {
+  const KEY = "yn1.sound";
+  let on = true;
+  try { on = localStorage.getItem(KEY) !== "off"; } catch {}
+  let ctx = null, master = null, noiseBuf = null, unlocked = false, humNodes = null, wantHum = false;
+  const btn = document.getElementById("soundBtn");
+  function paint() { if (btn) { btn.setAttribute("aria-pressed", on ? "true" : "false"); btn.setAttribute("aria-label", on ? "Sound on" : "Sound off"); } }
+  function ensure() {
+    if (!on || !unlocked) return null;
+    if (!ctx) {
+      const AC = window.AudioContext || window.webkitAudioContext;
+      if (!AC) return null;
+      ctx = new AC();
+      master = ctx.createGain(); master.gain.value = 0.55;
+      const comp = ctx.createDynamicsCompressor(); comp.threshold.value = -14; comp.ratio.value = 4;
+      master.connect(comp); comp.connect(ctx.destination);
+      noiseBuf = ctx.createBuffer(1, ctx.sampleRate, ctx.sampleRate);
+      const d = noiseBuf.getChannelData(0); for (let i = 0; i < d.length; i++) d[i] = Math.random() * 2 - 1;
+    }
+    if (ctx.state === "suspended" && !document.hidden) ctx.resume();
+    return ctx;
+  }
+  // A shaped burst of filtered noise: clicks, paper, tape, fans.
+  function noise({ at = 0, dur = 0.03, type = "bandpass", freq = 2000, freqEnd, q = 1, gain = 0.2, attack = 0.002, out = master }) {
+    const t = ctx.currentTime + at;
+    const src = ctx.createBufferSource(); src.buffer = noiseBuf; src.loop = true;
+    const f = ctx.createBiquadFilter(); f.type = type; f.Q.value = q; f.frequency.setValueAtTime(freq, t);
+    if (freqEnd) f.frequency.exponentialRampToValueAtTime(freqEnd, t + dur);
+    const g = ctx.createGain(); g.gain.setValueAtTime(0, t); g.gain.linearRampToValueAtTime(gain, t + attack); g.gain.exponentialRampToValueAtTime(0.0001, t + dur);
+    src.connect(f); f.connect(g); g.connect(out);
+    src.start(t, Math.random() * 0.5); src.stop(t + dur + 0.05);
+  }
+  function tone({ at = 0, dur = 0.08, type = "sine", freq = 440, freqEnd, gain = 0.1, attack = 0.003 }) {
+    const t = ctx.currentTime + at;
+    const o = ctx.createOscillator(); o.type = type; o.frequency.setValueAtTime(freq, t);
+    if (freqEnd) o.frequency.exponentialRampToValueAtTime(freqEnd, t + dur);
+    const g = ctx.createGain(); g.gain.setValueAtTime(0, t); g.gain.linearRampToValueAtTime(gain, t + attack); g.gain.exponentialRampToValueAtTime(0.0001, t + dur);
+    o.connect(g); g.connect(master); o.start(t); o.stop(t + dur + 0.05);
+  }
+  const r = (a, b) => a + Math.random() * (b - a);
+  const SOUNDS = {
+    // a key on the YN-1's keyboard: a bright click and a short thock under it
+    key() { noise({ freq: r(2600, 4200), q: 2, dur: 0.025, gain: 0.22 }); tone({ freq: r(130, 170), freqEnd: 80, dur: 0.045, type: "triangle", gain: 0.12 }); },
+    space() { noise({ freq: r(1400, 1800), q: 1.5, dur: 0.04, gain: 0.22 }); tone({ freq: 110, freqEnd: 70, dur: 0.06, type: "triangle", gain: 0.14 }); },
+    ret() { noise({ freq: 1500, q: 1.2, dur: 0.05, gain: 0.3 }); tone({ freq: 95, freqEnd: 55, dur: 0.09, type: "triangle", gain: 0.2 }); noise({ at: 0.06, freq: 3200, q: 3, dur: 0.02, gain: 0.08 }); },
+    // hovering a part: barely there
+    tick() { noise({ type: "highpass", freq: 5200, dur: 0.012, gain: 0.05 }); },
+    // clicking a part: a relay closing
+    relay() { noise({ type: "highpass", freq: 2800, dur: 0.014, gain: 0.32 }); noise({ at: 0.028, freq: 1800, q: 2, dur: 0.018, gain: 0.2 }); tone({ freq: 70, freqEnd: 45, dur: 0.07, gain: 0.16 }); },
+    // the camera flying between sheets: air past paper
+    whoosh(sec = 1.2) {
+      const s = Math.max(0.5, Math.min(2.4, sec));
+      const t = ctx.currentTime, src = ctx.createBufferSource(); src.buffer = noiseBuf; src.loop = true;
+      const f = ctx.createBiquadFilter(); f.type = "bandpass"; f.Q.value = 0.8;
+      f.frequency.setValueAtTime(260, t); f.frequency.exponentialRampToValueAtTime(1100, t + s * 0.5); f.frequency.exponentialRampToValueAtTime(320, t + s);
+      const g = ctx.createGain(); g.gain.setValueAtTime(0, t); g.gain.linearRampToValueAtTime(0.07, t + s * 0.45); g.gain.linearRampToValueAtTime(0, t + s);
+      src.connect(f); f.connect(g); g.connect(master); src.start(t); src.stop(t + s + 0.05);
+    },
+    // the sheet settling in front of you
+    paper() { noise({ type: "highpass", freq: 1800, freqEnd: 5000, dur: 0.12, gain: 0.06, attack: 0.02 }); },
+    // take apart / put together: a run of screw-ratchet clicks
+    ratchet(up = true) { for (let i = 0; i < 7; i++) noise({ at: i * 0.055 + r(0, 0.01), freq: (up ? 1800 + i * 220 : 3200 - i * 220), q: 4, dur: 0.018, gain: 0.16 }); },
+    // the sticky note peeling off its glue strip
+    peel() { noise({ type: "highpass", freq: 1200, freqEnd: 6500, dur: 0.32, gain: 0.09, attack: 0.04 }); for (let i = 0; i < 6; i++) noise({ at: 0.03 + i * 0.04, type: "highpass", freq: 4000, dur: 0.006, gain: 0.05 }); },
+    // the viewfinder: shutter, then the wind-on lever
+    shutter() {
+      noise({ type: "highpass", freq: 3000, dur: 0.012, gain: 0.35 }); tone({ freq: 160, freqEnd: 90, dur: 0.03, type: "triangle", gain: 0.1 });
+      noise({ at: 0.065, type: "highpass", freq: 2400, dur: 0.016, gain: 0.25 });
+      for (let i = 0; i < 4; i++) noise({ at: 0.2 + i * 0.03, freq: 2600, q: 5, dur: 0.012, gain: 0.08 });
+    },
+    loupe() { tone({ freq: 900, freqEnd: 600, dur: 0.05, type: "triangle", gain: 0.04 }); noise({ type: "highpass", freq: 3500, dur: 0.02, gain: 0.08 }); },
+    // the terminal's bell
+    beep(freq = 880, dur = 0.12) { tone({ freq, dur, type: "square", gain: 0.035, attack: 0.002 }); },
+    err() { tone({ freq: 196, dur: 0.16, type: "square", gain: 0.03 }); },
+    // the screen coming up: a degauss thunk
+    degauss() { tone({ freq: 62, freqEnd: 38, dur: 0.45, gain: 0.22 }); tone({ freq: 124, freqEnd: 70, dur: 0.3, type: "triangle", gain: 0.05 }); noise({ type: "lowpass", freq: 500, dur: 0.12, gain: 0.12 }); },
+    // cold boot: the power switch, then the fan spinning up
+    power() {
+      noise({ type: "highpass", freq: 2200, dur: 0.02, gain: 0.35 });
+      tone({ at: 0.01, freq: 55, freqEnd: 40, dur: 0.35, gain: 0.3 });
+      noise({ at: 0.05, freq: 180, freqEnd: 900, q: 0.7, dur: 2.2, gain: 0.05, attack: 0.9, type: "bandpass" });
+      tone({ at: 0.1, freq: 40, freqEnd: 118, dur: 2.0, type: "triangle", gain: 0.03, attack: 0.8 });
+    },
+  };
+  function play(name, ...args) {
+    if (!SOUNDS[name] || !ensure() || ctx.state !== "running") return;
+    try { SOUNDS[name](...args); } catch {}
+  }
+  // The CRT's hum while the terminal is up: mains hum and a little flyback hiss, very quiet.
+  function hum(v) {
+    wantHum = v;
+    if (v && !humNodes && ensure()) {
+      const t = ctx.currentTime, g = ctx.createGain(); g.gain.setValueAtTime(0, t); g.gain.linearRampToValueAtTime(1, t + 0.8); g.connect(master);
+      const a = ctx.createOscillator(); a.frequency.value = 120; const ga = ctx.createGain(); ga.gain.value = 0.012; a.connect(ga); ga.connect(g);
+      const b = ctx.createOscillator(); b.frequency.value = 60; const gb = ctx.createGain(); gb.gain.value = 0.01; b.connect(gb); gb.connect(g);
+      const n = ctx.createBufferSource(); n.buffer = noiseBuf; n.loop = true;
+      const f = ctx.createBiquadFilter(); f.type = "bandpass"; f.frequency.value = 7800; f.Q.value = 6;
+      const gn = ctx.createGain(); gn.gain.value = 0.006; n.connect(f); f.connect(gn); gn.connect(g);
+      a.start(); b.start(); n.start();
+      humNodes = { g, stop: () => { const t2 = ctx.currentTime; g.gain.cancelScheduledValues(t2); g.gain.setValueAtTime(g.gain.value, t2); g.gain.linearRampToValueAtTime(0, t2 + 0.4); [a, b, n].forEach((x) => x.stop(t2 + 0.45)); } };
+    } else if (!v && humNodes) { humNodes.stop(); humNodes = null; }
+  }
+  function set(v) {
+    on = !!v;
+    try { localStorage.setItem(KEY, on ? "on" : "off"); } catch {}
+    paint();
+    if (!on) { if (humNodes) { humNodes.stop(); humNodes = null; } if (ctx) ctx.suspend(); }
+    else { unlocked = true; ensure(); if (wantHum) hum(true); play("relay"); }
+  }
+  const unlock = () => { if (unlocked) return; unlocked = true; ensure(); if (wantHum) hum(true); };
+  addEventListener("pointerdown", unlock, true);
+  addEventListener("keydown", unlock, true);
+  document.addEventListener("visibilitychange", () => { if (!ctx) return; if (document.hidden) ctx.suspend(); else if (on) ctx.resume(); });
+  if (btn) btn.addEventListener("click", () => set(!on));
+  paint();
+  window.YN1Sound = { play, hum, set, get on() { return on; } };
+})();
+</script>
+<script>
 // The viewfinder: item 7 on the YN-1. A plain script so it also works on the flat (no-WebGL) page.
 (() => {
   const FRAMES = [
@@ -781,6 +944,7 @@ body[data-mode="computer"] #gl.over { cursor: pointer; }
     clearTimeout(timer);
     back = document.activeElement;
     show(0);
+    snd("loupe");
     vf.hidden = false;
     wall(true);
     requestAnimationFrame(() => requestAnimationFrame(() => vf.classList.add("on")));
@@ -801,12 +965,14 @@ body[data-mode="computer"] #gl.over { cursor: pointer; }
     if (back && back.focus) back.focus({ preventScroll: true });
   }
   document.getElementById("vfBack").addEventListener("click", () => close());
-  document.getElementById("vfPrev").addEventListener("click", () => show(i - 1));
-  document.getElementById("vfNext").addEventListener("click", () => show(i + 1));
+  const snd = (n) => window.YN1Sound && window.YN1Sound.play(n);
+  const step = (d) => { snd("shutter"); show(i + d); };
+  document.getElementById("vfPrev").addEventListener("click", () => step(-1));
+  document.getElementById("vfNext").addEventListener("click", () => step(1));
   vf.addEventListener("keydown", (e) => {
     if (e.key === "Escape") { e.preventDefault(); e.stopPropagation(); close(); }
-    else if (e.key === "ArrowRight") { e.stopPropagation(); show(i + 1); }
-    else if (e.key === "ArrowLeft") { e.stopPropagation(); show(i - 1); }
+    else if (e.key === "ArrowRight") { e.stopPropagation(); step(1); }
+    else if (e.key === "ArrowLeft") { e.stopPropagation(); step(-1); }
     else if (e.key === "Tab") {
       // Keep focus inside the dialog.
       const f = [...vf.querySelectorAll("button")], first = f[0], last = f[f.length - 1];
@@ -820,6 +986,50 @@ body[data-mode="computer"] #gl.over { cursor: pointer; }
   });
   if (location.hash === "#viewfinder") open(false);
   window.YN1Viewfinder = { open, close };
+})();
+</script>
+<script>
+// The drafting cursor: over a sheet's drawing, the two arms of a drafting machine follow the pointer across the
+// whole sheet, with the zone (as on the sheet's border, 1–8 and A–E) and the position in mm from the bottom-left
+// corner (1 CSS px = 1 mm). Mouse and trackpad only. A plain script, so it works on the flat page too.
+(() => {
+  if (!matchMedia("(hover: hover) and (pointer: fine)").matches) return;
+  const ZY = "ABCDE";
+  let active = null;
+  for (const border of document.querySelectorAll(".sheet .border")) {
+    const x = document.createElement("div"); x.className = "xhair"; x.setAttribute("aria-hidden", "true");
+    x.innerHTML = '<i class="h"></i><i class="v"></i><span class="xy"></span>';
+    border.append(x);
+  }
+  function hide() {
+    if (!active) return;
+    active.x.classList.remove("on");
+    active.border.querySelectorAll(".zones-x span.on, .zones-y span.on").forEach((s) => s.classList.remove("on"));
+    active = null;
+  }
+  document.addEventListener("pointermove", (e) => {
+    if (e.pointerType !== "mouse") return hide();
+    const drawing = e.target.closest && e.target.closest(".sheet .drawing");
+    if (!drawing) return hide();
+    const border = drawing.closest(".border");
+    if (active && active.border !== border) hide();
+    if (!active) active = { border, x: border.querySelector(".xhair"), zx: border.querySelectorAll(".zones-x span"), zy: border.querySelectorAll(".zones-y span") };
+    // The sheet may sit in a CSS 3D transform; the camera faces it square-on at one CSS px per screen px,
+    // so the bounding box scaled back to layout size gives local coordinates.
+    const r = border.getBoundingClientRect(), w = border.offsetWidth, h = border.offsetHeight;
+    const k = r.width / w || 1;
+    const lx = Math.max(0, Math.min(w, (e.clientX - r.left) / k)), ly = Math.max(0, Math.min(h, (e.clientY - r.top) / k));
+    const ix = Math.min(7, Math.floor((lx / w) * 8)), iy = Math.min(4, Math.floor((ly / h) * 5));
+    const x = active.x;
+    x.style.setProperty("--x", `${lx.toFixed(1)}px`); x.style.setProperty("--y", `${ly.toFixed(1)}px`);
+    x.classList.toggle("flip-x", lx > w - 150); x.classList.toggle("flip-y", ly > h - 40);
+    x.lastChild.textContent = `${ZY[iy]}${ix + 1} · X ${String(Math.round(lx)).padStart(4, "0")} · Y ${String(Math.round(h - ly)).padStart(3, "0")} mm`;
+    x.classList.add("on");
+    active.zx.forEach((s, i) => s.classList.toggle("on", i === ix));
+    active.zy.forEach((s, i) => s.classList.toggle("on", i === iy));
+  }, { passive: true });
+  document.addEventListener("pointerleave", hide);
+  addEventListener("blur", hide);
 })();
 </script>
 
@@ -941,6 +1151,8 @@ const fillMat = () => new THREE.MeshLambertMaterial({ color: 0x1a4a8a, emissive:
 const lineMat = () => new THREE.LineBasicMaterial({ color: 0xeef4ff });
 const hiddenMat = () => new THREE.LineDashedMaterial({ color: 0xeef4ff, dashSize: 0.006, gapSize: 0.0045, transparent: true, opacity: 0.32, depthFunc: THREE.GreaterDepth, depthWrite: false });
 let screenMesh = null, screenTex = null;
+// During the cold boot the screen shows the power-on self-test: "off" (dark glass) or the POST lines so far.
+let screenPost = null;
 
 function screenTexture() {
   const c = document.createElement("canvas"); c.width = 512; c.height = 352;
@@ -950,6 +1162,17 @@ function screenTexture() {
     const grd = g.createRadialGradient(256, 160, 20, 256, 176, 330);
     grd.addColorStop(0, "#0d2018"); grd.addColorStop(1, "#030806");
     g.fillStyle = grd; g.fillRect(0, 0, 512, 352);
+    if (screenPost === "off") { g.fillStyle = "#020504"; g.fillRect(0, 0, 512, 352); }
+    else if (screenPost) {
+      g.fillStyle = "#8ff0b8"; g.shadowColor = "rgba(143,240,184,0.7)"; g.shadowBlur = 10;
+      screenPost.forEach((l, i) => {
+        g.font = i === 0 ? "bold 26px dm, ui-monospace, monospace" : "21px dm, ui-monospace, monospace";
+        g.fillStyle = i === 0 ? "#8ff0b8" : l.endsWith("OK") ? "#8ff0b8" : "#4f9e76";
+        g.fillText(l, 36, 70 + i * 40);
+      });
+      g.fillStyle = "#8ff0b8";
+      if (blink) g.fillRect(36, 70 + screenPost.length * 40 - 18, 14, 22);
+    } else {
     g.fillStyle = "#8ff0b8"; g.shadowColor = "rgba(143,240,184,0.7)"; g.shadowBlur = 10;
     g.font = "bold 28px dm, ui-monospace, monospace";
     g.fillText("YN-1 READY", 36, 74);
@@ -957,6 +1180,7 @@ function screenTexture() {
     g.fillStyle = "#4f9e76"; g.fillText("64K OK  ·  TAPE OK", 36, 112);
     g.fillStyle = "#8ff0b8"; g.fillText("> CLICK THE SCREEN TO USE", 36, 270);
     if (blink) g.fillRect(36, 290, 14, 22);
+    }
     g.shadowBlur = 0;
     for (let y = 0; y < 352; y += 3) { g.fillStyle = "rgba(0,0,0,0.18)"; g.fillRect(0, y, 512, 1); }
     tex.needsUpdate = true;
@@ -1106,6 +1330,90 @@ const sticky = { t: 0, open: false, meshes: [] };
   sticky.todo = todo;
 }
 const CENTER = new THREE.Vector3(0, 170, -40);
+const snd = (name, ...a) => window.YN1Sound && window.YN1Sound.play(name, ...a);
+
+// ---------- cold boot: once per session the YN-1 powers on. The fan spins up, the line work plots itself
+// part by part, the fills come in, and the screen runs its power-on self-test. Any click or key skips it.
+// Not on deep links or with reduced motion; `reboot` in the terminal runs it again.
+const BOOT_ORDER = ["chassis", "logic", "tape", "hood", "display", "keyboard", "viewfinder", "sticky"];
+const BOOT_END = 2700;
+const boot = { on: false, t0: 0, lines: null, mats: null, beeped: false, lit: false, last: "" };
+const postEl = $("post");
+function bootCollect() {
+  if (boot.lines) return;
+  boot.lines = []; boot.mats = [];
+  const partOf = (o) => {
+    for (let p = o; p; p = p.parent) {
+      if (p.userData && p.userData.part) return p.userData.part;
+      if (p.name === "part_viewfinder") return "viewfinder";
+      if (p === sticky.hinge) return "sticky";
+    }
+    return "chassis";
+  };
+  const seen = new Set();
+  for (const root of [model, sticky.hinge.parent]) root.traverse((o) => {
+    if (o.isLineSegments && !seen.has(o.geometry)) {
+      seen.add(o.geometry);
+      const i = Math.max(0, BOOT_ORDER.indexOf(partOf(o)));
+      boot.lines.push({ geo: o.geometry, n: o.geometry.attributes.position.count, delay: 120 + i * 170 + Math.random() * 80 });
+    }
+    if (o.isMesh && o.material && o.material !== sticky.shadow.material) {
+      boot.mats.push({ m: o.material, transparent: o.material.transparent, opacity: o.material.opacity });
+    }
+  });
+}
+// The self-test, step by step: [time in ms, screen lines, bottom-bar readout].
+function postAt(t) {
+  if (t < 850) return null;
+  const mem = Math.round(Math.min(1, Math.max(0, (t - 1150) / 650)) * 64);
+  const k = String(mem).padStart(4, "0");
+  const lines = ["YN-1 ROM REV B"];
+  const bar = ["POST", "ROM REV B"];
+  if (t >= 1150) { lines.push(mem < 64 ? `MEMORY  ${k}K` : `MEMORY  ${k}K OK`); bar.push(mem < 64 ? `<b>MEMORY ${k}K</b>` : `MEMORY ${k}K OK`); }
+  if (t >= 1900) { lines.push(t < 2150 ? "TAPE  ...." : "TAPE  OK"); bar.push(t < 2150 ? "<b>TAPE …</b>" : "TAPE OK"); }
+  if (t >= 2250) { lines.push("DISPLAY  OK"); bar.push("DISPLAY OK"); }
+  return { lines, bar: bar.join(" · ") };
+}
+function startBoot() {
+  if (reduce || !screenTex) return;
+  bootCollect();
+  if (boot.on) endBoot();
+  boot.on = true; boot.t0 = 0; boot.beeped = false; boot.lit = false; boot.last = "";
+  for (const L of boot.lines) L.geo.setDrawRange(0, 0);
+  for (const M of boot.mats) { M.m.transparent = true; M.m.opacity = 0; M.m.needsUpdate = true; }
+  screenPost = "off"; screenTex.draw(false);
+  document.body.dataset.boot = "1"; postEl.textContent = "Power on";
+  snd("power");
+}
+function endBoot() {
+  if (!boot.on) return;
+  boot.on = false;
+  for (const L of boot.lines) L.geo.setDrawRange(0, Infinity);
+  for (const M of boot.mats) { M.m.transparent = M.transparent; M.m.opacity = M.opacity; M.m.needsUpdate = true; }
+  screenPost = null; screenTex.draw(true);
+  delete document.body.dataset.boot; postEl.textContent = "";
+  try { sessionStorage.setItem("yn1.booted", "1"); } catch {}
+}
+function bootFrame(now) {
+  if (!boot.t0) boot.t0 = now;   // time from the first frame drawn, so a slow first frame doesn't eat the boot
+  const t = now - boot.t0;
+  for (const L of boot.lines) {
+    const p = Math.min(1, Math.max(0, (t - L.delay) / 760));
+    L.geo.setDrawRange(0, Math.floor((L.n * (1 - Math.pow(1 - p, 2))) / 2) * 2);
+  }
+  const a = Math.min(1, Math.max(0, (t - 1350) / 700));
+  for (const M of boot.mats) M.m.opacity = M.opacity * a;
+  const post = postAt(t);
+  if (post) {
+    if (!boot.lit) { boot.lit = true; snd("degauss"); }
+    const key = post.lines.join("|");
+    if (key !== boot.last) { boot.last = key; screenPost = post.lines; screenTex.draw(true); postEl.innerHTML = post.bar; }
+  }
+  if (t >= 2300 && !boot.beeped) { boot.beeped = true; snd("beep", 988, 0.14); postEl.innerHTML = "POST complete · <b>YN-1 ready</b>"; }
+  if (t >= BOOT_END) endBoot();
+}
+addEventListener("pointerdown", () => boot.on && endBoot(), true);
+addEventListener("keydown", () => boot.on && endBoot(), true);
 
 // ---------- camera control in computer mode
 const controls = new OrbitControls(camera, gl.domElement);
@@ -1185,6 +1493,8 @@ function go(key) {
   const lift = key === "terminal" || current === "terminal" ? Math.min(500, d * 0.3) : Math.min(1800, d * 0.32 + 300);
   flight = { key, t0: performance.now(), dur: reduce ? 0 : Math.min(2200, 900 + d * 0.22),
     p0: from.pos, p1: from.pos.clone().addScaledVector(from.back, lift), p2: to.pos.clone().addScaledVector(to.back, lift), p3: to.pos, q0: from.quat, q1: to.quat };
+  if (key !== "terminal" && window.YN1Sound) window.YN1Sound.hum(false);
+  if (flight.dur > 400) snd("whoosh", flight.dur / 1000);
   current = key;
   mode = "flying";
   clearHover();
@@ -1200,8 +1510,8 @@ function arrive() {
   const key = flight.key; flight = null;
   if (key === "yn1") { mode = "computer"; controls.target.copy(saved.target); controls.enabled = true; controls.update(); return; }
   setPose(poseFor(key));
-  if (key === "terminal") { mode = "term"; showOnly(termEl); bootTerm(); setTimeout(() => termIn.focus({ preventScroll: true }), 60); return; }
-  mode = "sheet"; showOnly(sheets[key].el);
+  if (key === "terminal") { mode = "term"; showOnly(termEl); snd("degauss"); if (window.YN1Sound) window.YN1Sound.hum(true); bootTerm(); setTimeout(() => termIn.focus({ preventScroll: true }), 60); return; }
+  mode = "sheet"; showOnly(sheets[key].el); snd("paper");
   sheets[key].el.querySelector(".back").focus({ preventScroll: true });
 }
 
@@ -1220,7 +1530,7 @@ $("termBtn").addEventListener("click", () => go("terminal"));
 $("prev").addEventListener("click", () => { const i = SHEETS.indexOf(current); go(SHEETS[(i <= 0 ? SHEETS.length : i) - 1]); });
 $("next").addEventListener("click", () => { const i = SHEETS.indexOf(current); go(SHEETS[(i + 1) % SHEETS.length]); });
 explodeBtn.addEventListener("click", () => setExploded(!exploded));
-function setExploded(v) { exploded = v; explodeBtn.setAttribute("aria-pressed", v ? "true" : "false"); explodeBtn.textContent = v ? "Put together" : "Take apart"; }
+function setExploded(v) { if (v !== exploded) snd("ratchet", v); exploded = v; explodeBtn.setAttribute("aria-pressed", v ? "true" : "false"); explodeBtn.textContent = v ? "Put together" : "Take apart"; }
 addEventListener("hashchange", () => go(location.hash.slice(1) || "yn1"));
 document.addEventListener("click", (e) => {
   const a = e.target.closest('a[href^="#"]');
@@ -1260,7 +1570,9 @@ gl.domElement.addEventListener("pointermove", (e) => {
   if (mode !== "computer" || e.buttons) { if (mode !== "computer") clearHover(); return; }
   const h = hit(e);
   if (!h) return clearHover();
+  const was = hovered;
   hovered = h.part || (h.sticky ? "sticky" : null);
+  if (hovered && hovered !== was) snd("tick");
   gl.domElement.classList.add("over");
 });
 gl.domElement.addEventListener("pointerleave", clearHover);
@@ -1272,9 +1584,10 @@ gl.domElement.addEventListener("pointerup", (e) => {
   if (moved > 6) return;                   // that was a drag
   const h = hit(e);
   if (!h) return;
-  if (h.sheet) return go(h.sheet);
-  if (h.sticky) { sticky.open = !sticky.open; return; }
+  if (h.sheet) { snd("relay"); return go(h.sheet); }
+  if (h.sticky) { sticky.open = !sticky.open; snd("peel"); return; }
   picked = h.part;
+  snd("relay");
   const target = PART[h.part].go;
   if (target === "viewfinder") {
     setTimeout(() => { window.YN1Viewfinder.open(); picked = null; }, reduce ? 0 : 280);
@@ -1318,7 +1631,27 @@ async function loadPosts() {
 loadPosts();
 const ARCHIVE = [["A1", "macbook-air-m4"], ["A2", "neo80-keyboard"], ["B1", "neovim"], ["B2", "ghostty"], ["C1", "obsidian"], ["C2", "claude-code"]];
 const FILES = ["about.txt", "contact.txt", "do-not-open.txt", "work/", "writing/", "archive/"];
-const CMDS = ["help", "whoami", "ls", "cat", "unlock", "lock", "git log", "git show", "open", "take apart", "put together", "crt", "look", "clear", "exit"];
+const CMDS = ["help", "whoami", "ls", "cat", "unlock", "lock", "git log", "git show", "open", "take apart", "put together", "crt", "look", "clear", "exit",
+  "uptime", "status", "top", "ping", "history", "man", "date", "echo", "reboot", "sound", "fortune"];
+// The SLO on `status`. Every unknown command burns a little error budget.
+let budget = 100, burned = 0;
+const FORTUNES = [
+  "Hope is not a strategy.",
+  "It's always DNS. Except when it's certificates.",
+  "Nothing is more permanent than a temporary fix.",
+  "The cloud is just someone else's pager.",
+  "Every alert should be actionable. This one is: go outside.",
+  "A postmortem without action items is a eulogy.",
+  "Read the runbook. Then fix the runbook.",
+  "Friday deploys are a personality trait.",
+];
+const hhmm = (d = new Date()) => `${String(d.getHours()).padStart(2, "0")}:${String(d.getMinutes()).padStart(2, "0")}`;
+// Years in infrastructure, counted from the first job on the log (sysadmin at WSOL, October 2013).
+function upFor(d = new Date()) {
+  const m = (d.getFullYear() - 2013) * 12 + d.getMonth() - 9;
+  return { y: Math.floor(m / 12), mo: m % 12 };
+}
+const load = () => [0.42, 0.31, 0.27].map((v) => (v + Math.random() * 0.2).toFixed(2)).join(", ");
 
 // A locked file. The password is the code on the back of the sticky note on the desk (peel it back).
 const LOCKED = { "do-not-open.txt": { code: STICKY_CODE, open: false } };
@@ -1371,6 +1704,7 @@ function out(parts, cls) {
   }
   termOut.append(line);
   termOut.scrollTop = termOut.scrollHeight;
+  if ([].concat(parts).some((p) => p && p.cls === "err")) snd("err");
 }
 // whoami: the yellow-wall portrait redrawn on the phosphor screen. Built once from photos/portrait.jpg:
 // sampled down to 80×80, the yellow wall keyed out to black, contrast stretched over the figure, brightness
@@ -1449,6 +1783,8 @@ function exec(raw) {
       out([{ run: "take apart", text: "take apart" }, "         disassemble the YN-1 (", { run: "put together", text: "put together" }, " to undo)"]);
       out([{ run: "crt off", text: "crt" }, " on|off         screen glow"]);
       out([{ run: "look", text: "look" }, "               look through the viewfinder"]);
+      out([{ run: window.YN1Sound && window.YN1Sound.on ? "sound off" : "sound on", text: "sound" }, " on|off       key clicks, relays and the CRT hum"]);
+      out(["also: ", ...["uptime", "status", "top", "ping ricardo", "history", "man yn1", "date", "reboot"].flatMap((c, i) => [i ? " " : "", { run: c, text: c.split(" ")[0] }])]);
       out(["clear · ", { run: "exit", text: "exit" }]);
       break;
     case "whoami":
@@ -1515,12 +1851,114 @@ function exec(raw) {
     case "clear": termOut.textContent = ""; break;
     case "exit": case "logout": go("yn1"); break;
     case "look": out({ cls: "dim", text: "winding on…" }); setTimeout(() => window.YN1Viewfinder.open(), reduce ? 0 : 250); break;
-    case "sudo": out({ cls: "err", text: "nice try." }); break;
-    default: out({ cls: "err", text: `${cmd}: command not found. Try help.` });
+    case "sudo": out({ cls: "err", text: "operator is not in the sudoers file. This incident will be reported." }); break;
+    case "uptime": {
+      const { y, mo } = upFor();
+      out(` ${hhmm()}  up ${y} years, ${mo} month${mo === 1 ? "" : "s"},  1 user,  load average: ${load()}`);
+      out({ cls: "dim", text: "in infrastructure since October 2013. no unplanned reboots." });
+      break;
+    }
+    case "date": out(new Date().toString().replace(/ \(.*\)$/, "")); break;
+    case "pwd": out("/home/operator"); break;
+    case "cd": out({ cls: "dim", text: "cd: everything on this machine is in one place. try ls." }); break;
+    case "echo": out(arg); break;
+    case "history": hist.forEach((h, i) => out(`${String(i + 1).padStart(5)}  ${h}`)); break;
+    case "man": {
+      const page = (args[0] || "yn1").toLowerCase();
+      if (page !== "yn1") { out({ cls: "err", text: `No manual entry for ${page}` }); out(["try ", { run: "man yn1", text: "man yn1" }]); break; }
+      out({ cls: "head", text: "YN1(1) · YN-1 Operator's Manual" });
+      out(""); out({ cls: "head", text: "NAME" }); out("    yn1 — the personal computer of Ricardo Herrera");
+      out(""); out({ cls: "head", text: "SYNOPSIS" }); out(["    ", { run: "open about", text: "open" }, " index | about | work | writing | archive | contact"]);
+      out(""); out({ cls: "head", text: "DESCRIPTION" });
+      out("    A 1970s workstation that never existed, drawn live in blueprint");
+      out("    line work. Each part opens a drawing sheet. Drag to turn it,");
+      out("    click a part to open it, take it apart to see the logic board.");
+      out(""); out({ cls: "head", text: "FILES" }); out("    about.txt  contact.txt  work/  writing/  archive/");
+      out(""); out({ cls: "head", text: "BUGS" }); out("    do-not-open.txt is not as locked as it looks.");
+      out(""); out({ cls: "head", text: "SEE ALSO" }); out(["    ", { run: "help", text: "help(1)" }, ", ", { run: "git log", text: "git-log(1)" }, ", ", { go: "index", text: "sheet 01" }]);
+      break;
+    }
+    case "status": {
+      out({ cls: "head", text: "yn1.ricardoherrera.co" });
+      const ok = budget > 0;
+      out(`  display      ● operational`);
+      out(`  tape drive   ● operational`);
+      out(`  keyboard     ● operational`);
+      out(`  terminal     ${ok ? "● operational" : "◐ degraded (operator error)"}`);
+      out(`  operator     ● caffeinated`);
+      out("");
+      out(`SLO 99.95% · error budget remaining ${budget.toFixed(1)}%`);
+      if (!ok) out({ cls: "err", text: "error budget exhausted. change freeze in effect." });
+      else if (burned) out({ cls: "dim", text: `${burned} unknown command${burned === 1 ? "" : "s"} this session. it adds up.` });
+      break;
+    }
+    case "top": {
+      const { y } = upFor();
+      const j = (v) => (v + (Math.random() - 0.5) * v * 0.3).toFixed(1).padStart(5);
+      out(`top - ${hhmm()} up ${y}y,  1 user,  load average: ${load()}`);
+      out({ cls: "head", text: "  PID USER      %CPU  COMMAND" });
+      out(`    1 root     ${j(0.1)}  init`);
+      out(`  412 operator ${j(31)}  kubectl get pods -A -w`);
+      out(`  413 operator ${j(22)}  terraform plan`);
+      out(`  977 operator ${j(12)}  nvim`);
+      out(` 1024 operator ${j(8)}  coffee --refill`);
+      out(` 2048 pager    ${j(0.1)}  pagerd (sleeping, mostly)`);
+      out(` 3001 operator ${j(4)}  x100f --shutter`);
+      break;
+    }
+    case "ping": {
+      const host = args[0] || "ricardo";
+      const me = /^(ricardo|rick|rickhlx|ricardoherrera\.co|operator)$/i.test(host);
+      if (!me) { out({ cls: "err", text: `ping: ${host}: Name or service not known` }); out(["try ", { run: "ping ricardo", text: "ping ricardo" }]); break; }
+      out(`PING ${host} (ricardo@ricardoherrera.co): 56 data bytes`);
+      const times = [0, 1, 2].map(() => (18 + Math.random() * 30).toFixed(1));
+      times.forEach((ms, i) => setTimeout(() => { snd("beep", 1760, 0.03); out(`64 bytes from ricardo: icmp_seq=${i} ttl=64 time=${ms} ms`); }, reduce ? 0 : 420 * (i + 1)));
+      setTimeout(() => {
+        out(`--- ${host} ping statistics ---`);
+        out("3 packets transmitted, 3 received, 0% packet loss");
+        out(["for a real reply, ", { href: "mailto:ricardo@ricardoherrera.co", text: "say hi" }, "."]);
+      }, reduce ? 0 : 1500);
+      break;
+    }
+    case "kubectl": {
+      if (args[0] === "get" && /^(po|pod|pods)$/.test(args[1] || "")) {
+        const age = `${new Date().getFullYear() - 1974}y`;
+        out({ cls: "head", text: "NAME                READY  STATUS            RESTARTS  AGE" });
+        out(`yn1-display-0       1/1    Running           0         ${age}`);
+        out(`yn1-tape-0          1/1    Running           0         ${age}`);
+        out(`yn1-keyboard-0      1/1    Running           3         ${age}`);
+        out([`coffee-7d9f-x2k4q   0/1    `, { cls: "err", text: "CrashLoopBackOff" }, "  41        9h"]);
+      } else out({ cls: "err", text: "error: you must be logged in to the server (Unauthorized)" });
+      break;
+    }
+    case "rm": out({ cls: "err", text: /-\w*r\w*f|-\w*f\w*r/.test(arg) ? "rm: refusing to remove anything: change freeze is in effect." : "rm: read-only file system" }); break;
+    case "vi": case "vim": case "nvim": case "emacs": case "nano": out({ cls: "dim", text: `${cmd}: read-only machine. nvim is item B1 in the archive, though.` }); break;
+    case "fortune": out(FORTUNES[Math.floor(Math.random() * FORTUNES.length)]); break;
+    case "beep": case "bell": snd("beep"); out({ cls: "dim", text: "*beep*" }); break;
+    case "sound": {
+      const v = args[0] ? args[0].toLowerCase() !== "off" : !(window.YN1Sound && window.YN1Sound.on);
+      if (window.YN1Sound) window.YN1Sound.set(v);
+      out({ cls: "dim", text: `sound ${v ? "on" : "off"}` });
+      break;
+    }
+    case "reboot": case "shutdown": case "restart":
+      out({ cls: "dim", text: "Broadcast message from operator: the system is going down for reboot NOW!" });
+      setTimeout(() => {
+        termOut.textContent = ""; booted = false;
+        go("yn1");
+        startBoot();
+      }, reduce ? 0 : 700);
+      break;
+    default:
+      budget = Math.max(0, budget - 2.5); burned++;
+      out({ cls: "err", text: `${cmd}: command not found. Try help.` });
   }
 }
 $("termForm").addEventListener("submit", (e) => { e.preventDefault(); if (prompt) tryPassword(termIn.value); else exec(termIn.value); termIn.value = ""; });
 termIn.addEventListener("keydown", (e) => {
+  if (e.key === "Enter") snd("ret");
+  else if (e.key === " ") snd("space");
+  else if (e.key.length === 1 || e.key === "Backspace") snd("key");
   if (prompt) {   // password entry: no history or completion; Esc cancels instead of leaving the terminal
     if (e.key === "Escape") { e.preventDefault(); e.stopPropagation(); termIn.value = ""; endPrompt(); out({ cls: "dim", text: "unlock: cancelled" }); }
     return;
@@ -1604,6 +2042,7 @@ function tick(now) {
     sticky.hinge.rotation.x = -sticky.t * 2.0;
     sticky.shadow.material.opacity = 0.35 * (1 - Math.min(1, sticky.t * 2));
   }
+  if (boot.on) bootFrame(now);
   if (screenTex && now - blinkAt > 530) { blinkAt = now; blink = !blink; screenTex.draw(blink); }
 
   gl.render(scene, camera);
@@ -1620,8 +2059,10 @@ saved = { pos: HOME.clone(), target: CENTER.clone() };
 updateChrome();
 requestAnimationFrame(tick);
 const startKey = location.hash.slice(1);
+let coldBoot = !reduce && !["terminal", "viewfinder", ...SHEETS].includes(startKey);
+try { if (sessionStorage.getItem("yn1.booted")) coldBoot = false; } catch {}
 if (["terminal", ...SHEETS].includes(startKey)) { mode = "computer"; current = "intro"; go(startKey); }
-else { current = "intro"; mode = "flying"; flight = { key: "yn1", t0: performance.now(), dur: reduce ? 0 : 1800, p0: camera.position.clone(), p1: camera.position.clone(), p2: HOME.clone(), p3: HOME.clone(), q0: camera.quaternion.clone(), q1: poseFor("yn1").quat }; current = "yn1"; }
+else { if (coldBoot) startBoot(); current = "intro"; mode = "flying"; flight = { key: "yn1", t0: performance.now(), dur: reduce ? 0 : coldBoot ? 2600 : 1800, p0: camera.position.clone(), p1: camera.position.clone(), p2: HOME.clone(), p3: HOME.clone(), q0: camera.quaternion.clone(), q1: poseFor("yn1").quat }; current = "yn1"; }
 </script>
 
 </body></html>

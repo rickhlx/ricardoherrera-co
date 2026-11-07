@@ -33,10 +33,70 @@ Every Ingress without an `alb.ingress.kubernetes.io/group.name` gets its own loa
 
 ### You're running into quotas
 
-An ALB has limits on rules per listener, conditions per rule, target groups and certificates per listener. Some can be raised and some can't. You won't hit them with ten services. With a hundred services, or many tenants on their own hostnames, you will, and that's when people start splitting groups by hand.
+An ALB looks limitless until you put a whole cluster behind one. These are the default quotas that tend to come up on EKS:
+
+| Quota | Default | What runs into it |
+| --- | --- | --- |
+| Rules per ALB (not counting default rules) | 100 | Every host and path in an ingress group becomes a rule. |
+| Conditions, values and wildcards per rule | 5 each | Ingresses with many hostnames or paths in one rule. |
+| Certificates per ALB (not counting the default) | 25 | Tenants on their own domains. |
+| Target groups per ALB | 100 | One target group per Service port, for every Ingress in the group. |
+| Targets per ALB | 1,000 | Pods in IP mode, or nodes in instance mode, counted across all target groups. |
+| Targets per target group | 1,000 | One big Deployment in IP mode. |
+| Target groups per forward action | 5 | Weighted canaries across several versions. |
+
+You won't hit any of these with ten services. A shared ALB for a hundred services hits the rule limit. A few big Deployments in IP mode hit the target limit. Tenants on their own domains hit the certificate limit. Several of these can be raised, but each increase is a support ticket, and the next limit is waiting behind it. That's when people start splitting groups by hand.
+
+The target limits deserve a second look, because the count depends on the target type:
+
+- **Instance mode** registers every node in the cluster against every target group, and traffic goes through a NodePort and kube-proxy. With Karpenter adding and removing nodes all day, the target groups are always changing, and every node is a target for every service, whether it runs that service's pods or not.
+- **IP mode** registers pods. That's the better default, but now the limit counts replicas. A Deployment that scales to 600 pods during a spike uses 600 of the 1,000 targets the whole ALB is allowed.
 
 > [!NOTE]
-> Look up the current numbers in the Elastic Load Balancing quotas page for your account before you plan around them. They change, and several can be raised on request.
+> These are the defaults at the time of writing. Check the Elastic Load Balancing quotas page, or Service Quotas in your account, before you plan around them. They change, and several can be raised on request.
+
+<!-- TODO: verify every number in the table against the quotas page before publishing -->
+
+### Traffic spikes
+
+An ALB isn't one box. AWS runs it as a fleet of nodes and adds more as traffic grows. That scaling is fast for traffic that ramps up, and slower for a step change: a launch, a push notification to every user, a retry storm after an outage. Until it catches up, you see more latency, and sometimes 5xx errors that come from the ALB itself, not from your pods. In CloudWatch that's `HTTPCode_ELB_5XX_Count` going up while `HTTPCode_Target_5XX_Count` stays flat.
+
+There are ways to deal with it:
+
+- **LCU reservation.** You can reserve a minimum capacity for a load balancer ahead of a known event. It works, but you pay for the reserved capacity whether you use it or not, and you have to know the spike is coming.
+- **Pre-warming through AWS Support.** The older route, still around for some cases. Slow, and it needs a ticket.
+
+Neither helps with the spike you didn't see coming.
+
+The ALB also uses IP addresses from your subnets, one per ALB node, and it needs more of them as it scales. On EKS with the VPC CNI, pods use the same subnets. If those subnets are nearly full, the ALB can't scale out in the middle of a spike, at exactly the moment it needs to. AWS asks for at least a `/27` with eight free addresses per subnet. Give it a lot more than that.
+
+<!-- TODO: graph from a real spike: ELB 5XX vs target 5XX, and the LCU curve -->
+
+Your side of the spike has its own lag. The HPA adds pods, and in IP mode each new pod has to register with the target group and pass health checks before it gets traffic. With the defaults (a check every 15 seconds and several passes before it's healthy), that's close to a minute before a pod that's already running takes a single request. During a spike, that minute is when you needed it.
+
+### LCUs make the bill hard to predict
+
+An ALB bills by the hour plus Load Balancer Capacity Units. An LCU is measured on four dimensions, and each hour you pay for whichever is highest:
+
+| Dimension | One LCU is about |
+| --- | --- |
+| New connections | 25 per second |
+| Active connections | 3,000 per minute |
+| Processed bytes | 1 GB per hour (EC2 and IP targets) |
+| Rule evaluations | 1,000 per second |
+
+Two things make that awkward on a busy cluster:
+
+- **Rule evaluations scale with the number of rules.** Only the first ten rules are free. An ingress group with 80 rules is billed as if every request were checked against all of them. Sharing one ALB to save on the hourly charge can raise the LCU charge.
+- **Spikes show up in the bill.** A burst of new connections from clients that don't reuse them (mobile apps, webhooks, a retry storm) can make new connections the highest dimension for the hour, even when you send fairly little data.
+
+None of this is a reason to leave on its own. But if you can't explain last month's LCU line, it's worth knowing that an NLB has no rule evaluations to bill: its capacity units count connections and bytes. A proxy behind it also gives you metrics you can see.
+
+<!-- TODO: check current LCU dimensions and prices on the ELB pricing page before publishing -->
+
+### Health checks multiply
+
+Every ALB node health checks every target, in every target group. Add ALBs, target groups and pods, and that traffic grows with all three. In instance mode, every node is health checked for every service. It's rarely what brings a cluster down, but it shows up in access logs, in app metrics, and on small pods that have to answer a constant stream of health checks.
 
 ### Deploys cause 502s
 
@@ -120,6 +180,7 @@ This is where people underestimate it. The proxy is now tier 0. If it goes down,
 
 - **You run it.** Upgrades, CVEs, config reloads, memory leaks under load. Someone has to own it and be on call for it.
 - **Capacity.** It needs its own node pool, or at least its own priority class and PDBs, and an HPA tuned for connection count, not just CPU. Don't let consolidation reschedule it mid-day. (See "Karpenter: you're holding it wrong".)
+- **Spikes are now your problem.** The NLB in front scales well for this, but the proxy pods have to scale too. Run enough spare capacity to take a spike before the HPA reacts.
 - **One more hop.** Usually under a millisecond, but it's another thing between the client and the pod, and you have to plan for zones. Cross-zone traffic from the proxy to pods costs money.
 - **Certificates.** If TLS moves into the cluster, you need cert-manager, a plan for the keys, and alerts for when renewals fail. ACM did all of this for you.
 - **Client IPs.** With an NLB in front you'll need proxy protocol or `externalTrafficPolicy: Local` to keep the real client address. Get it wrong and your rate limits and logs all show the same IP.
@@ -136,7 +197,9 @@ Stay on the ALB if:
 Move routing into the cluster if two or more of these are true:
 
 - [ ] You're running enough ALBs that the base cost shows up in reviews.
-- [ ] You've hit, or are close to, a listener or target group quota.
+- [ ] You've hit, or are close to, a rule, certificate or target quota.
+- [ ] Traffic arrives in sudden spikes and you've seen ELB 5xx errors during them.
+- [ ] You can't explain the LCU line on the bill.
 - [ ] Teams need retries, rate limits, mirroring or progressive canaries.
 - [ ] You want per-route metrics and traces in the stack you already have.
 - [ ] Ingress changes are slow enough that people complain about deploys.

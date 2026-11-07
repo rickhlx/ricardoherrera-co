@@ -134,6 +134,12 @@ def recent_changes(service: str, hours: int = 6) -> list[dict]:
 
 Each result has an ID and a link, so every claim in the summary can cite one.
 
+The rule underneath this step: **use the model for judgment, and code for everything else.** Deciding which cause is most likely needs reasoning. Fetching the last six hours of deploys doesn't. Every step you move from "the agent works it out" to "a script does it the same way every time" is one less place for the run to drift, and one more place you can test.
+
+Tools like [Swamp](https://github.com/systeminit/swamp) are built around that split. The agent designs the automation once; a runtime then runs it as a deterministic workflow, with typed inputs and outputs, versioned data, credentials kept in a vault, and a history of every run, calling a model only for the steps that need one. You can get part of the way with plain scripts in the skill folder, as above. A runtime like that gives you the typing, run history and reuse without building them yourself.
+
+<!-- TODO: check the Swamp link and its license terms for work use before publishing -->
+
 ## Step 5: Split the investigation into subagents
 
 **Subagents** keep context clean: hand a focused task to a separate agent with its own context, and get a summary back. Triage splits naturally. Recent changes, current signals and past incidents don't depend on each other.
@@ -233,6 +239,8 @@ What makes this work, and keeps it safe:
 - **Wins count too.** When the skill got it right quickly, record which signal or past incident gave it away, so that path is easier to find next time.
 
 After a few months, the per-service files read like a summary of every incident that service has had, and the eval set covers most of the ways it breaks. That's the compound part: the hundredth incident is triaged by a skill that learned from the first ninety-nine.
+
+The other half of compounding is **promoting what works into code**. When the learn step sees the same investigation succeed incident after incident (say, "for checkout 5xx, check pool saturation against the last deploy"), propose turning it into a script or a deterministic workflow, in Swamp or whatever you use, instead of another paragraph of instructions. Over time the skill's judgment covers less and less, and what it does cover is the part that really needs it.
 
 <!-- TODO: an example lesson PR from a real incident -->
 

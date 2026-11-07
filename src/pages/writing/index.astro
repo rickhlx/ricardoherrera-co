@@ -3,7 +3,12 @@ import Writing from "../../layouts/Writing.astro";
 import { getPosts, iso, url } from "../../lib/posts.mjs";
 
 const posts = await getPosts();
-const tags = [...new Set(posts.flatMap((p) => p.data.tags))].sort();
+// Topics, most used first. Only the first few show until the reader asks for the rest.
+const counts = new Map<string, number>();
+for (const t of posts.flatMap((p) => p.data.tags)) counts.set(t, (counts.get(t) ?? 0) + 1);
+const tags = [...counts].sort((a, b) => b[1] - a[1] || a[0].localeCompare(b[0])).map(([t]) => t);
+const SHOWN = 6;
+const extra = Math.max(0, tags.length - SHOWN);
 const byYear = Map.groupBy(posts, (p) => p.data.date.getUTCFullYear());
 const site = Astro.site ?? new URL("https://ricardoherrera.co");
 const canonical = new URL("writing/", site);
@@ -26,7 +31,8 @@ const canonical = new URL("writing/", site);
         <div class="search"><label class="sr-only" for="q">Search posts</label><input id="q" type="search" placeholder="Search titles, summaries and topics" autocomplete="off"></div>
         <div class="chips" role="group" aria-label="Filter by topic">
           <button type="button" class="chip" data-tag="" aria-pressed="true">All</button>
-          {tags.map((t) => <button type="button" class="chip" data-tag={t} aria-pressed="false">{t}</button>)}
+          {tags.map((t, i) => <button type="button" class="chip" data-tag={t} aria-pressed="false" hidden={i >= SHOWN} data-more={i >= SHOWN ? "" : undefined}>{t}</button>)}
+          {extra > 0 && <button type="button" class="chip chip-toggle" id="moreTags" aria-expanded="false" data-label={`+${extra} more`}>+{extra} more</button>}
         </div>
       </div>
     )}
@@ -54,7 +60,16 @@ const canonical = new URL("writing/", site);
 
   <script>
     const q = document.getElementById("q") as HTMLInputElement | null;
-    const chips = [...document.querySelectorAll<HTMLButtonElement>(".chip")];
+    const chips = [...document.querySelectorAll<HTMLButtonElement>(".chip[data-tag]")];
+    const more = document.getElementById("moreTags") as HTMLButtonElement | null;
+    function showAllTags(open: boolean) {
+      document.querySelectorAll<HTMLElement>(".chip[data-more]").forEach((c) => (c.hidden = !open && c.dataset.tag !== tag));
+      if (more) {
+        more.setAttribute("aria-expanded", String(open));
+        more.textContent = open ? "Fewer" : more.dataset.label!;
+      }
+    }
+    more?.addEventListener("click", () => showAllTags(more.getAttribute("aria-expanded") !== "true"));
     let tag = new URLSearchParams(location.search).get("tag") || "";
     function apply() {
       const text = (q?.value || "").trim().toLowerCase();
@@ -81,6 +96,10 @@ const canonical = new URL("writing/", site);
       history.replaceState(null, "", u);
       apply();
     }));
-    if (tag) apply();
+    if (tag) {
+      // A link to a topic that's tucked away opens the full list, so the selected chip is visible.
+      if (chips.some((c) => c.dataset.tag === tag && c.hasAttribute("data-more"))) showAllTags(true);
+      apply();
+    }
   </script>
 </Writing>

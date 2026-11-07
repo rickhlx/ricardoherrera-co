@@ -1332,7 +1332,7 @@ const sticky = { t: 0, open: false, meshes: [] };
 const CENTER = new THREE.Vector3(0, 170, -40);
 const snd = (name, ...a) => window.YN1Sound && window.YN1Sound.play(name, ...a);
 
-// ---------- cold boot: once per session the YN-1 powers on. The fan spins up, the line work plots itself
+// ---------- cold boot: on every load (refreshes too) the YN-1 powers on. The fan spins up, the line work plots itself
 // part by part, the fills come in, and the screen runs its power-on self-test. Any click or key skips it.
 // Not on deep links or with reduced motion; `reboot` in the terminal runs it again.
 const BOOT_ORDER = ["chassis", "logic", "tape", "hood", "display", "keyboard", "viewfinder", "sticky"];
@@ -1392,7 +1392,6 @@ function endBoot() {
   for (const M of boot.mats) { M.m.transparent = M.transparent; M.m.opacity = M.opacity; M.m.needsUpdate = true; }
   screenPost = null; screenTex.draw(true);
   delete document.body.dataset.boot; postEl.textContent = "";
-  try { sessionStorage.setItem("yn1.booted", "1"); } catch {}
 }
 function bootFrame(now) {
   if (!boot.t0) boot.t0 = now;   // time from the first frame drawn, so a slow first frame doesn't eat the boot
@@ -2059,8 +2058,7 @@ saved = { pos: HOME.clone(), target: CENTER.clone() };
 updateChrome();
 requestAnimationFrame(tick);
 const startKey = location.hash.slice(1);
-let coldBoot = !reduce && !["terminal", "viewfinder", ...SHEETS].includes(startKey);
-try { if (sessionStorage.getItem("yn1.booted")) coldBoot = false; } catch {}
+const coldBoot = !reduce && !["terminal", "viewfinder", ...SHEETS].includes(startKey);
 if (["terminal", ...SHEETS].includes(startKey)) { mode = "computer"; current = "intro"; go(startKey); }
 else { if (coldBoot) startBoot(); current = "intro"; mode = "flying"; flight = { key: "yn1", t0: performance.now(), dur: reduce ? 0 : coldBoot ? 2600 : 1800, p0: camera.position.clone(), p1: camera.position.clone(), p2: HOME.clone(), p3: HOME.clone(), q0: camera.quaternion.clone(), q1: poseFor("yn1").quat }; current = "yn1"; }
 </script>

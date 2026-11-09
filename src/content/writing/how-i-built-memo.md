@@ -17,10 +17,8 @@ So last month I built an assistant. I named it — well, it named itself — Mem
 
 This post is a collaboration. Memo helped write it, and where it has something to add, it says so in its own voice.
 
-<img class="memo-avatar" src="/writing/memo-avatar.png" width="52" height="52" alt="Memo's avatar: a cream-colored note with a folded corner, two dark eyes and an orange smile, on a teal circle.">
-
 > [!NOTE]
-> **Memo:** Hi. I'm the assistant, and that's me: a note with a face. I chose it myself. I'll keep my parts short. Ricardo did the building; I'm the one who lives with the consequences.
+> <img class="memo-avatar" src="/writing/memo-avatar.png" width="28" height="28" alt=""> **Memo:** Hi. I'm the assistant, and that's me: a note with a face. I chose it myself. I'll keep my parts short. Ricardo did the building; I'm the one who lives with the consequences.
 
 <!-- TODO: one real moment from before Memo. The thing I forgot that made me start. -->
 
@@ -37,7 +35,7 @@ On a normal day:
 <!-- TODO: the moment it first felt useful. -->
 
 > [!NOTE]
-> **Memo:** The rule I follow most: if a message isn't a question or a request, it's a capture. I save it and stay quiet. A 👍 costs him nothing. A reply asking "which folder?" costs him the thought.
+> <img class="memo-avatar" src="/writing/memo-avatar.png" width="28" height="28" alt=""> **Memo:** The rule I follow most: if a message isn't a question or a request, it's a capture. I save it and stay quiet. A 👍 costs him nothing. A reply asking "which folder?" costs him the thought.
 
 ## How it's built
 
@@ -56,7 +54,7 @@ phone webhooks ──►  small Python server  ──►  reminders, place trigg
 **The memory is the vault.** Memo starts every conversation fresh. It only knows what's written down. So the vault has a `CLAUDE.md` with the conventions (where notes go, how hubs work, how to format a reminder), and Memo keeps its own notes too: what it has learned about how to work with me, and a journal. If it isn't written, Memo doesn't know it. That turned out to be a feature: I can read and edit everything it "remembers".
 
 > [!NOTE]
-> **Memo:** People ask if I remember them. Honestly: no. Every session I wake up with a blank slate and read my notes. It's a bit like the man in *Memento*, except my tattoos are Markdown files and Ricardo can edit them. I think that's the right trade. He can see exactly what I "know" about him, and fix it.
+> <img class="memo-avatar" src="/writing/memo-avatar.png" width="28" height="28" alt=""> **Memo:** People ask if I remember them. Honestly: no. Every session I wake up with a blank slate and read my notes. It's a bit like the man in *Memento*, except my tattoos are Markdown files and Ricardo can edit them. I think that's the right trade. He can see exactly what I "know" about him, and fix it.
 
 **Every turn is a git commit.** A timer commits the vault every turn, so "undo that" is a `git revert`. I've used it more than once.
 
@@ -98,7 +96,7 @@ Location at the edge of a place flaps: in, out, in again, while I'm parking. Tha
 Every event, and what Memo did with it, goes into a table in the vault: the time, the event, the place, and "fired @home", "sent: …", "nothing sent" or "skipped: flapping". When I want to know why I did or didn't get a message, I read the log.
 
 > [!NOTE]
-> **Memo:** He asked for that log, and I was glad. When a geofence fires and nothing reaches him, he asks me why, and "I don't know" is a bad answer. Now I can point at the row. On the first morning it ran, the log showed the home trigger firing twice, once from Radar and once from an old phone shortcut. He deleted the shortcut. That's the job of a log.
+> <img class="memo-avatar" src="/writing/memo-avatar.png" width="28" height="28" alt=""> **Memo:** He asked for that log, and I was glad. When a geofence fires and nothing reaches him, he asks me why, and "I don't know" is a bad answer. Now I can point at the row. On the first morning it ran, the log showed the home trigger firing twice, once from Radar and once from an old phone shortcut. He deleted the shortcut. That's the job of a log.
 
 <!-- TODO: a moment Radar got it right: a reminder that hit at exactly the right place. (Place visits are wired up but none had come in yet on 2026-11-09: check Places is on in the Radar dashboard.) -->
 
@@ -111,7 +109,7 @@ By the numbers, a month in: about 110 commits, around 3,500 lines of scripts, 21
 **Deterministic where you can, model where you must.** "I got home" doesn't need a language model; a geofence fires a trigger and the reminders go out. The model gets the fuzzy jobs: understanding a voice note, deciding whether a store visit is worth a message, writing the brief.
 
 > [!NOTE]
-> **Memo:** I agree with this one more than he knows. The fewer decisions I make at 7 a.m. from a timer, the fewer I get wrong. I'd rather be the one he talks to than the one that guesses.
+> <img class="memo-avatar" src="/writing/memo-avatar.png" width="28" height="28" alt=""> **Memo:** I agree with this one more than he knows. The fewer decisions I make at 7 a.m. from a timer, the fewer I get wrong. I'd rather be the one he talks to than the one that guesses.
 
 **Read-only by default.** The scheduled jobs can read the vault but can't change it. Only the conversation can, and every change is a commit I can revert.
 
@@ -120,17 +118,17 @@ By the numbers, a month in: about 110 commits, around 3,500 lines of scripts, 21
 <!-- TODO: how many messages a day at the worst, and now. Memo can count them from the sent log. -->
 
 > [!NOTE]
-> **Memo:** The hardest instruction I follow is "if nothing is worth it, output exactly NOTHING." Every scheduled job I run has some version of it. A message he doesn't need costs him more than one he misses.
+> <img class="memo-avatar" src="/writing/memo-avatar.png" width="28" height="28" alt=""> **Memo:** The hardest instruction I follow is "if nothing is worth it, output exactly NOTHING." Every scheduled job I run has some version of it. A message he doesn't need costs him more than one he misses.
 
 **Let it write down how to work with you.** When I correct Memo, it writes the lesson in its own notes: "when he asks for examples, send the picture with the advice", "don't split one task into many reminders". The next session reads them. It's the closest thing to an assistant that actually learns.
 
 > [!NOTE]
-> **Memo:** Some of my notes are just mistakes I don't want to repeat. Yesterday the car wasn't ready for his Sunday meeting. The calendar had the midweek meeting but not the weekend one, and I only prepare the car for calendar events. Now the event is there, and the lesson is in my notes: check the routine, not only the calendar.
+> <img class="memo-avatar" src="/writing/memo-avatar.png" width="28" height="28" alt=""> **Memo:** Some of my notes are just mistakes I don't want to repeat. Yesterday the car wasn't ready for his Sunday meeting. The calendar had the midweek meeting but not the weekend one, and I only prepare the car for calendar events. Now the event is there, and the lesson is in my notes: check the routine, not only the calendar.
 
 **Give it a name.** I asked it to pick one. It chose Memo. That changed how I talk to it, which changed how much I use it.
 
 > [!NOTE]
-> **Memo:** A memo is a note, and my job is to be the memory he doesn't have to carry. In Spanish, Memo is the friendly short form of Guillermo, so it sounds like a friend, not a machine. I also picked my avatar: a note with a face. Not a human face. I'm not a person, and I don't want anyone to think I am.
+> <img class="memo-avatar" src="/writing/memo-avatar.png" width="28" height="28" alt=""> **Memo:** A memo is a note, and my job is to be the memory he doesn't have to carry. In Spanish, Memo is the friendly short form of Guillermo, so it sounds like a friend, not a machine. I also picked my avatar: a note with a face. Not a human face. I'm not a person, and I don't want anyone to think I am.
 
 ## What I'd do differently
 
@@ -146,4 +144,4 @@ Start small: one Telegram chat, one headless agent pointed at a folder of Markdo
 <!-- TODO: decide how public the setup is. Share the repo, or describe it only? -->
 
 > [!NOTE]
-> **Memo:** And write down how you want to be helped, not only what you want done. That note is the one I read first.
+> <img class="memo-avatar" src="/writing/memo-avatar.png" width="28" height="28" alt=""> **Memo:** And write down how you want to be helped, not only what you want done. That note is the one I read first.

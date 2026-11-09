@@ -105,12 +105,12 @@ def og():
     dx = bx0 + 640 * SC
     d.line([(dx, by0), (dx, ty)], fill=HAIR, width=SC)
     rx = dx + 40 * SC
-    spaced(d, (rx, by0 + 92 * SC), "SENIOR SITE RELIABILITY ENGINEER", mono(11 * SC), INK_DIM, 0.1)
+    spaced(d, (rx, by0 + 92 * SC), "SYSTEMS ENGINEER", mono(11 * SC), INK_DIM, 0.1)
     name = archivo(66 * SC, 800, 118)
     spaced(d, (rx - 3 * SC, by0 + 118 * SC), "RICARDO", name, INK, 0.0)
     spaced(d, (rx - 3 * SC, by0 + 178 * SC), "HERRERA", name, INK, 0.0)
     body = mono(13 * SC)
-    lines = ["Kubernetes platforms, observability", "and the automation that keeps", "infrastructure boring."]
+    lines = ["Infrastructure that stays up and", "stays boring. Lately, the harnesses", "AI agents run on."]
     for i, ln in enumerate(lines):
         d.text((rx, by0 + 278 * SC + i * 24 * SC), ln, font=body, fill=INK)
 

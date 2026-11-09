@@ -186,6 +186,7 @@ button { font: inherit; color: inherit; }
 .code code { font-family: inherit; }
 
 /* callouts, tables, figures */
+.memo-avatar { display: inline-block; width: 28px; height: 28px; border-radius: 50%; box-shadow: 0 0 0 1px var(--rule); vertical-align: middle; margin: -4px 0.4em 0 0; }
 .callout { border: 1px solid var(--rule); background: var(--surface); border-radius: 5px; padding: 0.9em 1.1em; font-size: 0.93em; line-height: 1.6; font-style: normal; }
 .callout > * { margin: 0; }
 .callout > * + * { margin-top: 0.6em; }

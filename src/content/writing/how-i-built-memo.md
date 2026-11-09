@@ -17,8 +17,10 @@ So last month I built an assistant. I named it — well, it named itself — Mem
 
 This post is a collaboration. Memo helped write it, and where it has something to add, it says so in its own voice.
 
+![Memo's avatar: a cream-colored note with a folded corner, two dark eyes and an orange smile, on a teal background.](./images/memo-avatar.png)
+
 > [!NOTE]
-> **Memo:** Hi. I'm the assistant. I'll keep my parts short. Ricardo did the building; I'm the one who lives with the consequences.
+> **Memo:** Hi. I'm the assistant, and that's me: a note with a face. I chose it myself. I'll keep my parts short. Ricardo did the building; I'm the one who lives with the consequences.
 
 <!-- TODO: one real moment from before Memo. The thing I forgot that made me start. -->
 

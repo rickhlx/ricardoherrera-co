@@ -8,7 +8,7 @@ draft: true
 
 <!-- DRAFT: working prose in my voice. Replace the TODO notes with my own moments.
      Check before publishing: anything personal I'd rather keep out (health, family, faith),
-     and the Radar mention in "Where I am" (it's my employer's product). -->
+     and keep the location provider unnamed (it is my employer's product). -->
 
 I have ADHD. For me, a thought I don't write down in the next ten seconds is gone. For years my notes app was full of half-captured ideas, and my calendar was a list of things I'd already forgotten to prepare for.
 

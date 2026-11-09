@@ -22,7 +22,7 @@ interface Props {
 const { title, description, canonical, type = "website", noindex = false, published, modified, tags = [], jsonLd, current, ogImageWidth = 1200, ogImageHeight = 630 } = Astro.props;
 const site = Astro.site ?? new URL("https://ricardoherrera.co");
 const ogImage = Astro.props.ogImage ?? new URL("og.png", site);
-const ogImageAlt = Astro.props.ogImageAlt ?? "Blueprint drawing of the YN-1 workstation beside the name Ricardo Herrera, senior site reliability engineer";
+const ogImageAlt = Astro.props.ogImageAlt ?? "Blueprint drawing of the YN-1 workstation beside the name Ricardo Herrera, senior SRE, agent infrastructure";
 const feed = url("writing/feed.xml");
 ---
 <!doctype html>
